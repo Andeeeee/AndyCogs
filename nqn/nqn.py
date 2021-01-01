@@ -95,7 +95,8 @@ class NotQuiteNitro(commands.Cog):
             allowed_mentions=discord.AllowedMentions(
             users=False, everyone=False, roles=False)
             await ctx.send(x, allowed_mentions=allowed_mentions)
-        await ctx.message.delete()
+        if ctx.channel.permissions_for(ctx.me).manage_messages:
+            await ctx.message.delete()
 
     @commands.Cog.listener("on_message")
     async def on_message(self, message: discord.Message):
@@ -105,6 +106,8 @@ class NotQuiteNitro(commands.Cog):
         delete = await self.config.guild(message.guild).delete()
 
         if not auto:
+            return
+        if message.bot:
             return
 
         messages = message.content.split()
