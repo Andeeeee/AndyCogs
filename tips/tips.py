@@ -11,7 +11,7 @@ from random import choice, randrange
 class Tips(commands.Cog):
     def __init__(self, bot):
         self.bot = bot 
-        self.config = Config.get_conf(self, identifier=16080501408010200501901305,
+        self.config = Config.get_conf(self, identifier=160805014090190130501014,
         force_registration=True)
 
         default_global = {
