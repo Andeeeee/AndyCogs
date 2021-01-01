@@ -51,7 +51,7 @@ class NotQuiteNitro(commands.Cog):
             await ctx.send("I will no longer automatically try to convert failed emojis into emojis")
 
     @nqnset.command(name="delete")
-    @commands.admin_or_permissions(mangage_guild=True)
+    @commands.admin_or_permissions(manage_guild=True)
     async def nqnset_delete(self, ctx, delete: Optional[bool] = None):
         if delete is None:
             await ctx.send("Please specify true or false after this!")
