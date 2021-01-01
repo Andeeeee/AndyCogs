@@ -58,7 +58,7 @@ class Tips(commands.Cog):
     @commands.is_owner()
     @commands.command(name="addtip")
     async def addtip(self, ctx, * , tip: str):
-        tiplist = self.config.tips()
+        tiplist = await self.config.tiplist()
         number = str(len(tiplist))
 
         tiplist[number] = tip
