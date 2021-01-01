@@ -77,6 +77,7 @@ class NotQuiteNitro(commands.Cog):
                 x += f" {emoji}"
             
         cog = self.bot.get_cog("Webhook")
+
         #webhook send_to_channel logic taken from https://github.com/phenom4n4n/phen-cogs. Thank you.
         if ctx.channel.permissions_for(ctx.me).manage_webhooks:
             await cog.send_to_channel(
@@ -91,10 +92,12 @@ class NotQuiteNitro(commands.Cog):
                 allowed_mentions=discord.AllowedMentions(
             users=False, everyone=False, roles=False
             ))
+
         else:
             allowed_mentions=discord.AllowedMentions(
             users=False, everyone=False, roles=False)
             await ctx.send(x, allowed_mentions=allowed_mentions)
+
         if ctx.channel.permissions_for(ctx.me).manage_messages:
             await ctx.message.delete()
 
@@ -106,9 +109,10 @@ class NotQuiteNitro(commands.Cog):
         delete = await self.config.guild(message.guild).delete()
 
         if not auto:
+            await ctx.send("not auto")
             return
         if message.bot:
-            await ctx.send("bot")
+            await message.channel.send("bot")
             return
 
         messages = message.content.split()
