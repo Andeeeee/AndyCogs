@@ -78,7 +78,7 @@ class NotQuiteNitro(commands.Cog):
             
         cog = self.bot.get_cog("Webhook")
         #webhook send_to_channel logic taken from https://github.com/phenom4n4n/phen-cogs. Thank you.
-        try:
+        if message.channel.permissions_for(message.guild.me).manage_webhooks:
             await cog.send_to_channel(
                 channel=ctx.channel,
                 me=ctx.me,
@@ -89,8 +89,8 @@ class NotQuiteNitro(commands.Cog):
                 avatar_url=ctx.author.avatar_url,
                 username=ctx.author.display_name
             )
-        except(Exception) as e:
-            await ctx.send(x)
+        else:
+            await ctx.send(e)
         await ctx.message.delete()
 
     @commands.Cog.listener("on_message")
