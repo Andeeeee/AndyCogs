@@ -109,10 +109,8 @@ class NotQuiteNitro(commands.Cog):
         delete = await self.config.guild(message.guild).delete()
 
         if not auto:
-            await message.channel.send("not auto")
             return
-        if message.bot:
-            await message.channel.send("bot")
+        if message.author.bot:
             return
 
         messages = message.content.split()
