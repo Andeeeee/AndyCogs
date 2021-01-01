@@ -69,11 +69,11 @@ class NotQuiteNitro(commands.Cog):
         messages = message.split()
         x = ""
         
-        for message in messages:
+        for msg in messages:
             if not self.check_emoji(message):
-                x += f" {message}"
+                x += f" {msg}"
             else:
-                emoji = await self.convert_emojis(message)
+                emoji = await self.convert_emojis(msg)
                 x += f" {emoji}"
             
         cog = self.bot.get_cog("Webhook")
