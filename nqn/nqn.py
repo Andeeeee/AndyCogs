@@ -80,18 +80,20 @@ class NotQuiteNitro(commands.Cog):
         #webhook send_to_channel logic taken from https://github.com/phenom4n4n/phen-cogs. Thank you.
         if message.channel.permissions_for(message.guild.me).manage_webhooks:
             await cog.send_to_channel(
-                channel=ctx.channel,
-                me=ctx.me,
-                author=ctx.author,
+                channel=message.channel,
+                me=message.guild.me,
+                author=message.author,
                 reason="For the NotQuiteNitro command",
-                ctx=ctx,
+                ctx=message,
                 content=x,
-                avatar_url=ctx.author.avatar_url,
-                username=ctx.author.display_name,
+                avatar_url=message.author.avatar_url,
+                username=message.author.display_name,
                 allowed_mentions=discord.AllowedMentions(
             users=False, everyone=False, roles=False
             ))
         else:
+            allowed_mentions=discord.AllowedMentions(
+            users=False, everyone=False, roles=False)
             await ctx.send(e, allowed_mentions=allowed_mentions)
         await ctx.message.delete()
 
