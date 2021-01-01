@@ -87,10 +87,12 @@ class NotQuiteNitro(commands.Cog):
                 ctx=ctx,
                 content=x,
                 avatar_url=ctx.author.avatar_url,
-                username=ctx.author.display_name
-            )
+                username=ctx.author.display_name,
+                allowed_mentions=discord.AllowedMentions(
+            users=False, everyone=False, roles=False
+            ))
         else:
-            await ctx.send(e)
+            await ctx.send(e, allowed_mentions=allowed_mentions)
         await ctx.message.delete()
 
     @commands.Cog.listener("on_message")
