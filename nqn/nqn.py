@@ -70,7 +70,7 @@ class NotQuiteNitro(commands.Cog):
         x = ""
         
         for msg in messages:
-            if not self.check_emoji(message):
+            if not self.check_emoji(msg):
                 x += f" {msg}"
             else:
                 emoji = await self.convert_emojis(msg)
@@ -80,11 +80,11 @@ class NotQuiteNitro(commands.Cog):
         #webhook send_to_channel logic taken from https://github.com/phenom4n4n/phen-cogs. Thank you.
         if message.channel.permissions_for(message.guild.me).manage_webhooks:
             await cog.send_to_channel(
-                channel=message.channel,
-                me=message.guild.me,
-                author=message.author,
+                channel=ctx.channel,
+                me=ctx.me,
+                author=ctx.author,
                 reason="For the NotQuiteNitro command",
-                ctx=message,
+                ctx=ctx,
                 content=x,
                 avatar_url=message.author.avatar_url,
                 username=message.author.display_name,
@@ -94,7 +94,7 @@ class NotQuiteNitro(commands.Cog):
         else:
             allowed_mentions=discord.AllowedMentions(
             users=False, everyone=False, roles=False)
-            await ctx.send(e, allowed_mentions=allowed_mentions)
+            await ctx.send(x, allowed_mentions=allowed_mentions)
         await ctx.message.delete()
 
     @commands.Cog.listener("on_message")
@@ -127,7 +127,7 @@ class NotQuiteNitro(commands.Cog):
         if counter == 0:
             return 
             
-        try:
+        if message.channel.permissions_for(message.guild.me).manage_webhooks:
             cog = self.bot.get_cog("Webhook")
             await cog.send_to_channel(
                 channel=message.channel,
@@ -136,12 +136,16 @@ class NotQuiteNitro(commands.Cog):
                 reason="Automatic NQN converter",
                 content=x,
                 avatar_url=message.author.avatar_url,
-                username=message.author.display_name
-            )
+                username=message.author.display_name,
+                allowed_mentions=discord.AllowedMentions(
+                users=False, everyone=False, roles=False
+            ))
+            
 
-        except(Exception) as e:
-            #Sending a message through the bot
-            await message.channel.send(x)
+        else:
+            allowed_mentions=discord.AllowedMentions(
+            users=False, everyone=False, roles=False)
+            await message.channel.send(x, allowed_mentions=allowed_mentions)
 
         if delete:
             if message.channel.permissions_for(message.guild.me).manage_messages:
