@@ -108,6 +108,7 @@ class NotQuiteNitro(commands.Cog):
         if not auto:
             return
         if message.bot:
+            await ctx.send("bot")
             return
 
         messages = message.content.split()
