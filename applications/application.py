@@ -237,7 +237,9 @@ class Applications(commands.Cog):
             return 
         
         channel = await self.config.guild(ctx.guild).resultchannel()
+        channel = self.bot.get_channel(channel)
         if not channel:
-            pass 
+            pass
         else:
-            await channel.send(f"{member.name} was accepted as {role.name} by {ctx.author.name} with the reason {msg1.content}.")
+            await channel.send(f"{member.mention} was accepted as {role.name} by {ctx.author.mention} with the reason {msg1.content}.")
+        await member.add_roles(role)
