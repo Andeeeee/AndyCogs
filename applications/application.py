@@ -315,6 +315,6 @@ class Applications(commands.Cog):
             f"User ID: {applicant.id} \n Username & Tag: {applicant}")
 
             for i in range(len(current_questions)):
-                e.add_field(name=current_questions[0], value=answers[0], inline=False)
+                e.add_field(name=current_questions[i], value=answers[i], inline=False)
         
         await ctx.send(embed=e)
