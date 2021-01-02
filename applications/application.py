@@ -16,7 +16,7 @@ class Applications(commands.Cog):
             "resultchannel": None,
             "acceptrole": None,
             "dm": True,
-            "positions": None,
+            "positions": [],
         }
 
         default_member = {
