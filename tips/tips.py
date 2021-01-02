@@ -42,7 +42,7 @@ class Tips(commands.Cog):
     
     @tips.command(name="status")
     async def tips_status(self, ctx):
-        tips await self.config.user(ctx.author).tips()
+        tips = await self.config.user(ctx.author).tips()
         if tips:
             await ctx.send("You are currently having tips randomly sent.")
         else:
