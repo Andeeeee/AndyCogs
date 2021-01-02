@@ -35,6 +35,7 @@ class Applications(commands.Cog):
             return newrole
         else:
             return newrole 
+        return newrole 
         
         newrole = guild.get_role(int(role))
 
