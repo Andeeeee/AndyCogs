@@ -183,9 +183,13 @@ class Applications(commands.Cog):
     @commands.guild_only()
     async def accept(self, ctx, member: Optional[discord.Member] = None):
         role = await self.config.guild(ctx.guild).acceptrole()
+        if not role:
+            await ctx.send("This server has no configured acceptrole.")
+            return
         role = ctx.guild.get_role(role)
 
         if role not in ctx.author.roles:
+            await ctx.send(f"You need to have the role {role.name} to be able to accept members")
             return
         if not member:
             await ctx.send("Uh oh, please specify a member to accept")
@@ -242,4 +246,71 @@ class Applications(commands.Cog):
             pass
         else:
             await channel.send(f"{member.mention} was accepted as {role.name} by {ctx.author.mention} with the reason {msg1.content}.")
+
+        await self.config.member(member).answers.set([])
+        await self.config.member(member).current_questions.set([])
         await member.add_roles(role)
+        await member.send(f"You were accepted as **{role.name}** in **{ctx.guild.name}** with the reason {msg1.content}")
+        await ctx.send("Done.")
+
+    @commands.command(name="deny")
+    async def deny(self, ctx, member: Optional[discord.Member] = None):
+        acceptrole = self.config.guild(ctx.guild).acceptrole()
+        if not acceptrole:
+            await ctx.send("This server has no configured acceptrole")
+            return 
+
+        acceptrole = ctx.guild.get_role(acceptrole)
+        if acceptrole not in ctx.author.roles:
+            await ctx.send(f"You need to have the **{acceptrole.name}** role to do this!")
+            return 
+        
+        try:
+            await ctx.send("Specify the reason here.")
+            def check(message):
+                return message.author == ctx.author and message.channel == ctx.channel
+            msg = await self.bot.wait_for("message", check=check, timeout=60)
+        
+        except asyncio.TimeoutError:
+            await ctx.send("You ran out of time, try again later")
+            return
+
+        channel = await self.config.guild(ctx.guild).resultchannel()
+        channel = self.bot.get_channel(channel)
+        if not channel:
+            pass 
+        else:
+            await channel.send(f"{member.mention} was denied by {ctx.author.mention} with the reason {msg.content}")
+        
+        await member.send(f"Your application was denied **{ctx.guild.name}** with the reason {msg.content}")
+
+    
+    @commands.command(name="fetchapp", aliases=["getapp", "review"])
+    async def fetchapp(self, ctx, applicant: Optional[discord.Member] = None):
+        acceptrole = self.config.guild(ctx.guild).acceptrole()
+
+        if not acceptrole:
+            await ctx.send("Your server does not have an acceptrole setup.")
+            return 
+
+        acceptrole = ctx.guild.get_role(acceptrole)
+
+        if acceptrole not in ctx.author.roles:
+            await ctx.send(f"You need to have the **{acceptrole.name}** role to view an application.")
+            return 
+        
+        answers = self.config.member(applicant).answers()
+        current_questions = self.config.member(applicant).current_questions()
+
+        if len(answers) == 0:
+            await ctx.send("This user has not applied for anything yet.")
+            return 
+        
+        else:
+            e = discord.Embed(title="Application", color=discord.Color.green(), description=
+            f"User ID: {applicant.id} \n Username & Tag: {applicant}")
+
+            for i in range(len(current_questions)):
+                e.add_field(name=current_questions[0], value=answers[0], inline=False)
+        
+        await ctx.send(embed=e)
