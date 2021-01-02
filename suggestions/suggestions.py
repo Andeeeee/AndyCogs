@@ -164,7 +164,7 @@ class Suggestions(commands.Cog):
             author_url = ctx.author.avatar_url
             footer = f"ID: {ctx.author.id}"
         
-        e = discord.Embed(title=f"Suggetion Number {total}", color=discord.Color.green()), description=content)
+        e = discord.Embed(title=f"Suggetion Number {total}", color=discord.Color.green(), description=content)
         e.set_author(name=author, url=author_url)
         e.set_footer(text=footer)
 
