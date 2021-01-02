@@ -287,7 +287,7 @@ class Applications(commands.Cog):
     
     @commands.command(name="fetchapp", aliases=["getapp", "review"])
     async def fetchapp(self, ctx, applicant: Optional[discord.Member] = None):
-        acceptrole = self.config.guild(ctx.guild).acceptrole()
+        acceptrole = await self.config.guild(ctx.guild).acceptrole()
 
         if not acceptrole:
             await ctx.send("Your server does not have an acceptrole setup.")
