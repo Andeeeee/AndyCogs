@@ -158,7 +158,7 @@ class Applications(commands.Cog):
     @appset.command(name="questions", aliases=["custom"])
     @commands.admin_or_permissions(manage_guild=True)
     async def questions(self, ctx):
-        await ctx.send("Lets get started. I'll ask you for the questions, and they will be your questions, you can have up to 20 questions. Type `done` when you are done.")
+        await ctx.send("Lets get started. I'll ask you for the questions, and they will be your questions, you can have up to 20 questions. Type `done` when you are done")
         questions = []
 
         for i in range(20):
