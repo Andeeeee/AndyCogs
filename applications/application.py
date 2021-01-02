@@ -135,7 +135,7 @@ class Applications(commands.Cog):
             pass 
         else:
             acceptrole = ctx.guild.get_role(acceptrole)
-            acceptrole = acceptrole.name
+            acceptrole = acceptrole.mention
         
         if not resultchannel:
             pass 
@@ -154,6 +154,41 @@ class Applications(commands.Cog):
         e.add_field(name="DirectMessage", value=dm)
 
         await ctx.send(embed=e)
+    
+    @appset.command(name="questions", aliases=["custom"])
+    @commands.admin_or_permissions(manage_guild=True)
+    async def questions(self, ctx):
+        await ctx.send("Lets get started. I'll ask you for the questions, and they will be your questions, you can have up to 20 questions.")
+        questions = []
+
+        for i in range(20):
+            await ctx.send(f"What will be question {i + 1}?")
+
+            def check(m):
+                return m.author == ctx.author and m.channel == ctx.channel
+
+            answer = await self.bot.wait_for("message", check=check, timeout=60)
+
+            if answer.content.lower() == "done":
+                await self.config.guild(ctx.guild).questions.set(questions)
+
+                e = discord.Embed(title="Custom Questions", color=discord.Color.green())
+
+                for i in range(len(questions)):
+                    e.add_field(name=f"Question {i}", value=questions[i], inline=False)
+                await ctx.send(f"{ctx.author.mention} your custom questions", embed=e)
+                return
+
+            questions.append(answer.content)
+        
+        await self.config.guild(ctx.guild).questions.set(questions)
+
+        e = discord.Embed(title="Custom Questions", color=discord.Color.green())
+
+        for i in range(20):
+            e.add_field(name=f"Question {i}", value=questions[i], inline=False)
+        
+        await ctx.send(f"{ctx.author.mention} your custom questions", embed=e)
 
     @commands.command(name="apply")
     @commands.guild_only()
