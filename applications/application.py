@@ -123,6 +123,37 @@ class Applications(commands.Cog):
         else:
             await self.config.clear_all()
             await ctx.send("I've cleared your guilds channels, resultchannels, DM settings, acceptroles, and currently logged member applications.")
+            
+    @appset.command(name="settings", aliases=["showsettings", "viewsettings"])
+    async def appset_settings(self, ctx):
+        acceptrole = await self.config.guild(ctx.guild).acceptrole()
+        channel = await self.config.guild(ctx.guild).channel()
+        resultchannel = await self.config.guild(ctx.guild).resultchannel()
+        dm = await self.config.guild(ctx.guild).dm()
+
+        if not acceptrole:
+            pass 
+        else:
+            acceptrole = ctx.guild.get_role(acceptrole)
+            acceptrole = acceptrole.name
+        
+        if not resultchannel:
+            pass 
+        else:
+            resultchannel = f"<#{resultchannel}>"
+        
+        if not channel:
+            pass 
+        else:
+            channel = f"<#{channel}>"
+
+        e = discord.Embed(title=f"Application settings for {ctx.guild.name}", color=discord.Color.green())
+        e.add_field(name="Acceptrole", value=acceptrole)
+        e.add_field(name="Resultchannel", value=resultchannel)
+        e.add_field(name="Channel", value=channel)
+        e.add_field(name="DirectMessage", value=dm)
+
+        await ctx.send(embed=e)
 
     @commands.command(name="apply")
     @commands.guild_only()
@@ -318,3 +349,4 @@ class Applications(commands.Cog):
                 e.add_field(name=current_questions[i], value=answers[i], inline=False)
         
         await ctx.send(embed=e)
+    
