@@ -292,12 +292,16 @@ class Applications(commands.Cog):
         if not acceptrole:
             await ctx.send("Your server does not have an acceptrole setup.")
             return 
+        
 
         acceptrole = ctx.guild.get_role(acceptrole)
 
         if acceptrole not in ctx.author.roles:
             await ctx.send(f"You need to have the **{acceptrole.name}** role to view an application.")
             return 
+        
+        if not member:
+            await ctx.send("You need to specify the member after this!")
         
         answers = self.config.member(applicant).answers()
         current_questions = self.config.member(applicant).current_questions()
