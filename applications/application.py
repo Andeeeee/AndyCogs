@@ -28,29 +28,24 @@ class Applications(commands.Cog):
     def convert_role(self, guild, role):
         guild = self.bot.get_guild(int(guild))
 
+        if role.startswith("<@&") and role.endswith(">"):
+            role = role[3:-1]
+        
 
-        newrole = discord.utils.get(guild.roles, name=role[3:-1])
+        newrole = discord.utils.get(guild.roles, name=role)
 
-        if not newrole:
-            return newrole
+        if newrole is None:
+            pass
         else:
             return newrole 
-        return newrole 
-        
+
         newrole = guild.get_role(int(role))
 
         if not newrole:
             pass 
         else:
             return newrole
-        
-        newrole = discord.utils.get(guild.roles, name=role)
-        if not newrole:
-            pass 
-        else:
-            return newrole 
-        
-        
+
         return None
     
 
