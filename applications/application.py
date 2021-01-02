@@ -303,8 +303,8 @@ class Applications(commands.Cog):
         if not applicant:
             await ctx.send("You need to specify the member after this!")
         
-        answers = self.config.member(applicant).answers()
-        current_questions = self.config.member(applicant).current_questions()
+        answers = await self.config.member(applicant).answers()
+        current_questions = await self.config.member(applicant).current_questions()
 
         if len(answers) == 0:
             await ctx.send("This user has not applied for anything yet.")
