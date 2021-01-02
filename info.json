@@ -1,18 +1,8 @@
 {
-    "name": "suggestions",
-    "short": "Suggestions for your server",
-    "description": "Suggest things in channels and other stuf",
-    "install_msg": "Remember to set a channel before trying to suggest something!",
-    "author": [
-        "Andy"
-    ],
-    "required_cogs": {},
-    "requirements": [],
-    "tags": [
-        "utility"
-    ],
-    "min_bot_version": "3.4.6.dev1",
-    "hidden": false,
-    "disabled": false,
-    "type": "COG"
+    "author" : ["Andy"],
+    "install_msg" : "Thanks for installing my repo! If you need help, join my support server with <https://discord.gg/nVcZQt7mqk>, or make a PR on my repo.",
+    "name" : "AndyCogs",
+    "short" : "Utility bot cogs",
+    "description" : "Random bot cogs that are easy to make but at the same time too easy so no one wants to make them.",
+    "tags" : ["utility"]
 }
