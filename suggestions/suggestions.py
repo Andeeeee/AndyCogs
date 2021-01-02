@@ -142,7 +142,7 @@ class Suggestions(commands.Cog):
             total += 1
         
         total = str(total)
-        
+        suggestions[total] = {}
         suggestions[total]["user"] = ctx.author.id
         suggestions[total]["content"] = ctx.author.id 
 
