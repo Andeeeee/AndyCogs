@@ -50,7 +50,7 @@ class Tips(commands.Cog):
 
     @commands.Cog.listener('on_command')
     async def on_command(self, ctx):
-        send_tips = randrange(10, 100)
+        send_tips = randrange(1, 100)
         tips = await self.config.user(ctx.author).tips()
 
         if not tips:
@@ -60,7 +60,7 @@ class Tips(commands.Cog):
 
         tipchoice = choice(list(tiplist.values()))
 
-        if True:
+        if send_tips < 10:
             await ctx.send(f"{tipchoice} \n You can disable these with `{ctx.prefix}tips off` anytime!")
     
     @commands.is_owner()
