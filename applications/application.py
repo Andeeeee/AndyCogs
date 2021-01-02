@@ -62,10 +62,10 @@ class Applications(commands.Cog):
     @commands.admin_or_permissions(manage_guild=True)
     async def appset_channel(self, ctx, channel: Optional[discord.TextChannel] = None):
         if not channel:
-            self.config.guild(ctx.guild).channel.set(None)
+            await self.config.guild(ctx.guild).channel.set(None)
             await ctx.send("Applications have been closed.")
         else:
-            self.config.guild(ctx.guild).channel.set(channel.id)
+            await self.config.guild(ctx.guild).channel.set(channel.id)
             await ctx.send(f"I will now send applications to <#{channel.id}>")
     
     @appset.command(name="resultchannel")
@@ -73,10 +73,10 @@ class Applications(commands.Cog):
     @commands.guild_only()
     async def resultchannel(self, ctx, channel: Optional[discord.TextChannel] = None):
         if not channel:
-            self.config.guild(ctx.guild).resultchannel.set(None)
+            await self.config.guild(ctx.guild).resultchannel.set(None)
             await ctx.send("I will no longer post results.")
         else:
-            self.config.guild(ctx.guild).set(channel.id)
+            await self.config.guild(ctx.guild).set(channel.id)
             await ctx.send(f"I will now post application results to <#{channel.id}>")
 
     @appset.command(name="dm", aliases=["pm", "directmessage", "privatemessage"])
