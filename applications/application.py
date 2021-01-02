@@ -68,15 +68,15 @@ class Applications(commands.Cog):
             await self.config.guild(ctx.guild).channel.set(channel.id)
             await ctx.send(f"I will now send applications to <#{channel.id}>")
     
-    @appset.command(name="resultchannel")
-    @commands.admin_or_permissions(manage_guild=True)
+    @appset.command(name="resultchannel", aliases=["decisionchannel"])
     @commands.guild_only()
+    @commands.admin_or_permissions(manage_guild=True)
     async def resultchannel(self, ctx, channel: Optional[discord.TextChannel] = None):
         if not channel:
             await self.config.guild(ctx.guild).resultchannel.set(None)
             await ctx.send("I will no longer post results.")
         else:
-            await self.config.guild(ctx.guild).set(channel.id)
+            await self.config.guild(ctx.guild).resultchannel.set(channel.id)
             await ctx.send(f"I will now post application results to <#{channel.id}>")
 
     @appset.command(name="dm", aliases=["pm", "directmessage", "privatemessage"])
