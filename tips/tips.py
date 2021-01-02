@@ -60,7 +60,7 @@ class Tips(commands.Cog):
 
         tipchoice = choice(list(tiplist.values()))
 
-        if send_tips < 10:
+        if True:
             await ctx.send(f"{tipchoice} \n You can disable these with `{ctx.prefix}tips off` anytime!")
     
     @commands.is_owner()
