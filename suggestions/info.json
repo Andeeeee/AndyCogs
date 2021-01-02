@@ -6,7 +6,7 @@
     "author": [
         "Andy"
     ],
-    "required_cogs": {"https://github.com/phenom4n4n/phen-cogs/tree/master/webhook"},
+    "required_cogs": {},
     "requirements": [],
     "tags": [
         "utility"
