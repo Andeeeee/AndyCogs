@@ -388,7 +388,7 @@ class Applications(commands.Cog):
     @commands.command(name="deny")
     async def deny(self, ctx, member: Optional[discord.Member] = None):
         """Deny a member for a role"""
-        acceptrole = self.config.guild(ctx.guild).acceptrole()
+        acceptrole = await self.config.guild(ctx.guild).acceptrole()
         if not acceptrole:
             await ctx.send("This server has no configured acceptrole")
             return 
