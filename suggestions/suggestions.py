@@ -171,7 +171,7 @@ class Suggestions(commands.Cog):
         message = await channel.send(embed=e)
 
         await message.add_reaction("✅")
-        await message.add_reaction(""❌"")
+        await message.add_reaction("❌")
         await ctx.author.send(f"Your suggestion has been sent for approval. You can view it here: {message.jump_url}")
 
         if ctx.channel.permissions_for(ctx.me).manage_messages:
