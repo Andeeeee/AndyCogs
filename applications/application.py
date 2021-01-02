@@ -62,6 +62,7 @@ class Applications(commands.Cog):
     @commands.guild_only()
     @commands.admin_or_permissions(manage_guild=True)
     async def appset_channel(self, ctx, channel: Optional[discord.TextChannel] = None):
+        """The channel where applications show up"""
         if not channel:
             await self.config.guild(ctx.guild).channel.set(None)
             await ctx.send("Applications have been closed.")
@@ -73,6 +74,7 @@ class Applications(commands.Cog):
     @commands.guild_only()
     @commands.admin_or_permissions(manage_guild=True)
     async def resultchannel(self, ctx, channel: Optional[discord.TextChannel] = None):
+        """The channel where application results go"""
         if not channel:
             await self.config.guild(ctx.guild).resultchannel.set(None)
             await ctx.send("I will no longer post results.")
@@ -84,6 +86,7 @@ class Applications(commands.Cog):
     @commands.admin_or_permissions(manage_guild=True)
     @commands.guild_only()
     async def appset_dm(self, ctx, dm: Optional[bool] = None):
+        """Toggles whether to DM users on application decisions"""
         if dm is None:
             await ctx.send("You need to specify either True or False.")
         else:
@@ -97,6 +100,7 @@ class Applications(commands.Cog):
     @appset.command(name="acceptrole", aliases=["role"])
     @commands.guild_only()
     async def acceptrole(self, ctx, role: Optional[discord.Role] = None):
+        """Sets the role that can accept members"""
         if ctx.author.id != ctx.guild.owner.id:
             return 
         if role is None:
@@ -110,6 +114,7 @@ class Applications(commands.Cog):
     @commands.guild_only()
     @commands.admin_or_permissions(administrator=True)
     async def appset_reset(self, ctx):
+        """Resets everything for this server (applications)"""
         try:
             await ctx.send("Are you sure? Type `YES I WANT TO RESET` in the chat in the next 30 seconds (Caps Count)")
             def check(message):
@@ -128,6 +133,7 @@ class Applications(commands.Cog):
             
     @appset.command(name="settings", aliases=["showsettings", "viewsettings"])
     async def appset_settings(self, ctx):
+        """View server settings for applications"""
         acceptrole = await self.config.guild(ctx.guild).acceptrole()
         channel = await self.config.guild(ctx.guild).channel()
         resultchannel = await self.config.guild(ctx.guild).resultchannel()
@@ -172,6 +178,7 @@ class Applications(commands.Cog):
     @appset.command(name="removeposition")
     @commands.admin_or_permissions(manage_guild=True)
     async def removeposition(self, ctx, role: Optional[discord.Role] = None):
+        """Remove a position that can be accepted for"""
         if not role:
             await ctx.send("Specify the role to remove.")
             return 
@@ -186,6 +193,7 @@ class Applications(commands.Cog):
     
     @appset.command(name="positions")
     async def positions(self, ctx):
+        """View server positions"""
         positions = await self.config.guild(ctx.guild).positions()
         if len(positions) == 0:
             await ctx.send("This guild has no positions.")
@@ -198,6 +206,7 @@ class Applications(commands.Cog):
     @appset.command(name="questions", aliases=["custom"])
     @commands.admin_or_permissions(manage_guild=True)
     async def questions(self, ctx):
+        """Set the custom application questions"""
         await ctx.send("Lets get started. I'll ask you for the questions, and they will be your questions, you can have up to 20 questions. Type `done` when you are done")
         questions = []
 
@@ -234,6 +243,7 @@ class Applications(commands.Cog):
     @commands.cooldown(500, 1, BucketType.member)
     @commands.guild_only()
     async def apply(self, ctx):
+        """Apply in your server"""
         channel = await self.config.guild(ctx.guild).channel()
         if not channel:
             await ctx.send("Uh oh, looks like the application channel for this server isn't set. Please ask an admin or above to set one.")
@@ -289,6 +299,7 @@ class Applications(commands.Cog):
     @commands.command(name="accept")
     @commands.guild_only()
     async def accept(self, ctx, member: Optional[discord.Member] = None):
+        """Accept a member for a role"""
         role = await self.config.guild(ctx.guild).acceptrole()
         if not role:
             await ctx.send("This server has no configured acceptrole.")
@@ -376,6 +387,7 @@ class Applications(commands.Cog):
 
     @commands.command(name="deny")
     async def deny(self, ctx, member: Optional[discord.Member] = None):
+        """Deny a member for a role"""
         acceptrole = self.config.guild(ctx.guild).acceptrole()
         if not acceptrole:
             await ctx.send("This server has no configured acceptrole")
