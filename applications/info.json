@@ -1,0 +1,19 @@
+{
+    "name": "applications",
+    "short": "Apply for stuff",
+    "description": "Applications with custom apps too",
+    "end_user_data_statement": "This cog will store your User ID's and applications",
+    "install_msg": "`[p]appset custom` which is probably what you want",   
+    "author": [
+        "Andy"
+    ],
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "utility"
+    ],
+    "min_bot_version": "3.4.6.dev1",
+    "hidden": false,
+    "disabled": false,
+    "type": "COG"
+}
