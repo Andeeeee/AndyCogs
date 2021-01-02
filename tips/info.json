@@ -1,0 +1,18 @@
+{
+    "name": "tips",
+    "short": "Toggle Tips On or Off",
+    "description": "Tips so you can copy it, not really something too useful, just take it as a template",
+    "install_msg": "It won't send tips until you add tips.",
+    "author": [
+        "Andy"
+    ],
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "fun"
+    ],
+    "min_bot_version": "3.4.6.dev1",
+    "hidden": false,
+    "disabled": false,
+    "type": "COG"
+}
