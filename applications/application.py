@@ -30,9 +30,9 @@ class Applications(commands.Cog):
 
 
         newrole = discord.utils.get(guild.roles, name=role[3:-1])
-        
+
         if not newrole:
-            pass 
+            return newrole
         else:
             return newrole 
         
