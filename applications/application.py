@@ -27,6 +27,12 @@ class Applications(commands.Cog):
     
     def convert_role(self, guild, role):
         guild = self.bot.get_guild(int(guild))
+
+        role = discord.utils.get(guild.roles, name=role[3:-1])
+        if not role:
+            pass 
+        else:
+            return role 
         
         role = guild.get_role(int(role))
 
@@ -41,11 +47,6 @@ class Applications(commands.Cog):
         else:
             return role 
         
-        role = discord.utils.get(guild.roles, name=role[3:-1])
-        if not role:
-            pass 
-        else:
-            return role 
         
         return None
     
@@ -172,7 +173,7 @@ class Applications(commands.Cog):
             description=f"User ID: {ctx.author.id}\nUser Name and Tag: {ctx.author}")
 
             for i in range(len(questions)):
-                e.add_field(name=questions[i], value=answers[i])
+                e.add_field(name=questions[i], value=answers[i], inline=False)
             await self.config.member(ctx.author).answers.set(answers)
             await self.config.member(ctx.author).current_questions.set(questions)
             await channel.send(embed=e)
@@ -207,6 +208,7 @@ class Applications(commands.Cog):
             
         except asyncio.TimeoutError:
             await ctx.send("You've exceeded the 1 minute time limit.")
+            return
         
         role = self.convert_role(ctx.guild.id, msg.content)
         
