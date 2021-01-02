@@ -164,13 +164,14 @@ class Suggestions(commands.Cog):
             author_url = ctx.author.avatar_url
             footer = f"ID: {ctx.author.id}"
         
-        e = discord.Embed(title=f"Suggetion Number {total}", color=discord.Color.green())
+        e = discord.Embed(title=f"Suggetion Number {total}", color=discord.Color.green()), description=content)
         e.set_author(name=author, url=author_url)
         e.set_footer(text=footer)
 
         message = await channel.send(embed=e)
 
-        await message.add_reaction("✅", "❌")
+        await message.add_reaction("✅")
+        await message.add_reaction(""❌"")
         await ctx.author.send(f"Your suggestion has been sent for approval. You can view it here: {message.jump_url}")
 
         if ctx.channel.permissions_for(ctx.me).manage_messages:
