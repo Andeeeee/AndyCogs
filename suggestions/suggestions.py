@@ -139,7 +139,8 @@ class Suggestions(commands.Cog):
         if len(suggestions) == 0:
             total = 1 
         else:
-            total = len(suggestions) += 1
+            total = len(suggestions)
+            total += 1
         
         total = str(total)
         suggestions[total] = {}
