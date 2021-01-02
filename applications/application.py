@@ -169,6 +169,32 @@ class Applications(commands.Cog):
         await self.config.guild(ctx.guild).positions.set(positions)
         await ctx.send(f"**{role.name}** can now be accepted as a role")
     
+    @appset.command(name="removeposition")
+    @commands.admin_or_permissions(manage_guild=True)
+    async def removeposition(self, ctx, role: Optional[discord.Role] = None):
+        if not role:
+            await ctx.send("Specify the role to remove.")
+            return 
+        positions = await self.config.guild(ctx.guild).positions()
+        if role.id not in positions:
+            await ctx.send("This position is not in the position list.")
+            return 
+        else:
+            positions.remove(role.id)
+            await self.config.guild(ctx.guild).positions.set(positions)
+            await ctx.send(f"Removed **{role.name}** from the position list")
+    
+    @appset.command(name="positions")
+    async def positions(self, ctx):
+        positions = await self.config.guild(ctx.guild).positions()
+        if len(positions) == 0:
+            await ctx.send("This guild has no positions.")
+        else:
+            e = discord.Embed(title="Positions", color=discord.Color.green())
+            for i in range(len(positions)):
+                e.add_field(name=f"Position {i+1}", value=positions[i])
+            await ctx.send(embed=e)
+    
     @appset.command(name="questions", aliases=["custom"])
     @commands.admin_or_permissions(manage_guild=True)
     async def questions(self, ctx):
@@ -310,6 +336,7 @@ class Applications(commands.Cog):
             await ctx.send("This position is not valid")
             
         role = positions[pos - 1]
+        role = ctx.guild.get_role(role)
         
         
         try:
