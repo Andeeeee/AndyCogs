@@ -1,5 +1,6 @@
 import discord 
 from redbot.core import commands 
+from redbot.core.commands import BucketType
 from redbot.core import Config 
 from typing import Optional
 import asyncio
@@ -14,7 +15,8 @@ class Applications(commands.Cog):
             "channel": None,
             "resultchannel": None,
             "acceptrole": None,
-            "dm": True
+            "dm": True,
+            "positions": None,
         }
 
         default_member = {
@@ -155,6 +157,18 @@ class Applications(commands.Cog):
 
         await ctx.send(embed=e)
     
+    @appset.command(name="addposition")
+    @commands.admin_or_permissions(manage_guild=True)
+    async def addposition(self, ctx, role: Optional[discord.Role] = None):
+        """Add roles that the acceptrole can accept, they still cant accept roles higher than them"""
+        if not role:
+            await ctx.send("You need to specify a valid role.")
+            return 
+        positions = await self.config.guild(ctx.guild).positions()
+        positions.append(role.id)
+        await self.config.guild(ctx.guild).positions.set(positions)
+        await ctx.send(f"**{role.name}** can now be accepted as a role")
+    
     @appset.command(name="questions", aliases=["custom"])
     @commands.admin_or_permissions(manage_guild=True)
     async def questions(self, ctx):
@@ -175,7 +189,7 @@ class Applications(commands.Cog):
                 e = discord.Embed(title="Custom Questions", color=discord.Color.green())
 
                 for i in range(len(questions)):
-                    e.add_field(name=f"Question {i}", value=questions[i], inline=False)
+                    e.add_field(name=f"Question {i + 1}", value=questions[i], inline=False)
                 await ctx.send(f"{ctx.author.mention} your custom questions", embed=e)
                 return
 
@@ -186,11 +200,12 @@ class Applications(commands.Cog):
         e = discord.Embed(title="Custom Questions", color=discord.Color.green())
 
         for i in range(20):
-            e.add_field(name=f"Question {i}", value=questions[i], inline=False)
+            e.add_field(name=f"Question {i + 1}", value=questions[i], inline=False)
         
         await ctx.send(f"{ctx.author.mention} your custom questions", embed=e)
 
     @commands.command(name="apply")
+    @commands.cooldown(500, 1, BucketType.member)
     @commands.guild_only()
     async def apply(self, ctx):
         channel = await self.config.guild(ctx.guild).channel()
@@ -267,22 +282,35 @@ class Applications(commands.Cog):
         if len(member_data) == 0:
             await ctx.send("This member hasn't applied for anything yet.")
             return 
+        
+        positions = await self.config.guild(ctx.guild).positions()
+        if len(positions) == 0:
+            await ctx.send("There are no positions to be accepted for.")
+            return 
+
+        e = discord.Embed(title="Available positions", color=discord.Color.green())
+        
+        for i in range(len(positions)):
+            e.add_field(name=f"Position {i+1}", value=f"<@&{positions[i]}>")
+        await ctx.send(embed=e)
+
             
         try:
             def check(m):
-                return m.author == ctx.author and m.channel == ctx.channel
-            await ctx.send("Specify the role you would like to accept them here.")
+                return m.author == ctx.author and m.channel == ctx.channel and str(m.content).isdigit()
+            await ctx.send("Specify the number of the role you would like to accept them for.")
             msg = await self.bot.wait_for("message", check=check, timeout=60)
             
         except asyncio.TimeoutError:
             await ctx.send("You've exceeded the 1 minute time limit.")
             return
         
-        role = self.convert_role(ctx.guild.id, msg.content)
+        pos = int(msg.content)
+        if pos > len(positions):
+            await ctx.send("This position is not valid")
+            
+        role = positions[pos - 1]
         
-        if role is None:
-            await ctx.send("Uh oh, I couldn't find this role, try again?")
-            return 
         
         try:
             def check1(m):
