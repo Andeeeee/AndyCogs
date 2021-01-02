@@ -39,6 +39,14 @@ class Tips(commands.Cog):
     async def off(self, ctx):
         await self.config.user(ctx.author).tips.set(False)
         await ctx.send("I will no longer send tips.")
+    
+    @tips.command(name="status")
+    async def tips_status(self, ctx):
+        tips await self.config.user(ctx.author).tips()
+        if tips:
+            await ctx.send("You are currently having tips randomly sent.")
+        else:
+            await ctx.send("Your tips are off.")
 
     @commands.Cog.listener('on_command')
     async def on_command(self, ctx):
@@ -85,3 +93,4 @@ class Tips(commands.Cog):
         for number, tip in tips.items():
             e.add_field(name=number, value=tip, inline=False)
         await ctx.send(embed=e)
+
