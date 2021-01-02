@@ -300,7 +300,7 @@ class Applications(commands.Cog):
             await ctx.send(f"You need to have the **{acceptrole.name}** role to view an application.")
             return 
         
-        if not member:
+        if not applicant:
             await ctx.send("You need to specify the member after this!")
         
         answers = self.config.member(applicant).answers()
