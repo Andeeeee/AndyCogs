@@ -145,7 +145,7 @@ class Suggestions(commands.Cog):
         total = str(total)
         suggestions[total] = {}
         suggestions[total]["user"] = ctx.author.id
-        suggestions[total]["content"] = ctx.author.id 
+        suggestions[total]["content"] = content
         
         channel = self.bot.get_channel(channel)
 
