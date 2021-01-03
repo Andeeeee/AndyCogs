@@ -398,6 +398,10 @@ class Applications(commands.Cog):
             await ctx.send(f"You need to have the **{acceptrole.name}** role to do this!")
             return 
         
+        if not member:
+            await ctx.send("Please specify a valid member after this!")
+            return
+        
         try:
             await ctx.send("Specify the reason here.")
             def check(message):
@@ -435,6 +439,7 @@ class Applications(commands.Cog):
         
         if not applicant:
             await ctx.send("You need to specify the member after this!")
+            return
         
         answers = await self.config.member(applicant).answers()
         current_questions = await self.config.member(applicant).current_questions()
