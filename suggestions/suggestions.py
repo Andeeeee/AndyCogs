@@ -146,8 +146,6 @@ class Suggestions(commands.Cog):
         suggestions[total] = {}
         suggestions[total]["user"] = ctx.author.id
         suggestions[total]["content"] = ctx.author.id 
-
-        await self.config.guild(ctx.guild).suggestions.set(suggestions)
         
         channel = self.bot.get_channel(channel)
 
@@ -165,11 +163,13 @@ class Suggestions(commands.Cog):
             author_url = ctx.author.avatar_url
             footer = f"ID: {ctx.author.id}"
         
-        e = discord.Embed(title=f"Suggetion Number {total}", color=discord.Color.green(), description=content)
+        e = discord.Embed(title=f"Suggetion #{total}", color=discord.Color.green(), description=content)
         e.set_author(name=author, url=author_url)
         e.set_footer(text=footer)
 
         message = await channel.send(embed=e)
+        suggestions[total]["messageid"] = message.id
+        await self.config.guild(ctx.guild).suggestions.set(suggestions)
 
         await message.add_reaction("✅")
         await message.add_reaction("❌")
@@ -177,5 +177,107 @@ class Suggestions(commands.Cog):
 
         if ctx.channel.permissions_for(ctx.me).manage_messages:
             await ctx.message.delete()
+    
+    @commands.command(name="approve")
+    @commands.mod_or_permissions(manage_guild=True)
+    async def approve(self, ctx, number: Optional[int] = None, * , reason="No Reason Provided"):
+        if not number:
+            await ctx.send("This is not a valid suggestion.")
+            return 
+
+        suggestions = await self.config.guild(ctx.guild).suggestions()
+
+        if len(suggestions) == 0:
+            await ctx.send("This server has no suggestions")
+            return 
+        number = str(number)
+
+        if number not in suggestions:
+            await ctx.send("This suggestion does not exist.")
+            return 
+
+        suggestion = suggestions[number]
+        messageid = suggestion["messageid"]
+        author = suggestion["user"]
+        content = suggestion["content"]
+
+        channel = await self.config.guild(ctx.guild).channel()
+        channel = self.bot.get_channel(channel)
+        try:
+            message = await channel.fetch_message(messageid)
+        except discord.NotFound:
+            await ctx.send("Uh oh, I couldn't find this message. Check if you changed your suggestion channel.")
+            return 
+        e = discord.Embed(title=f"Suggestion #{number} approved.", description=content, color=discord.Color.green())
+        e.add_field(name=f"Approved by {ctx.author}", value=reason)
+        edit = await self.config.guild(ctx.guild).edit()
+
+        newchannel = await self.config.guild(ctx.guild).decision_channel()
+
+        if edit:
+            await message.edit(embed=e)
+        else:
+            if not newchannel:
+                await channel.send(embed=e)
+            else:
+                newchannel = self.bot.get_channel(newchannel)
+                await newchannel.send(embed=e)
+
+        dm = await self.config.guild(ctx.guild).dm()
+        if dm:
+            await ctx.author.send("Your suggestion was approved!", embed=e)
+        
+    @commands.command(name="reject")
+    @commands.mod_or_permissions(manage_guild=True)
+    async def reject(self, ctx, number: Optional[int] = None, * , reason="No Reason Provided"):
+        if not number:
+            await ctx.send("This is not a valid suggestion.")
+            return 
+
+        suggestions = await self.config.guild(ctx.guild).suggestions()
+
+        if len(suggestions) == 0:
+            await ctx.send("This server has no suggestions")
+            return 
+
+        number = str(number)
+
+        if number not in suggestions:
+            await ctx.send("This suggestion does not exist.")
+            return 
+
+        suggestion = suggestions[number]
+        messageid = suggestion["messageid"]
+        author = suggestion["user"]
+        content = suggestion["content"]
+
+        channel = await self.config.guild(ctx.guild).channel()
+        channel = self.bot.get_channel(channel)
+        try:
+            message = await channel.fetch_message(messageid)
+        except discord.NotFound:
+            await ctx.send("Uh oh, I couldn't find this message. Check if you changed your suggestion channel.")
+            return 
+        e = discord.Embed(title=f"Suggestion #{number} denied.", description=content, color=discord.Color.red())
+        e.add_field(name=f"Denied by {ctx.author}", value=reason)
+        edit = await self.config.guild(ctx.guild).edit()
+
+        newchannel = await self.config.guild(ctx.guild).decision_channel()
+
+        if edit:
+            await message.edit(embed=e)
+        else:
+            if not newchannel:
+                await channel.send(embed=e)
+            else:
+                newchannel = self.bot.get_channel(newchannel)
+                await newchannel.send(embed=e)
+
+        dm = await self.config.guild(ctx.guild).dm()
+        if dm:
+            await ctx.author.send("Your suggestion was denied.", embed=e)
+        
+        
+
     
         
