@@ -405,7 +405,8 @@ class Applications(commands.Cog):
         answers = await self.config.member(member).answers()
         
         if len(answers) == 0:
-            await ctx.send("This member has not applied for anything yet")
+            await ctx.send("This member has not applied for anything yet.")
+            return
         
         try:
             await ctx.send("Specify the reason here.")
