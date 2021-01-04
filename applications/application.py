@@ -402,6 +402,11 @@ class Applications(commands.Cog):
             await ctx.send("Please specify a valid member after this!")
             return
         
+        answers = await self.config.member(member).answers()
+        
+        if len(answers) == 0:
+            await ctx.send("This member has not applied for anything yet")
+        
         try:
             await ctx.send("Specify the reason here.")
             def check(message):
