@@ -418,7 +418,9 @@ class Applications(commands.Cog):
             pass 
         else:
             await channel.send(f"{member.mention} was denied by {ctx.author.mention} with the reason {msg.content}")
-        
+            
+        await self.config.member(member).answers.set([])
+        await self.config.member(member).current_questions.set([])
         await member.send(f"Your application was denied **{ctx.guild.name}** with the reason {msg.content}")
 
     
