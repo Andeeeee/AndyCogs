@@ -432,45 +432,44 @@ class DisboardReminder(commands.Cog):
         if "Please wait another" in embeds.description:
             last_bump = data["nextbump"]
             if last_bump:
-                if not (last_bump - message.created_at.timestamp() >= 0):
+                if not (last_bump - message.created_at.timestamp() <= 0 or last_bump - message.created_at.timestamp() >= 0):
                     return
+            next_bump = message.created_at.timestamp() + 20
+            await self.config.guild(message.guild).nextbump.set(next_bump)
+
+            words = embeds.description.split(",")
+            mention = words[0]
+
+            if mention.startswith("<@!"):
+                memberid = int(mention[3:-1])
             else:
-                next_bump = message.created_at.timestamp() + 20
-                await self.config.guild(message.guild).nextbump.set(next_bump)
-
-                words = embeds.description.split(",")
-                mention = words[0]
-
-                if mention.startswith("<@!"):
-                    memberid = int(mention[3:-1])
-                else:
-                    memberid = int(mention[2:-1])
+                memberid = int(mention[2:-1])
                 
-                ty = ty.replace("{member}", mention)
-                ty = ty.replace("{guild.id}", message.guild.id)
-                ty = ty.replace("{guildid}", message.guild.id)
+            ty = ty.replace("{member}", mention)
+            ty = ty.replace("{guild.id}", message.guild.id)
+            ty = ty.replace("{guildid}", message.guild.id)
 
-                await message.channel.send(ty)
+            await message.channel.send(ty)
 
-                if lock and message.channel.permissions_for(message.guild.me).manage_channels:
-                    try:
-                        overwrites = message.channel.overwrites_for(message.guild.default_role)
-                        overwrites.send_messages = False
-                    except discord.errors.Forbidden:
-                        pass  
+            if lock and message.channel.permissions_for(message.guild.me).manage_channels:
+                try:
+                    overwrites = message.channel.overwrites_for(message.guild.default_role)
+                    overwrites.send_messages = False
+                except discord.errors.Forbidden:
+                    pass  
 
 
 
-                member = message.guild.get_member(memberid)
-                bumps = await self.config.member(member).bumps()
-                bumps += 1
-                await self.config.member(member).bumps.set(bumps)
+            member = message.guild.get_member(memberid)
+            bumps = await self.config.member(member).bumps()
+            bumps += 1
+            await self.config.member(member).bumps.set(bumps)
 
-                weekly_bumps = await self.config.member(member).weeklybumps()
-                weekly_bumps += 1
-                await self.config.member(member).weeklybumpers.set(weekly_bumps)
+            weekly_bumps = await self.config.member(member).weeklybumps()
+            weekly_bumps += 1
+            await self.config.member(member).weeklybumpers.set(weekly_bumps)
 
-                await self.start_timer(message.guild.id, next_bump)
+            await self.start_timer(message.guild.id, next_bump)
         else:
             if clean and message.channel.permissions_for(message.guild.me).manage_messages and message.channel.id == channel.id:
                 await asyncio.sleep(2)
