@@ -369,6 +369,13 @@ class DisboardReminder(commands.Cog):
                 await self.config.guild(guild).channel.set(None)
         else:
             await self.config.guild(guild).channel.set(None)
+            
+        if data["lock"]:
+            try:
+                overwrites = channel.overwrites_for(guild.default_role)
+                overwrites.send_messages = None
+            except discord.errors.Forbidden:
+                pass
         await self.config.guild(guild).nextBump.set(None)
     
     async def start_timer(self, guild: discord.Guild, remaining):
@@ -406,6 +413,7 @@ class DisboardReminder(commands.Cog):
         
         clean = data["clean"]
         ty = data["ty"]
+        lock = data["lock"]
 
         if clean and message.author.id != message.guild.me.id and message.author.id != 302050872383242240 and message.channel.id == channel.id:
             if message.channel.permissions_for(message.guild.me).manage_messages:
@@ -439,6 +447,14 @@ class DisboardReminder(commands.Cog):
                 ty = ty.replace("{guild.id}", message.guild.id)
                 ty = ty.replace("{guildid}", message.guild.id)
 
+                await message.channel.send(ty)
+                if lock and message.channel.permissions_for(message.guild.me).manage_channels:
+                    try:
+                        overwrites = message.channel.overwrites_for(message.guild.default_role)
+                        overwrites.send_messages = False 
+
+
+
                 member = message.guild.get_member(memberid)
                 bumps = await self.config.member(member).bumps()
                 bumps += 1
@@ -448,7 +464,7 @@ class DisboardReminder(commands.Cog):
                 weekly_bumps += 1
                 await self.config.member(member).weeklybumpers.set(weekly_bumps)
 
-                await self.bump_timer(message.guild.id, next_bump)
+                await self.start_timer(message.guild.id, next_bump)
         else:
             if clean and message.channel.permissions_for(message.guild.me).manage_messages and message.channel.id == channel.id:
                 await asyncio.sleep(2)
