@@ -445,14 +445,8 @@ class DisboardReminder(commands.Cog):
             else:
                 memberid = int(mention[2:-1])
             
-            await channel.send(ty)
+            await channel.send(ty.replace("{member}", mention).replace("{guild.id}", message.guildid).replace("{guildid}", message.guild.id))
             
-            ty = ty.replace("{member}", mention)
-            ty = ty.replace("{guild.id}", message.guild.id)
-            ty = ty.replace("{guildid}", message.guild.id)
-
-            await channel.send(ty)
-
             if lock and message.channel.permissions_for(message.guild.me).manage_channels:
                 try:
                     overwrites = message.channel.overwrites_for(message.guild.default_role)
