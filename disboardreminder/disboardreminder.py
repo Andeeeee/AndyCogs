@@ -446,7 +446,7 @@ class DisboardReminder(commands.Cog):
                 memberid = int(mention[2:-1])
             
             try:
-                await channel.send(ty.replace("{member}", mention).replace("{guild}", message.guild.name).replace("{guild.id}", message.guild.id))
+                await channel.send(ty.replace("{member}", mention).replace("{guild}", message.guild.name).replace("{guild.id}", str(message.guild.id)))
             except Exception as e:
                 await channel.send(e)
             
