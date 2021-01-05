@@ -367,8 +367,7 @@ class DisboardReminder(commands.Cog):
                     else:
                         coros.append(self.weekly_timer(guild, timer))
                 else:
-                    timer = datetime.utcnow().timestamp() + 604800
-                    coros.append(self.weekly_timer(guild, timer))
+                    coros.append(self.reset_weekly(guild))
             await asyncio.gather(*coros)
         
         except Exception as e:
@@ -424,7 +423,7 @@ class DisboardReminder(commands.Cog):
     async def reset_weekly(self, guild: discord.Guild):
         for member in guild.members:
             await self.config.member(member).weeklybumps.set(0)
-        next_reset = datetime.utcnow() + 604800
+        next_reset = datetime.utcnow().timestamp() + 604800
         await self.config.guild(guild).nextweeklyreset.set(next_reset)
         await self.weekly_timer(guild, next_reset)
 
