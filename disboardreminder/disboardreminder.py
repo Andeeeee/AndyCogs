@@ -368,26 +368,22 @@ class DisboardReminder(commands.Cog):
     
     async def bump_restart(self):
         channel = self.bot.get_channel(779170774934093844)
-        try:
-            await self.bot.wait_until_ready()
-            coros = []
-            data = await self.config.all_guilds()
-            for guildid, guilddata in data.items():
-                guild = self.bot.get_guild(guildid)
-                if not guild:
-                    continue
-                timer = guilddata["nextbump"]
-                if timer:
-                    now = datetime.utcnow().timestamp()
-                    remaining = timer - now
-                    if remaining <= 0:
-                        await self.send_bumpmsg(guild)
-                    else:
-                        coros.append(self.start_timer(guild, timer))
-            await asyncio.gather(*coros)
-        except Exception as e:
-            channel = self.bot.get_channel(779170774934093844)
-            await channel.send(e)
+        await self.bot.wait_until_ready()
+        coros = []
+        data = await self.config.all_guilds()
+        for guildid, guilddata in data.items():
+            guild = self.bot.get_guild(guildid)
+            if not guild:
+                continue
+            timer = guilddata["nextbump"]
+            if timer:
+                now = datetime.utcnow().timestamp()
+                remaining = timer - now
+                if remaining <= 0:
+                    await self.send_bumpmsg(guild)
+                else:
+                    coros.append(self.start_timer(guild, timer))
+        await asyncio.gather(*coros)
         
         try:
             coros = []
