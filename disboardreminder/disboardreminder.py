@@ -23,7 +23,7 @@ plt.switch_backend("agg")
 class DisboardReminder(commands.Cog):
     def __init__(self, bot):
         self.bot = bot 
-        self.bot.loop.create_task(self.bump_restart())
+        self.load_check = self.bot.loop.create_task(self.bump_restart())
         self.config = Config.get_conf(self, identifier=160805014090190130501014, force_registration=True)
         
 
