@@ -96,10 +96,10 @@ class DisboardReminder(commands.Cog):
     async def autolock(self, ctx, lock: Optional[bool] = None):
         """Sets whether to lock the bump channel or not"""
         if not lock:
-            await self.config.guild(ctx.guild).clean.set(False)
+            await self.config.guild(ctx.guild).lock.set(False)
             await ctx.send("I will no longer lock the bump channel")
         else:
-            await self.config.guild(ctx.guild).clean.set(True)
+            await self.config.guild(ctx.guild).lock.set(True)
             await ctx.send("I will now lock the bump channel")
     
     @bumpreminder.command(name="top")
@@ -358,14 +358,14 @@ class DisboardReminder(commands.Cog):
             role = guild.get_role(data["role"])
             if role is not None:
                 message = f"{role.mention} {data['message']}"
-                allowed_mentions = discord.AllowedMentions(roles=True, everyone=False, here=False)
+                allowed_mentions = discord.AllowedMentions(roles=True, everyone=False)
                 await channel.send(message, allowed_mentions=allowed_mentions)
             else:
                 await self.config.guild(guild).set(None)
 
         elif channel:
             message = data["message"]
-            allowed_mentions = discord.AllowedMentions(roles=True, everyone=False, here=False)
+            allowed_mentions = discord.AllowedMentions(roles=True, everyone=False)
             try:
                 await channel.send(message, allowed_mentions=allowed_mentions)
             except discord.errors.Forbidden:
