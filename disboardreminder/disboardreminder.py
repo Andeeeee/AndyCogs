@@ -379,7 +379,6 @@ class DisboardReminder(commands.Cog):
                 timer = guilddata["nextbump"]
                 if timer:
                     now = datetime.utcnow().timestamp()
-                    await channel.send(now)
                     remaining = timer - now
                     if remaining <= 0:
                         await self.send_bumpmsg(guild)
@@ -406,7 +405,7 @@ class DisboardReminder(commands.Cog):
                     else:
                         coros.append(self.weekly_timer(guild, timer))
                 else:
-                    now = datetime.utcnow() + 604800
+                    now = datetime.utcnow().timestamp() + 604800
                     await self.config.guild(guild).nextweeklyreset.set(now)
                     coros.append(self.weekly_timer(guild, now))
             await asyncio.gather(*coros)
@@ -445,6 +444,7 @@ class DisboardReminder(commands.Cog):
             try:
                 overwrites = channel.overwrites_for(guild.default_role)
                 overwrites.send_messages = None
+                await channel.send(overwrites)
                 await channel.set_permissions(guild.default_role, overwrites=overwrites)
             except discord.errors.Forbidden:
                 pass
