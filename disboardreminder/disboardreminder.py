@@ -429,13 +429,13 @@ class DisboardReminder(commands.Cog):
             return
         embeds = message.embeds[0]
 
-        if "Bump done" in embeds.description:
+        if "Please wait another" in embeds.description:
             last_bump = data["nextbump"]
             if last_bump:
                 if not (last_bump - message.created_at.timestamp() <= 0):
                     return
             else:
-                next_bump = message.created_at.timestamp() + 7200
+                next_bump = message.created_at.timestamp() + 20
                 await self.config.guild(message.guild).nextbump.set(next_bump)
 
                 words = embeds.description.split(",")
@@ -451,6 +451,7 @@ class DisboardReminder(commands.Cog):
                 ty = ty.replace("{guildid}", message.guild.id)
 
                 await message.channel.send(ty)
+
                 if lock and message.channel.permissions_for(message.guild.me).manage_channels:
                     try:
                         overwrites = message.channel.overwrites_for(message.guild.default_role)
