@@ -102,8 +102,31 @@ class DisboardReminder(commands.Cog):
             await self.config.guild(ctx.guild).lock.set(True)
             await ctx.send("I will now lock the bump channel")
     
+    @bumpreminder.command(name="message", aliases=["msg", "bumpmsg", "bumpmessage"])
+    @commands.admin_or_permissions(manage_guild=True)
+    async def bumpreminder_message(self, ctx, * , message = None):
+        """Changes the bump message"""
+        if not message:
+            await self.config.guild(ctx.guild).msg.set("It's been 2 hours since someone bumped us on DISBOARD, could someone run !d bump here?")
+            await ctx.send("I've cleared your message")
+        else:
+            await self.config.guild(ctx.guild).msg.set(message)
+            await ctx.send(f"Your message is now `{message}`")
+    
+    @bumpreminder.command(name="tymessage", aliases=["thankyou"])
+    @commands.admin_or_permissions(manage_guild=True)
+    async def tymessage(self, ctx, * , message = None):
+        """Changes the message sent when someone bumps. Use {member} for the member who bumped, and {guildid} or {guild.id} for your server id."""
+        if not message:
+            await self.config.guild(ctx.guild).ty.set("{member} thanks for bumping our server! I'll notify you in 2 hours to bump again.")
+            await ctx.send("Reset this servers thank you message.")
+        else:
+            await self.config.guild(ctx.guild).ty.set(message)
+            await ctx.send(f"Your message is now `{message}`")
+        
     @bumpreminder.command(name="top")
     async def top(self, ctx, amt: Optional[int] = 30):
+        """View the top bumpers of the server"""
         if amt < 1:
             await ctx.send("You can't view nothing idiot.")
             return 
@@ -136,6 +159,7 @@ class DisboardReminder(commands.Cog):
 
     @bumpreminder.group(name="weekly")
     async def weekly(self, ctx):
+        """Bumpreminders for weekly"""
         if not ctx.invoked_subcommand:
             data = await self.config.all_members(ctx.guild)
             data = [(member, memberdata["weeklybumps"]) for member, memberdata in data.items() if ctx.guild.get_members(member) is not None]
@@ -429,7 +453,7 @@ class DisboardReminder(commands.Cog):
             return
         embeds = message.embeds[0]
 
-        if "Please wait another" in embeds.description:
+        if "Please" in embeds.description:
             last_bump = data["nextbump"]
             if last_bump:
                 if not (last_bump - message.created_at.timestamp() <= 0 or last_bump - message.created_at.timestamp() >= 0):
