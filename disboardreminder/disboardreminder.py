@@ -397,7 +397,7 @@ class DisboardReminder(commands.Cog):
                     continue 
                 timer = guilddata["nextweeklyreset"]
                 if timer:
-                    now = datetime.utcnow().fromtimestamp()
+                    now = datetime.utcnow().timestamp()
                     remaining = timer - now 
                     if remaining <= 0:
                         self.reset_weekly(guild)
@@ -443,7 +443,7 @@ class DisboardReminder(commands.Cog):
             try:
                 overwrites = channel.overwrites_for(guild.default_role)
                 overwrites.send_messages = None
-                await channel.set_permissions(overwrites=overwrites)
+                await channel.set_permissions(guild.default_role, overwrites=overwrites)
             except discord.errors.Forbidden:
                 pass
         await self.config.guild(guild).nextbump.set(None)
