@@ -201,14 +201,15 @@ class DisboardReminder(commands.Cog):
             for member, bumpdata in data.items():
                 _member = ctx.guild.get_member(member)
                 if _member:
+                    if bumpdata["weeklybumps"] == 0:
+                        continue
                     if len(_member.display_name) >= 23:
                         whole_name = f"{_member.display_name[:20]}..."
                     else:
                         whole_name = _member.display_name
                     count[whole_name] = bumpdata["weeklybumps"]
                 else:
-                    #For when idiots leave the server
-                    count[str(member)] = bumpdata["weeklybumps"]
+                    pass
             chart = self.create_chart(count)
         except Exception as e:
             await ctx.send(f"Uh oh, something borked, \n {e}")
@@ -236,6 +237,8 @@ class DisboardReminder(commands.Cog):
 
             for member, bumpdata in data.items():
                 _member = ctx.guild.get_member(member)
+                if bumpdata["bumps"] == 0:
+                    continue
                 if _member:
                     if len(_member.display_name) >= 23:
                         whole_name = f"{_member.display_name[:20]}..."
@@ -243,8 +246,7 @@ class DisboardReminder(commands.Cog):
                         whole_name = _member.display_name
                     count[whole_name] = bumpdata["bumps"]
                 else:
-                    #For when idiots leave the server
-                    count[str(member)] = bumpdata["bumps"]
+                    pass
             chart = self.create_chart(count)
         except Exception as e:
             await ctx.send(f"Uh oh, something borked, \n {e}")
