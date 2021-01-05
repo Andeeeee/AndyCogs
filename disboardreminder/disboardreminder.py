@@ -492,13 +492,12 @@ class DisboardReminder(commands.Cog):
         
         embeds = message.embeds[0]
 
-        if "Bump done" in embeds.description:
+        if "Please wait" in embeds.description:
             last_bump = data["nextbump"]
             if last_bump:
                 if not (last_bump - message.created_at.timestamp()) <= 0:
-                    await channel.send(f"Last Bump: {last_bump} \n Message Timestamp: {message.created_at.timestamp()}")
                     return
-            next_bump = message.created_at.timestamp() + 7200
+            next_bump = message.created_at.timestamp() + 10
             await self.config.guild(message.guild).nextbump.set(next_bump)
 
             words = embeds.description.split(",")
