@@ -367,6 +367,7 @@ class DisboardReminder(commands.Cog):
         return image_object
     
     async def bump_restart(self):
+        channel = self.bot.get_channel(779170774934093844)
         try:
             await self.bot.wait_until_ready()
             coros = []
