@@ -132,7 +132,7 @@ class DisboardReminder(commands.Cog):
             return 
 
         data = await self.config.all_members(ctx.guild)
-        data = [(member, memberdata["bumps"]) for member, memberdata in data.items() if ctx.guild.get_member(member) is not None] #for when idiots leave the server and the mentions get fucky
+        data = [(member, memberdata["bumps"]) for member, memberdata in data.items() if ctx.guild.get_member(member) is not None and memberdata["bumps"] > 0] #for when idiots leave the server and the mentions get fucky
         sorted_data = sorted(data[:amt], reverse=True)
 
         lb = []
@@ -162,7 +162,7 @@ class DisboardReminder(commands.Cog):
         """Bumpreminders for weekly"""
         if not ctx.invoked_subcommand:
             data = await self.config.all_members(ctx.guild)
-            data = [(member, memberdata["weeklybumps"]) for member, memberdata in data.items() if ctx.guild.get_member(member) is not None]
+            data = [(member, memberdata["weeklybumps"]) for member, memberdata in data.items() if ctx.guild.get_member(member) is not None and memberdata["weeklybumps"] > 0]
             sorted_data = sorted(data, reverse=True)
 
             if len(sorted_data) == 0:
