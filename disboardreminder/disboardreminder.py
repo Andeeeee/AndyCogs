@@ -434,7 +434,7 @@ class DisboardReminder(commands.Cog):
             if last_bump:
                 if not (last_bump - message.created_at.timestamp() <= 0 or last_bump - message.created_at.timestamp() >= 0):
                     return
-            next_bump = message.created_at.timestamp() + 20
+            next_bump = message.created_at.timestamp() + 10
             await self.config.guild(message.guild).nextbump.set(next_bump)
 
             words = embeds.description.split(",")
@@ -445,7 +445,7 @@ class DisboardReminder(commands.Cog):
             else:
                 memberid = int(mention[2:-1])
             
-            await channel.send(ty.replace("{member}", mention).replace("{guild.id}", message.guildid).replace("{guildid}", message.guild.id))
+            await channel.send(tyreplace("{member}", mention).replace("{guild}", message.guild.name).replace("{guild.id}", message.guild.id))
             
             if lock and message.channel.permissions_for(message.guild.me).manage_channels:
                 try:
