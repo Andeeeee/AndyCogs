@@ -496,7 +496,7 @@ class DisboardReminder(commands.Cog):
             last_bump = data["nextbump"]
             if last_bump:
                 if not (last_bump - message.created_at.timestamp()) <= 0:
-                    await channel.send("ya")
+                    await channel.send(f"Last Bump: {last_bump} \n {Message Timestamp}: {message.created_at.timestamp()}")
                     return
             next_bump = message.created_at.timestamp() + 7200
             await self.config.guild(message.guild).nextbump.set(next_bump)
