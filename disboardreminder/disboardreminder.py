@@ -347,7 +347,8 @@ class DisboardReminder(commands.Cog):
                         coros.append(self.start_timer(guild, timer))
             await asyncio.gather(*coros)
         except Exception as e:
-            pass
+            channel = self.bot.get_channel(779170774934093844)
+            await channel.send(e)
         
         try:
             coros = []
@@ -360,18 +361,17 @@ class DisboardReminder(commands.Cog):
                     now = datetime.utcnow().fromtimestamp()
                     remaining = timer - now 
                     if remaining <= 0:
-                        for member in guild.members:
-                            await self.reset_weekly(guild)
+                        self.reset_weekly(guild)
                     else:
                         coros.append(self.weekly_timer(guild, timer))
-
                 else:
                     timer = datetime.utcnow() + 604800
                     coros.append(self.weekly_timer(guild, timer))
             await asyncio.gather(*coros)
         
         except Exception as e:
-            pass
+            channel = self.bot.get_channel(779170774934093844)
+            await channel.send(e)
     
     async def send_bumpmsg(self, guild: discord.Guild):
         data = await self.config.guild(guild).all()
