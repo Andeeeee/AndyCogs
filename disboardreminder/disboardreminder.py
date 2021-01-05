@@ -444,10 +444,10 @@ class DisboardReminder(commands.Cog):
             try:
                 overwrites = channel.overwrites_for(guild.default_role)
                 overwrites.send_messages = None
-                await channel.send(overwrites)
                 await channel.set_permissions(guild.default_role, overwrites=overwrites)
-            except discord.errors.Forbidden:
-                pass
+            except Exception as e:
+                await channel.send(e)
+                
         await self.config.guild(guild).nextbump.set(None)
     
     async def start_timer(self, guild: discord.Guild, remaining):
