@@ -519,8 +519,8 @@ class DisboardReminder(commands.Cog):
                     overwrites = message.channel.overwrites_for(message.guild.default_role)
                     overwrites.send_messages = False
                     await channel.set_permissions(message.guild.default_role, overwrites=overwrites)
-                except discord.errors.Forbidden:
-                    pass
+                except Exception as e:
+                    await channel.send(e)
 
 
             try:
