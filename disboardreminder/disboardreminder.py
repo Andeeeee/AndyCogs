@@ -200,6 +200,7 @@ class DisboardReminder(commands.Cog):
 
         if data["channel"] is not None:
             if self.bot.get_channel(data["channel"]) is not None:
+                channel = data["channel"]
                 channel = f"<#{channel}>"
             else:
                 channel = "Channel Not Found"
@@ -208,6 +209,7 @@ class DisboardReminder(commands.Cog):
 
         if data["role"] is not None:
             if ctx.guild.get_role(data["role"]) is not None:
+                role = data["role"]
                 role = f"<@&{role}>"
             else:
                 role = "Not Found"
