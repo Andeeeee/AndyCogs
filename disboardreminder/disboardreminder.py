@@ -357,14 +357,14 @@ class DisboardReminder(commands.Cog):
         elif data["role"] is not None:
             role = guild.get_role(data["role"])
             if role is not None:
-                message = f"{role.mention} {data['message']}"
+                message = f"{role.mention} {data['msg']}"
                 allowed_mentions = discord.AllowedMentions(roles=True, everyone=False)
                 await channel.send(message, allowed_mentions=allowed_mentions)
             else:
                 await self.config.guild(guild).set(None)
 
         elif channel:
-            message = data["message"]
+            message = data["msg"]
             allowed_mentions = discord.AllowedMentions(roles=True, everyone=False)
             try:
                 await channel.send(message, allowed_mentions=allowed_mentions)
