@@ -404,7 +404,9 @@ class DisboardReminder(commands.Cog):
                     else:
                         coros.append(self.weekly_timer(guild, timer))
                 else:
-                    coros.append(self.reset_weekly(guild))
+                    now = datetime.utcnow() + 604800
+                    await self.config.guild(guild).nextweeklyreset.set(now)
+                    coros.append(self.reset_weekly(guild, now))
             await asyncio.gather(*coros)
         
         except Exception as e:
@@ -497,7 +499,7 @@ class DisboardReminder(commands.Cog):
         if "Bump done" in embeds.description:
             last_bump = data["nextbump"]
             if last_bump:
-                if not (last_bump - message.created_at.timestamp() <= 0 or last_bump - message.created_at.timestamp() >= 0):
+                if not (last_bump - message.created_at.timestamp() <= 0:
                     return
             next_bump = message.created_at.timestamp() + 7200
             await self.config.guild(message.guild).nextbump.set(next_bump)
@@ -515,13 +517,16 @@ class DisboardReminder(commands.Cog):
             except Exception as e:
                 await channel.send(e)
             
+            if data["nextweeklyreset"] is None:
+                data["nextweeklyreset"] = datetime.utcnow().timestamp() + 604800
+            
             if lock:
                 try:
                     overwrites = message.channel.overwrites_for(message.guild.default_role)
                     overwrites.send_messages = False
-                    await channel.set_permissions(overwrites=overwrites)
-                except discord.errors.Forbidden:
-                    pass  
+                    await channel.set_permissions(message.guild.default_role, overwrites=overwrites)
+                except Exception as e:
+                    await message.channel.send(e)
 
 
             try:
