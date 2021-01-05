@@ -207,7 +207,7 @@ class DisboardReminder(commands.Cog):
                 else:
                     #For when idiots leave the server
                     count[str(member)] = bumpdata["bumps"]
-            chart = await self.create_chart(count)
+            chart = await self.create_chart(count, count)
             await ctx
         except Exception as e:
             await ctx.send(f"Uh oh, something borked, \n {e}")
