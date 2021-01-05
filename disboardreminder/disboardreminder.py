@@ -277,7 +277,7 @@ class DisboardReminder(commands.Cog):
         
 
     @staticmethod
-    async def create_chart(ßdata: Counter):
+    async def create_chart(data: Counter):
         """Thanky Thanky Aikaterna for the chatchart. Code can be viewed here: https://github.com/aikaterna/aikaterna-cogs/blob/v3/chatchart/chatchart.py"""
         plt.clf()
         most_common = data.most_common()
