@@ -162,7 +162,7 @@ class DisboardReminder(commands.Cog):
         """Bumpreminders for weekly"""
         if not ctx.invoked_subcommand:
             data = await self.config.all_members(ctx.guild)
-            data = [(member, memberdata["weeklybumps"]) for member, memberdata in data.items() if ctx.guild.get_members(member) is not None]
+            data = [(member, memberdata["weeklybumps"]) for member, memberdata in data.items() if ctx.guild.get_member(member) is not None and memberdata["weeklybumps"] > 0]
             sorted_data = sorted(data, reverse=True)
 
             if len(sorted_data) == 0:
@@ -170,7 +170,7 @@ class DisboardReminder(commands.Cog):
 
             lb = []
 
-            for number, member in enumerate(sorted_data):
+            for number, member in enumerate(sorted_data, start=1):
                 lb.append(f"{number}. <@!{member[0]}> has {member[1]} bumps.")
 
             if len(lb) == 0:
@@ -183,7 +183,7 @@ class DisboardReminder(commands.Cog):
 
             total = len(lb_pages)
 
-            for number, page in enumerate(lb_pages):
+            for number, page in enumerate(lb_pages, start=1):
                 e = discord.Embed(title="Bump Leaderboard", description=page, color=discord.Color.green())
                 e.set_footer(text=f"{number} out of {total} pages.")
                 pages.append(e)
@@ -367,8 +367,7 @@ class DisboardReminder(commands.Cog):
                     else:
                         coros.append(self.weekly_timer(guild, timer))
                 else:
-                    timer = datetime.utcnow().timestamp() + 604800
-                    coros.append(self.weekly_timer(guild, timer))
+                    coros.append(self.reset_weekly(guild))
             await asyncio.gather(*coros)
         
         except Exception as e:
@@ -424,7 +423,7 @@ class DisboardReminder(commands.Cog):
     async def reset_weekly(self, guild: discord.Guild):
         for member in guild.members:
             await self.config.member(member).weeklybumps.set(0)
-        next_reset = datetime.utcnow() + 604800
+        next_reset = datetime.utcnow().timestamp() + 604800
         await self.config.guild(guild).nextweeklyreset.set(next_reset)
         await self.weekly_timer(guild, next_reset)
 
