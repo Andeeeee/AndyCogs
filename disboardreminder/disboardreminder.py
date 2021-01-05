@@ -432,9 +432,8 @@ class DisboardReminder(commands.Cog):
         if "Please wait another" in embeds.description:
             last_bump = data["nextbump"]
             if last_bump:
-                pass
-                #if not (last_bump - message.created_at.timestamp() <= 0):
-                    #return
+                if not (last_bump - message.created_at.timestamp() >= 0):
+                    return
             else:
                 next_bump = message.created_at.timestamp() + 20
                 await self.config.guild(message.guild).nextbump.set(next_bump)
