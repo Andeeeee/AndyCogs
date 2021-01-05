@@ -137,7 +137,7 @@ class DisboardReminder(commands.Cog):
 
         lb = []
 
-        for number, member in enumerate(sorted_data):
+        for number, member in enumerate(sorted_data, start=1):
             lb.append(f"{number}. <@!{member[0]}> has {member[1]} bumps.")
 
         if len(lb) == 0:
@@ -151,7 +151,7 @@ class DisboardReminder(commands.Cog):
 
         total = len(lb_pages)
 
-        for number, page in enumerate(lb_pages):
+        for number, page in enumerate(lb_pages, start=1):
             e = discord.Embed(title="Bump Leaderboard", description=page, color=discord.Color.green())
             e.set_footer(text=f"{number} out of {total} pages.")
             pages.append(e)
@@ -189,10 +189,7 @@ class DisboardReminder(commands.Cog):
     @bumpreminder.command(name="chart")
     async def chart(self, ctx):
         """Thanky Thanky Aikaterna for the chatchart. Code can be viewed here: https://github.com/aikaterna/aikaterna-cogs/blob/v3/chatchart/chatchart.py"""
-     
-        history = []
-        history_counter = 0
-        
+   
         try:
             data = await self.config.all_members(ctx.guild)
             if not data:
