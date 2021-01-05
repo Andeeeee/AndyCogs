@@ -457,7 +457,7 @@ class DisboardReminder(commands.Cog):
     
     async def reset_weekly(self, guild: discord.Guild):
         for member in guild.members:
-            await self.config.member(member).weeklybumps.clear())
+            await self.config.member(member).weeklybumps.clear()
         next_reset = datetime.utcnow().timestamp() + 604800
         await self.config.guild(guild).nextweeklyreset.set(next_reset)
         await self.weekly_timer(guild, next_reset)
