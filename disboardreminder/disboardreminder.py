@@ -333,7 +333,8 @@ class DisboardReminder(commands.Cog):
         try:
             await self.bot.wait_until_ready()
             coros = []
-            for guildid, guilddata in (await self.config.all_guilds()).items():
+            data = await self.config.all_guilds()
+            for guildid, guilddata in data.items():
                 guild = self.bot.get_guild(guildid)
                 if not guild:
                     continue
@@ -352,7 +353,8 @@ class DisboardReminder(commands.Cog):
         
         try:
             coros = []
-            for guildid, guilddata in (await self.config.all_guilds().items()):
+            data = await self.config.all_guilds()
+            for guildid, guilddata in data.items():
                 guild = self.bot.get_guild(guildid)
                 if not guild:
                     continue 
