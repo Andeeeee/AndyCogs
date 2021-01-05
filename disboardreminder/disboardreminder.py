@@ -212,7 +212,7 @@ class DisboardReminder(commands.Cog):
             await ctx.send(f"Uh oh, something borked, \n {e}")
             return 
 
-        await ctx.send(file=discord.File(chart))
+        await ctx.send(file=discord.File(chart, "chart.png"))
     
     @bumpreminder.command(name="settings", aliases=["showsettings"])
     async def bumpreminder_settings(self, ctx):
