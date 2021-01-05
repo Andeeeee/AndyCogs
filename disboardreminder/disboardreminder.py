@@ -422,7 +422,7 @@ class DisboardReminder(commands.Cog):
             else:
                 pass
         
-        if message.author.id == 302050872383242240 and message.embeds:
+        if not message.author.id == 302050872383242240 and message.embeds:
             return
         embeds = message.embeds[0]
 
