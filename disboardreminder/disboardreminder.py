@@ -513,9 +513,7 @@ class DisboardReminder(commands.Cog):
             except Exception as e:
                 await channel.send(e)
             
-            if data["nextweeklyreset"] is None:
-                data["nextweeklyreset"] = datetime.utcnow().timestamp() + 604800
-            
+    
             if lock:
                 try:
                     overwrites = message.channel.overwrites_for(message.guild.default_role)
@@ -539,6 +537,12 @@ class DisboardReminder(commands.Cog):
                 
             except Exception as e:
                 await channel.send(e)
+                
+            if data["nextweeklyreset"] is None:
+                data["nextweeklyreset"] = datetime.utcnow().timestamp() + 604800
+                await self.config.guild(message.guild).nextweeklyreset.set(data["nextweeklyreset"])
+                await self.weekly_timer(message.guild, data["nextweeklyreset"])
+            
         else:
             if clean and message.channel.permissions_for(message.guild.me).manage_messages and message.channel.id == channel.id:
                 await asyncio.sleep(2)
