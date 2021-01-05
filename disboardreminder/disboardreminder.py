@@ -221,13 +221,9 @@ class DisboardReminder(commands.Cog):
     @commands.admin_or_permissions(manage_guild=True)
     async def weekly_reset(self, ctx):
         """Reset your weekly data early"""
-        await self.reset_weekly(ctx.guild)
         await ctx.send("I've reset the weekly data. It will reset again in 1 week unless ended early.")
+        await self.reset_weekly(ctx.guild)
     
-    @weekly.error 
-    async def weekly_error(self, ctx, error):
-        await ctx.send(error)
-        
     @bumpreminder.command(name="chart")
     async def chart(self, ctx):
         """View the bumpers in a chart, looks better"""
