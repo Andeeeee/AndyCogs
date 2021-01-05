@@ -170,7 +170,7 @@ class DisboardReminder(commands.Cog):
 
             lb = []
 
-            for number, member in enumerate(sorted_data):
+            for number, member in enumerate(sorted_data, start=1):
                 lb.append(f"{number}. <@!{member[0]}> has {member[1]} bumps.")
 
             if len(lb) == 0:
@@ -183,7 +183,7 @@ class DisboardReminder(commands.Cog):
 
             total = len(lb_pages)
 
-            for number, page in enumerate(lb_pages):
+            for number, page in enumerate(lb_pages, start=1):
                 e = discord.Embed(title="Bump Leaderboard", description=page, color=discord.Color.green())
                 e.set_footer(text=f"{number} out of {total} pages.")
                 pages.append(e)
