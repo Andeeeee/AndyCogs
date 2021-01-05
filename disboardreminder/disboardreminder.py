@@ -245,11 +245,12 @@ class DisboardReminder(commands.Cog):
         pages.append(e)
 
         e2 = discord.Embed(title="Bumpreminder Settings Page 2", color=discord.Color.green())
-        e.add_field(name="Next Weekly Reset", value=nextreset)
+        e2.add_field(name="Next Weekly Reset", value=nextreset)
         if nextreset is not None:
             nextreset = datetime.fromtimestamp(nextreset)
-            e.timestamp = nextreset 
-            e.set_footer(text="Next Weekly reset is at")
+            e2.timestamp = nextreset 
+            e2.set_footer(text="Next Weekly reset is at")
+        pages.append(e2)
         
         await menu(ctx, pages, DEFAULT_CONTROLS)
         
