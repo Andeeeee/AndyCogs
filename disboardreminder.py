@@ -367,7 +367,7 @@ class DisboardReminder(commands.Cog):
                     else:
                         coros.append(self.weekly_timer(guild, timer))
                 else:
-                    timer = datetime.utcnow() + 604800
+                    timer = datetime.utcnow().timestamp() + 604800
                     coros.append(self.weekly_timer(guild, timer))
             await asyncio.gather(*coros)
         
