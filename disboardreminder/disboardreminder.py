@@ -132,7 +132,7 @@ class DisboardReminder(commands.Cog):
             return 
 
         data = await self.config.all_members(ctx.guild)
-        data = [(member, memberdata["bumps"]) for member, memberdata in data.items() if ctx.guild.get_member(member) is not None] #for when idiots leave the server and the mentions get fucky
+        data = [(member, memberdata["bumps"]) for member, memberdata in data.items() if ctx.guild.get_member(member) is not None and memberdata["bumps"] > 0] #for when idiots leave the server and the mentions get fucky
         sorted_data = sorted(data[:amt], reverse=True)
 
         lb = []
@@ -277,7 +277,7 @@ class DisboardReminder(commands.Cog):
         
 
     @staticmethod
-    async def create_chart(data: Counter):
+    def create_chart(data: Counter):
         """Thanky Thanky Aikaterna for the chatchart. Code can be viewed here: https://github.com/aikaterna/aikaterna-cogs/blob/v3/chatchart/chatchart.py"""
         plt.clf()
         most_common = data.most_common()
