@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://discord.gg/nVcZQt7mqk">
-    <img src="https://discord.com/api/guilds/779170711305715764/widget.json" alt="Support Server">
+    <img src="https://discordapp.com/api/guilds/779170711305715764/widget.png?style=shield" alt="Support Server">
   </a>
   <a href="https://www.python.org/downloads/">
     <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/Red-Discordbot">
