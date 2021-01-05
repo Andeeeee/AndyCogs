@@ -133,7 +133,7 @@ class DisboardReminder(commands.Cog):
 
         data = await self.config.all_members(ctx.guild)
         data = [(member, memberdata["bumps"]) for member, memberdata in data.items() if ctx.guild.get_member(member) is not None and memberdata["bumps"] > 0] #for when idiots leave the server and the mentions get fucky
-        sorted_data = sorted(data[:amt], reverse=True)
+        sorted_data = sorted(data[:amt], reverse=True, key=lambda m: m[1])
 
         lb = []
 
@@ -163,7 +163,7 @@ class DisboardReminder(commands.Cog):
         if not ctx.invoked_subcommand:
             data = await self.config.all_members(ctx.guild)
             data = [(member, memberdata["weeklybumps"]) for member, memberdata in data.items() if ctx.guild.get_member(member) is not None and memberdata["weeklybumps"] > 0]
-            sorted_data = sorted(data, reverse=True)
+            sorted_data = sorted(data, reverse=True, key=lambda m: m[1])
 
             if len(sorted_data) == 0:
                 return await ctx.send("I do not have bump data for this server")
