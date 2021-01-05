@@ -226,7 +226,8 @@ class DisboardReminder(commands.Cog):
     
     @weekly.error 
     async def weekly_error(self, ctx, error):
-        await ctx.esnd(error)
+        await ctx.send(error)
+        
     @bumpreminder.command(name="chart")
     async def chart(self, ctx):
         """View the bumpers in a chart, looks better"""
