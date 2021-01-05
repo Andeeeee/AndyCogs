@@ -441,12 +441,10 @@ class DisboardReminder(commands.Cog):
             await self.config.guild(guild).channel.set(None)
             
         if data["lock"]:
-            try:
-                overwrites = channel.overwrites_for(guild.default_role)
-                overwrites.send_messages = None
-                await channel.set_permissions(guild.default_role, overwrites=overwrites)
-            except Exception as e:
-                await channel.send(e)
+            overwrites = channel.overwrites_for(guild.default_role)
+            overwrites.send_messages = None
+            await channel.set_permissions(guild.default_role, overwrites=overwrites)
+
                 
         await self.config.guild(guild).nextbump.set(None)
     
