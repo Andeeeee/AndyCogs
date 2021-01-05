@@ -378,6 +378,7 @@ class DisboardReminder(commands.Cog):
                 timer = guilddata["nextbump"]
                 if timer:
                     now = datetime.utcnow().timestamp()
+                    await channel.send(now)
                     remaining = timer - now
                     if remaining <= 0:
                         await self.send_bumpmsg(guild)
