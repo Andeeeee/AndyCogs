@@ -207,7 +207,7 @@ class DisboardReminder(commands.Cog):
                 else:
                     #For when idiots leave the server
                     count[str(member)] = bumpdata["bumps"]
-            chart = await self.create_chart(ctx, count)
+            chart = await self.create_chart(count)
             await ctx
         except Exception as e:
             await ctx.send(f"Uh oh, something borked, \n {e}")
@@ -277,7 +277,7 @@ class DisboardReminder(commands.Cog):
         
 
     @staticmethod
-    async def create_chart(self, data: Counter):
+    async def create_chart(ßdata: Counter):
         """Thanky Thanky Aikaterna for the chatchart. Code can be viewed here: https://github.com/aikaterna/aikaterna-cogs/blob/v3/chatchart/chatchart.py"""
         plt.clf()
         most_common = data.most_common()
