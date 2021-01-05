@@ -188,9 +188,44 @@ class DisboardReminder(commands.Cog):
                 e.set_footer(text=f"{number} out of {total} pages.")
                 pages.append(e)
             await menu(ctx, pages, DEFAULT_CONTROLS)
+    
+    @weekly.command(name="chart")
+    async def weekly_chart(self, ctx):
+        """Basically bumpreminder chart but for weekly bumps"""
+        try:
+            data = await self.config.all_members(ctx.guild)
+            if not data:
+                return await ctx.send("This server has no registered bumps.")
+            count = Counter()
+
+            for member, bumpdata in data.items():
+                _member = ctx.guild.get_member(member)
+                if _member:
+                    if len(_member.display_name) >= 23:
+                        whole_name = f"{_member.display_name[:20]}..."
+                    else:
+                        whole_name = _member.display_name
+                    count[whole_name] = bumpdata["weeklybumps"]
+                else:
+                    #For when idiots leave the server
+                    count[str(member)] = bumpdata["weeklybumps"]
+            chart = self.create_chart(count)
+        except Exception as e:
+            await ctx.send(f"Uh oh, something borked, \n {e}")
+            return 
+
+        await ctx.send(file=discord.File(chart, "chart.png"))
+
+    @weekly.command(name="reset")
+    @commands.admin_or_permissions(manage_guild=True)
+    async def weekly_reset(self, ctx):
+        """Reset your weekly data early"""
+        await self.reset_weekly(ctx.guild)
+        await ctx.send("I've reset the weekly data. It will reset again in 1 week unless ended early.")
 
     @bumpreminder.command(name="chart")
     async def chart(self, ctx):
+        """View the bumpers in a chart, looks better"""
         """Thanky Thanky Aikaterna for the chatchart. Code can be viewed here: https://github.com/aikaterna/aikaterna-cogs/blob/v3/chatchart/chatchart.py"""
    
         try:
