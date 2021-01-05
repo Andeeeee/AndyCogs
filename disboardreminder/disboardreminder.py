@@ -316,7 +316,7 @@ class DisboardReminder(commands.Cog):
                     now = datetime.utcnow().timestamp()
                     remaining = timer - now
                     if remaining <= 0:
-                        await self.bump_message(guild)
+                        await self.send_bumpmsg(guild)
                     else:
                         coros.append(self.start_timer(guild, timer))
             await asyncio.gather(*coros)
