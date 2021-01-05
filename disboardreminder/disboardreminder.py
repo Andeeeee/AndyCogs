@@ -444,7 +444,9 @@ class DisboardReminder(commands.Cog):
                 memberid = int(mention[3:-1])
             else:
                 memberid = int(mention[2:-1])
-                
+            
+            await channel.send(ty)
+            
             ty = ty.replace("{member}", mention)
             ty = ty.replace("{guild.id}", message.guild.id)
             ty = ty.replace("{guildid}", message.guild.id)
