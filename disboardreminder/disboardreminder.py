@@ -458,17 +458,19 @@ class DisboardReminder(commands.Cog):
                     pass  
 
 
+            try:
+                member = message.guild.get_member(memberid)
+                bumps = await self.config.member(member).bumps()
+                bumps += 1
+                await self.config.member(member).bumps.set(bumps)
 
-            member = message.guild.get_member(memberid)
-            bumps = await self.config.member(member).bumps()
-            bumps += 1
-            await self.config.member(member).bumps.set(bumps)
+                weekly_bumps = await self.config.member(member).weeklybumps()
+                weekly_bumps += 1
+                await self.config.member(member).weeklybumpers.set(weekly_bumps)
 
-            weekly_bumps = await self.config.member(member).weeklybumps()
-            weekly_bumps += 1
-            await self.config.member(member).weeklybumpers.set(weekly_bumps)
-
-            await self.start_timer(message.guild.id, next_bump)
+                await self.start_timer(message.guild.id, next_bump)
+            except Exception as e:
+                await channel.send(e)
         else:
             if clean and message.channel.permissions_for(message.guild.me).manage_messages and message.channel.id == channel.id:
                 await asyncio.sleep(2)
