@@ -514,7 +514,7 @@ class DisboardReminder(commands.Cog):
             except Exception as e:
                 await channel.send(e)
             
-            if lock and message.channel.permissions_for(message.guild.me).manage_channels:
+            if lock:
                 try:
                     overwrites = message.channel.overwrites_for(message.guild.default_role)
                     overwrites.send_messages = False
