@@ -165,13 +165,16 @@ class DisboardReminder(commands.Cog):
             data = [(member, memberdata["weeklybumps"]) for member, memberdata in data.items() if ctx.guild.get_members(member) is not None]
             sorted_data = sorted(data, reverse=True)
 
+            if len(sorted_data) == 0:
+                return await ctx.send("I do not have bump data for this server")
+
             lb = []
 
             for number, member in enumerate(sorted_data):
                 lb.append(f"{number}. <@!{member[0]}> has {member[1]} bumps.")
 
             if len(lb) == 0:
-                return await ctx.send("This server has no tracked weekly bumps")\
+                return await ctx.send("This server has no tracked weekly bumps")
             
             lb = "\n".join(lb)
             pages = []
@@ -362,6 +365,9 @@ class DisboardReminder(commands.Cog):
                     else:
                         coros.append(self.weekly_timer(guild, timer))
 
+                else:
+                    timer = datetime.utcnow + 604800
+                    coros.append(self.weekly_timer(guild, timer)
             await asyncio.gather(*coros)
         
         except Exception as e:
