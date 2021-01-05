@@ -1,0 +1,19 @@
+{
+    "name": "disboardreminder",
+    "short": "easy way to remind people to bump",
+    "description": "Remind your server to bump every 2 hours on disboard with kewl features",
+    "end_user_data_statement": "This cog will store your bumps in a server",
+    "install_msg": "Check out `[p]bumpreminder` to start.",   
+    "author": [
+        "Andy"
+    ],
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "utility"
+    ],
+    "min_bot_version": "3.4.6.dev1",
+    "hidden": false,
+    "disabled": false,
+    "type": "COG"
+}
