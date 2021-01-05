@@ -468,7 +468,8 @@ class DisboardReminder(commands.Cog):
                 weekly_bumps += 1
                 await self.config.member(member).weeklybumps.set(weekly_bumps)
 
-                await self.start_timer(message.guild.id, next_bump)
+                await self.start_timer(message.guild, next_bump)
+                
             except Exception as e:
                 await channel.send(e)
         else:
