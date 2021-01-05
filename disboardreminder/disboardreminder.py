@@ -445,7 +445,7 @@ class DisboardReminder(commands.Cog):
             else:
                 memberid = int(mention[2:-1])
             
-            await channel.send(tyreplace("{member}", mention).replace("{guild}", message.guild.name).replace("{guild.id}", message.guild.id))
+            await channel.send(ty.replace("{member}", mention).replace("{guild}", message.guild.name).replace("{guild.id}", message.guild.id))
             
             if lock and message.channel.permissions_for(message.guild.me).manage_channels:
                 try:
