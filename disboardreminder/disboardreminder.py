@@ -400,13 +400,13 @@ class DisboardReminder(commands.Cog):
                     now = datetime.utcnow().timestamp()
                     remaining = timer - now 
                     if remaining <= 0:
-                        self.reset_weekly(guild)
+                        await self.reset_weekly(guild)
                     else:
                         coros.append(self.weekly_timer(guild, timer))
                 else:
                     now = datetime.utcnow() + 604800
                     await self.config.guild(guild).nextweeklyreset.set(now)
-                    coros.append(self.reset_weekly(guild, now))
+                    coros.append(self.weekly_timer(guild, now))
             await asyncio.gather(*coros)
         
         except Exception as e:
