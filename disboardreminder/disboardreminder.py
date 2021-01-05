@@ -451,7 +451,9 @@ class DisboardReminder(commands.Cog):
                 if lock and message.channel.permissions_for(message.guild.me).manage_channels:
                     try:
                         overwrites = message.channel.overwrites_for(message.guild.default_role)
-                        overwrites.send_messages = False 
+                        overwrites.send_messages = False
+                    except discord.errors.Forbidden:
+                        pass  
 
 
 
