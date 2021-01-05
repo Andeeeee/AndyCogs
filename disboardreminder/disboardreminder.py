@@ -379,7 +379,7 @@ class DisboardReminder(commands.Cog):
                 overwrites.send_messages = None
             except discord.errors.Forbidden:
                 pass
-        await self.config.guild(guild).nextBump.set(None)
+        await self.config.guild(guild).nextbump.set(None)
     
     async def start_timer(self, guild: discord.Guild, remaining):
         remaining = int(remaining)
