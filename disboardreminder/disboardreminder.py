@@ -499,7 +499,7 @@ class DisboardReminder(commands.Cog):
         if "Bump done" in embeds.description:
             last_bump = data["nextbump"]
             if last_bump:
-                if not (last_bump - message.created_at.timestamp() <= 0:
+                if not (last_bump - message.created_at.timestamp()) <= 0:
                     return
             next_bump = message.created_at.timestamp() + 7200
             await self.config.guild(message.guild).nextbump.set(next_bump)
