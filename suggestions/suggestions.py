@@ -7,7 +7,7 @@ from typing import Optional
 class Suggestions(commands.Cog):
     def __init__(self, bot):
         self.bot = bot 
-        self.config = Config.get_conf(self, identifier=160805014090190130501014, force_registration=True)
+        self.config = Config.get_conf(self, identifier=160805014090190130501014, force_registration=True) #e
 
         default_guild = {
             "channel": None,
