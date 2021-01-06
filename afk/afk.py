@@ -83,8 +83,8 @@ class Afk(commands.Cog):
         if len(mentions) == 0:
             return 
 
-		for mention in result:
-			userid = int(mention.lstrip("<@!").lstrip("<@").rstrip(">"))
+        for mention in result:
+            userid = int(mention.lstrip("<@!").lstrip("<@").rstrip(">"))
             user = await guild.get_member(userid)
             if not user:
                 continue 
