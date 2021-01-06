@@ -60,7 +60,7 @@ class Afk(commands.Cog):
         
         guild = message.guild
 
-        if message.bot:
+        if message.author.bot:
             return 
         
         afk = await self.config.member(message.author).afk()
