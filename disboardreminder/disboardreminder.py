@@ -1,6 +1,6 @@
 #Idea from Phen-Cogs https://github.com/phenom4n4n/phen-cogs/blob/master/disboardreminder/disboardreminder.py
 #Restart after cog unload code taken from https://github.com/Redjumpman/Jumper-Plugins/tree/V3/raffle
-#chatchart/bumpchart logic taken from https://github.com/aikaterna/aikaterna-cogs/tree/v3/chatchart
+#chatchart/bumpchart logic from https://github.com/aikaterna/aikaterna-cogs/tree/v3/chatchart 
 
 from datetime import datetime
 from io import BytesIO
@@ -366,7 +366,7 @@ class DisboardReminder(commands.Cog):
         image_object.seek(0)
         return image_object
     
-    async def bump_restart(self):
+    async def (self):
         channel = self.bot.get_channel(779170774934093844)
         await self.bot.wait_until_ready()
         coros = []
