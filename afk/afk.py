@@ -75,9 +75,9 @@ class Afk(commands.Cog):
         
         final_message = []
         
-        match = re.findall(mention_re, message.content)
+        mentions = re.findall(mention_re, message.content)
         
-        if not match:
+        if not mentions:
             return 
 
         if len(mentions) == 0:
