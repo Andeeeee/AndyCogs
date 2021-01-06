@@ -6,6 +6,8 @@ from typing import Optional
 from redbot.core.utils.chat_formatting import pagify
 import re
 
+mention_re = re.compile(r'(<@(|!|)\d*>)')
+
 class Afk(commands.Cog):
     """A cog for being afk and responding when idiots ping you"""
     def __init__(self, bot):
@@ -71,15 +73,12 @@ class Afk(commands.Cog):
         else:
             await message.channel.send(f"Welcome back {message.author.mention}, I've removed your afk.")
         
-        mentions = self.mention_regex.findall(message.content)
-
-		if not mentions:
-            return 
-			
-        
         final_message = []
         
-        mentions = [mention for mention in mentions]
+        match = re.findall(mention_re, message.content)
+        
+        if not match:
+            return 
 
         if len(mentions) == 0:
             return 
@@ -105,6 +104,8 @@ class Afk(commands.Cog):
         final_message = "\n".join(final_message)
         final_message = list(pagify(final_message)) 
 
+        allowed_mentions = discord.AllowedMentions(roles=False, everyone=False, users=False)
+
         for message in final_message:
-            await message.channel.send(message)
+            await message.channel.send(message, allowed_mentions=allowed_mentions)
             
