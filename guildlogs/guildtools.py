@@ -40,7 +40,7 @@ class GuildTools(commands.Cog):
     
     @commands.group(name="guildtools")
     @commands.is_owner()
-    async def guildlog(self, ctx):
+    async def guildtools(self, ctx):
         if not ctx.invoked_subcommand:
             await ctx.send_help("guildlog")
     
@@ -60,7 +60,6 @@ class GuildTools(commands.Cog):
     
 
     @commands.Cog.listener("on_guild_join")
-    @commands.is_owner()
     async def on_guild_join(self, guild):
         try:
             logchannel = await self.config.logchannel()
@@ -134,7 +133,6 @@ class GuildTools(commands.Cog):
             await logchannel.send(e)
     
     @commands.Cog.listener("on_guild_remove")
-    @commands.is_owner()
     async def on_guild_remove(self, guild):
         try:
             logchannel = await self.config.logchannel()

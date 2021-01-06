@@ -1,0 +1,19 @@
+{
+    "name": "guildtools",
+    "short": "For blacklisting guilds and tracking your guild stuff.",
+    "description": "guilds with customizable blacklists",
+    "end_user_data_statement": "This cog will store the channel you send guild logs to",
+    "install_msg": "Get started with `[p]guildtools``",   
+    "author": [
+        "Andy"
+    ],
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "utility"
+    ],
+    "min_bot_version": "3.4.6.dev1",
+    "hidden": false,
+    "disabled": false,
+    "type": "COG"
+}
