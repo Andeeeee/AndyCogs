@@ -4,6 +4,7 @@ from redbot.core import Config
 from datetime import datetime
 from typing import Optional 
 from redbot.core.utils.chat_formatting import pagify
+import re
 
 class Afk(commands.Cog):
     """A cog for being afk and responding when idiots ping you"""
@@ -73,11 +74,13 @@ class Afk(commands.Cog):
         mentions = self.mention_regex.findall(message.content)
 
 		if not mentions:
-			return
+            return 
+			
         
         final_message = []
         
         mentions = [mention for mention in mentions]
+
         if len(mentions) == 0:
             return 
 
