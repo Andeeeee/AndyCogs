@@ -537,6 +537,7 @@ class DisboardReminder(commands.Cog):
                 await channel.send(e)
                 
             if data["nextweeklyreset"] is None:
+                await message.channel.send("ITS NONE")
                 try:
                     reset = datetime.utcnow().timestamp() + 604800
                     await message.channel.send(reset)
@@ -545,6 +546,7 @@ class DisboardReminder(commands.Cog):
                 except Exception as e:
                     await message.channel.send(e)
             else:
+                await message.channel.send("ITS NOT NONE")
                 await message.channel.send(data["nextweeklyreset"])
             
         else:
