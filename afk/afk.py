@@ -94,7 +94,7 @@ class Afk(commands.Cog):
 
 
         for mention in mentions:
-            for m in mention
+            for m in mention:
                 if m == "!":
                     continue
                 if m.startswith("<@!"):
