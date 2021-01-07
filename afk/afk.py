@@ -16,7 +16,7 @@ class Afk(commands.Cog):
 
         default_member = {
             "afk": None, #None becuase its gonna be replaced with a timestamp
-            "sticky": True, #sets if afk goes away when they type or if they manually toggle it.
+            "sticky": False, #sets if afk goes away when they type or if they manually toggle it.
             "message": "{author} has been afk since {time}, please be paitent and wait till he comes online."
         }
 
@@ -37,7 +37,8 @@ class Afk(commands.Cog):
         await ctx.send("I have set you as afk. People who ping you will now receive a message")
 
         if ctx.channel.permissions_for(ctx.me).manage_nicknames:
-            await ctx.author.edit(nick=f"[afk] {ctx.author.display_name}")
+            if not ctx.me.top_role.position <= ctx.author.top_role.position: 
+                await ctx.author.edit(nick=f"[afk] {ctx.author.display_name}")
     
     @afk.command(name="off")
     async def afk_off(self, ctx):
@@ -75,6 +76,7 @@ class Afk(commands.Cog):
             pass 
         else:
             await message.channel.send(f"Welcome back {message.author.mention}, I've removed your afk.")
+            await self.config.member(message.author).afk.clear()
         
         final_message = []
         
