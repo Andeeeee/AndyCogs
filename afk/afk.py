@@ -54,7 +54,11 @@ class Afk(commands.Cog):
 
         if ctx.channel.permissions_for(ctx.me).manage_nicknames:
             name = ctx.author.display_name
-            name = name.strip("[afk]")
+            name = name.replace("[afk]", "")
+            if len(name) < 2:
+                return
+            elif len(name) > 32:
+                return 
             await ctx.author.edit(nick=name)
     
     @afk.command(name="sticky")
