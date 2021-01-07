@@ -93,28 +93,29 @@ class Afk(commands.Cog):
             return
 
 
-        for mention in mentions[0]:
-            if mention == "!":
-                continue
-            if mention.startswith("<@!"):
-                userid = mention[3:-1]
-            else:
-                userid = mention[2:-1]
-            user = guild.get_member(int(userid))
-            if not user:
-                continue 
-            
-            afk = await self.config.member(user).afk()
-            msg = await self.config.member(user).message()
-
-            if not afk:
-                continue 
+        for mention in mentions:
+            for m in mention
+                if m == "!":
+                    continue
+                if m.startswith("<@!"):
+                    userid = m[3:-1]
+                else:
+                    userid = m[2:-1]
+                user = guild.get_member(int(userid))
+                if not user:
+                    continue 
                 
-            afk = datetime.utcnow() - datetime.fromtimestamp(afk)
-            afk = str(afk).split(".")
-            afk = afk[0]
+                afk = await self.config.member(user).afk()
+                msg = await self.config.member(user).message()
 
-            final_message.append(msg.replace("{author}", user.mention).replace("{time}", str(afk)))
+                if not afk:
+                    continue 
+                    
+                afk = datetime.utcnow() - datetime.fromtimestamp(afk)
+                afk = str(afk).split(".")
+                afk = afk[0]
+
+                final_message.append(msg.replace("{author}", user.mention).replace("{time}", str(afk)))
 
         
         if len(final_message) == 0:
