@@ -98,7 +98,6 @@ class Afk(commands.Cog):
                 userid = mention[3:-1]
             else:
                 userid = mention[2:-1]
-            await message.channel.send(userid)
             user = guild.get_member(int(userid))
             if not user:
                 continue 
@@ -122,6 +121,6 @@ class Afk(commands.Cog):
 
         allowed_mentions = discord.AllowedMentions(roles=False, everyone=False, users=False)
 
-        for message in final_message:
-            await message.channel.send(message, allowed_mentions=allowed_mentions)
+        for msg in final_message:
+            await message.channel.send(msg, allowed_mentions=allowed_mentions)
             
