@@ -91,7 +91,10 @@ class Afk(commands.Cog):
             return 
 
         for mention in mentions[0]:
-            userid = int(mention.lstrip("<@!").lstrip("<@").rstrip(">"))
+            if mention.startswith("<@!"):
+                userid = mention[3:-1]
+            else:
+                userid = mention[2:-1]
             user = guild.get_member(userid)
             if not user:
                 continue 
