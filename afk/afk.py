@@ -110,8 +110,7 @@ class Afk(commands.Cog):
             if not afk:
                 continue 
                 
-            afk = datetime.utcnow().timestamp() - afk
-            afk = datetime.fromtimestamp(afk)
+            afk = datetime.utcnow() - datetime.fromtimestamp(afk)
 
             final_message.append(msg.replace("{author}", message.author.mention).replace("{time}", str(afk)))
 
