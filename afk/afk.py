@@ -53,7 +53,7 @@ class Afk(commands.Cog):
         await ctx.send("I removed your afk status.")
 
         if ctx.channel.permissions_for(ctx.me).manage_nicknames:
-            name = member.display_name
+            name = ctx.author.display_name
             name = name.strip("[afk]")
             await member.edit(nick=name)
     
