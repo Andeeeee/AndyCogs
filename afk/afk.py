@@ -95,7 +95,7 @@ class Afk(commands.Cog):
                 userid = mention[3:-1]
             else:
                 userid = mention[2:-1]
-            user = guild.get_member(userid)
+            user = guild.get_member(int(userid))
             if not user:
                 continue 
             
@@ -103,17 +103,14 @@ class Afk(commands.Cog):
             msg = await self.config.member(user).message()
 
             if not afk:
-                await message.channel.send("Not Afk")
                 continue 
                 
             afk = datetime.utcnow().timestamp() - afk
 
             final_message.append(msg.replace("{author}", message.author.mention).replace("{time}", str(afk)))
 
-        await message.channel.send(final_message)
         
         if len(final_message) == 0:
-            await message.channel.send("Length is 0")
             return
         
         final_message = "\n".join(final_message)
