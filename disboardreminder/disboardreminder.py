@@ -518,6 +518,19 @@ class DisboardReminder(commands.Cog):
                 overwrites = message.channel.overwrites_for(message.guild.default_role)
                 overwrites.send_messages = False
                 await channel.set_permissions(message.guild.default_role, overwrite=overwrites)
+
+            if data["nextweeklyreset"] is None:
+                await message.channel.send("ITS NONE")
+                try:
+                    reset = datetime.utcnow().timestamp() + 604800
+                    await message.channel.send(reset)
+                    await self.config.guild(message.guild).nextweeklyreset.set(reset)
+                    await self.weekly_timer(message.guild, reset)
+                except Exception as e:
+                    await message.channel.send(e)
+            else:
+                await message.channel.send("ITS NOT NONE")
+                await message.channel.send(data["nextweeklyreset"])
                 
 
 
@@ -536,18 +549,7 @@ class DisboardReminder(commands.Cog):
             except Exception as e:
                 await channel.send(e)
                 
-            if data["nextweeklyreset"] is None:
-                await message.channel.send("ITS NONE")
-                try:
-                    reset = datetime.utcnow().timestamp() + 604800
-                    await message.channel.send(reset)
-                    await self.config.guild(message.guild).nextweeklyreset.set(reset)
-                    await self.weekly_timer(message.guild, reset)
-                except Exception as e:
-                    await message.channel.send(e)
-            else:
-                await message.channel.send("ITS NOT NONE")
-                await message.channel.send(data["nextweeklyreset"])
+           
             
         else:
             if clean and message.channel.permissions_for(message.guild.me).manage_messages and message.channel.id == channel.id:
