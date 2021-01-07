@@ -114,7 +114,7 @@ class Afk(commands.Cog):
             afk = str(afk).split(".")
             afk = afk[0]
 
-            final_message.append(msg.replace("{author}", message.author.mention).replace("{time}", str(afk)))
+            final_message.append(msg.replace("{author}", user.mention).replace("{time}", str(afk)))
 
         
         if len(final_message) == 0:
