@@ -6,7 +6,7 @@ from typing import Optional
 from redbot.core.utils.chat_formatting import pagify
 import re
 
-mention_re = re.compile(r'(<@(|!|)\d*>)')
+mention_re = re.compile(r"(<@(|!|)\d*>)")
 
 class Afk(commands.Cog):
     """A cog for being afk and responding when idiots ping you"""
@@ -90,9 +90,10 @@ class Afk(commands.Cog):
         if len(mentions) == 0:
             return
 
-        await message.channel.send(mentions)
 
         for mention in mentions[0]:
+            if mention == "!":
+                continue
             if mention.startswith("<@!"):
                 userid = mention[3:-1]
             else:
