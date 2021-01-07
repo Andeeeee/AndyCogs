@@ -30,6 +30,10 @@ class Afk(commands.Cog):
     async def afk_on(self, ctx, * , message="{author} has been afk since {time}, please be paitent and wait till he comes online."):
         """Responds when people ping you"""
 
+        afk = await self.config.member(ctx.author).afk()
+        if afk is not None:
+            return await ctx.send("You are already AFK")
+
         date = datetime.utcnow().timestamp()
         await self.config.member(ctx.author).afk.set(date)
         await self.config.member(ctx.author).message.set(message)
@@ -47,6 +51,11 @@ class Afk(commands.Cog):
         """Turn off afk mode"""
         await self.config.member(ctx.author).afk.clear()
         await ctx.send("I removed your afk status.")
+
+        if ctx.channel.permissions_for(ctx.me).manage_nicknames:
+            name = member.display_name
+            name = name.strip("[afk]")
+            await member.edit(nick=name)
     
     @afk.command(name="sticky")
     async def sticky(self, ctx, sticky: Optional[bool] = None):
