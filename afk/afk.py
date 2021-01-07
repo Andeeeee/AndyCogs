@@ -89,9 +89,7 @@ class Afk(commands.Cog):
             return 
 
         for mention in mentions[0]:
-            await message.channel.send(mention)
             userid = int(mention.lstrip("<@!").lstrip("<@").rstrip(">"))
-            await message.channel.send(userid)
             user = guild.get_member(userid)
             if not user:
                 continue 
