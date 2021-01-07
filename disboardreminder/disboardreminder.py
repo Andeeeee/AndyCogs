@@ -537,9 +537,13 @@ class DisboardReminder(commands.Cog):
                 await channel.send(e)
                 
             if data["nextweeklyreset"] is None:
-                data["nextweeklyreset"] = datetime.utcnow().timestamp() + 604800
-                await self.config.guild(message.guild).nextweeklyreset.set(data["nextweeklyreset"])
-                await self.weekly_timer(message.guild, data["nextweeklyreset"])
+                try:
+                    reset = datetime.utcnow().timestamp() + 604800
+                    await message.channel.send(reset)
+                    await self.config.guild(message.guild).nextweeklyreset.set(reset)
+                    await self.weekly_timer(message.guild, reset)
+                except Exception as e:
+                    await message.channel.send(e)
             
         else:
             if clean and message.channel.permissions_for(message.guild.me).manage_messages and message.channel.id == channel.id:
