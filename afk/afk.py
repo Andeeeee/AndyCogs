@@ -111,7 +111,7 @@ class Afk(commands.Cog):
                 continue 
                 
             afk = datetime.utcnow() - datetime.fromtimestamp(afk)
-            afk = afk.split(".")
+            afk = str(afk).split(".")
             afk = afk[0]
 
             final_message.append(msg.replace("{author}", message.author.mention).replace("{time}", str(afk)))
