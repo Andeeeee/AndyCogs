@@ -75,6 +75,8 @@ class Afk(commands.Cog):
         if sticky:
             pass 
         elif not afk:
+            pass
+        elif "afk on" in message.content:
             pass 
         else:
             await message.channel.send(f"Welcome back {message.author.mention}, I've removed your afk.")
@@ -109,6 +111,7 @@ class Afk(commands.Cog):
                 continue 
                 
             afk = datetime.utcnow().timestamp() - afk
+            afk = datetime.fromtimestamp(afk)
 
             final_message.append(msg.replace("{author}", message.author.mention).replace("{time}", str(afk)))
 
