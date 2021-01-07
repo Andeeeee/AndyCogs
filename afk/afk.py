@@ -109,6 +109,8 @@ class Afk(commands.Cog):
             afk = datetime.utcnow().timestamp() - afk
 
             final_message.append(msg.replace("{author}", message.author.mention).replace("{time}", str(afk)))
+
+        await message.channel.send(final_message)
         
         if len(final_message) == 0:
             await message.channel.send("Length is 0")
