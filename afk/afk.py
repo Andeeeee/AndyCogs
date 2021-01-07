@@ -100,6 +100,7 @@ class Afk(commands.Cog):
             msg = await self.config.member(user).message()
 
             if not afk:
+                await message.channel.send("Not Afk")
                 continue 
                 
             afk = datetime.utcnow().timestamp() - afk
@@ -107,7 +108,9 @@ class Afk(commands.Cog):
             final_message.append(msg.replace("{author}", message.author.mention).replace("{time}", str(afk)))
         
         if len(final_message) == 0:
-            return 
+            await message.channel.send("Length is 0")
+            return
+        
         final_message = "\n".join(final_message)
         final_message = list(pagify(final_message)) 
 
