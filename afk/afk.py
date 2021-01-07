@@ -55,7 +55,7 @@ class Afk(commands.Cog):
         if ctx.channel.permissions_for(ctx.me).manage_nicknames:
             name = ctx.author.display_name
             name = name.strip("[afk]")
-            await member.edit(nick=name)
+            await ctx.author.edit(nick=name)
     
     @afk.command(name="sticky")
     async def sticky(self, ctx, sticky: Optional[bool] = None):
