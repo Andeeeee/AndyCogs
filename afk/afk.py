@@ -95,6 +95,7 @@ class Afk(commands.Cog):
                 userid = mention[3:-1]
             else:
                 userid = mention[2:-1]
+            await message.channel.send(userid)
             user = guild.get_member(int(userid))
             if not user:
                 continue 
