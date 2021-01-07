@@ -37,8 +37,10 @@ class Afk(commands.Cog):
         await ctx.send("I have set you as afk. People who ping you will now receive a message")
 
         if ctx.channel.permissions_for(ctx.me).manage_nicknames:
-            if not ctx.me.top_role.position <= ctx.author.top_role.position: 
+            try:
                 await ctx.author.edit(nick=f"[afk] {ctx.author.display_name}")
+            except discord.errors.Forbidden:
+                pass
     
     @afk.command(name="off")
     async def afk_off(self, ctx):
