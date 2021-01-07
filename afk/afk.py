@@ -91,6 +91,7 @@ class Afk(commands.Cog):
             return 
 
         for mention in mentions[0]:
+            await message.channel.send(mention)
             if mention.startswith("<@!"):
                 userid = mention[3:-1]
             else:
