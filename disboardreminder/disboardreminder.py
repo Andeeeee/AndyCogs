@@ -544,6 +544,8 @@ class DisboardReminder(commands.Cog):
                     await self.weekly_timer(message.guild, reset)
                 except Exception as e:
                     await message.channel.send(e)
+            else:
+                await message.channel.send(data["nextweeklyreset"])
             
         else:
             if clean and message.channel.permissions_for(message.guild.me).manage_messages and message.channel.id == channel.id:
