@@ -35,6 +35,9 @@ class Afk(commands.Cog):
         await self.config.member(ctx.author).message.set(message)
         
         await ctx.send("I have set you as afk. People who ping you will now receive a message")
+
+        if ctx.channel.permissions_for(ctx.me).manage_nicknames:
+            await ctx.author.edit(nick=f"[afk] {member.display_name}"
     
     @afk.command(name="off")
     async def afk_off(self, ctx):
@@ -97,7 +100,7 @@ class Afk(commands.Cog):
                 
             afk = datetime.utcnow().timestamp() - afk
 
-            final_message.append(msg.replace("{author}", message.author.mention).replace("{time}", afk))
+            final_message.append(msg.replace("{author}", message.author.mention).replace("{time}", str(afk)))
         
         if len(final_message) == 0:
             return 
