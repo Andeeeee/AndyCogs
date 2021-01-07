@@ -508,10 +508,8 @@ class DisboardReminder(commands.Cog):
             else:
                 memberid = int(mention[2:-1])
             
-            try:
-                await channel.send(ty.replace("{member}", mention).replace("{guild}", message.guild.name).replace("{guild.id}", str(message.guild.id)))
-            except Exception as e:
-                await channel.send(e)
+            await channel.send(ty.replace("{member}", mention).replace("{guild}", message.guild.name).replace("{guild.id}", str(message.guild.id)))
+
             
     
             if lock:
@@ -520,37 +518,19 @@ class DisboardReminder(commands.Cog):
                 await channel.set_permissions(message.guild.default_role, overwrite=overwrites)
 
             if data["nextweeklyreset"] is None:
-                await message.channel.send("ITS NONE")
-                try:
-                    reset = datetime.utcnow().timestamp() + 604800
-                    await message.channel.send(reset)
-                    await self.config.guild(message.guild).nextweeklyreset.set(reset)
-                    await self.weekly_timer(message.guild, reset)
-                except Exception as e:
-                    await message.channel.send(e)
-            else:
-                await message.channel.send("ITS NOT NONE")
-                await message.channel.send(data["nextweeklyreset"])
+                reset = datetime.utcnow().timestamp() + 604800
+                await self.config.guild(message.guild).nextweeklyreset.set(reset)
+                await self.weekly_timer(message.guild, reset)
                 
-
-
-            try:
-                member = message.guild.get_member(memberid)
-                bumps = await self.config.member(member).bumps()
-                bumps += 1
-                await self.config.member(member).bumps.set(bumps)
-
-                weekly_bumps = await self.config.member(member).weeklybumps()
-                weekly_bumps += 1
-                await self.config.member(member).weeklybumps.set(weekly_bumps)
-
-                await self.start_timer(message.guild, next_bump)
-                
-            except Exception as e:
-                await channel.send(e)
-                
-           
-            
+            member = message.guild.get_member(memberid)
+            bumps = await self.config.member(member).bumps()
+            weekly_bumps = await self.config.member(member).weeklybumps()
+            bumps += 1
+            weekly_bumps += 1
+            await self.config.member(member).bumps.set(bumps)
+            await self.config.member(member).weeklybumps.set(weekly_bumps)
+            await self.start_timer(message.guild, next_bump)
+ 
         else:
             if clean and message.channel.permissions_for(message.guild.me).manage_messages and message.channel.id == channel.id:
                 await asyncio.sleep(2)
