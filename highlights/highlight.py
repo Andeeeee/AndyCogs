@@ -138,6 +138,7 @@ class Highlight(commands.Cog):
     
     @highlight.command(name="afk", aliases=["afktime"])
     async def afktime(self, ctx, time: Optional[int] = None):
+        """The time you have to be afk in the server for a highlight to trigger. """
         if time is None:
             return await ctx.send("You need to specify a digit.")
         else:
@@ -163,6 +164,8 @@ class Highlight(commands.Cog):
             last_seen = await self.config.member(user).last_message() or 1
             afk_time = await self.config.member(user).afk_time()
             if (datetime.utcnow().timestamp() - last_seen) < afk_time:
+                continue
+            if message.author.id == user.id:
                 continue
 
             for hl in highlights["highlights"]:
