@@ -24,13 +24,15 @@ class Afk(commands.Cog):
     
     @commands.group(name="afk")
     async def afk(self, ctx):
+        """A group for settings custom responses when being pinged."""
         pass #just realized the bot sends help automatically if there isn't a subcmd invoked.
 
     @afk.command(name="on")
     async def afk_on(self, ctx, * , message="{author} has been afk since {time}, please be paitent and wait till he comes online."):
-        """Responds when people ping you"""
+        """Responds when people ping you. Set {time} for the time you've been afk and {author} for your mention. (You won't actually be pinged)."""
 
         afk = await self.config.member(ctx.author).afk()
+        
         if afk is not None:
             return await ctx.send("You are already AFK")
 
@@ -44,11 +46,11 @@ class Afk(commands.Cog):
             try:
                 await ctx.author.edit(nick=f"[afk] {ctx.author.display_name}")
             except discord.errors.Forbidden:
-                pass
+                pass #hericahy
     
     @afk.command(name="off")
     async def afk_off(self, ctx):
-        """Turn off afk mode"""
+        """Turn off afk mode."""
         await self.config.member(ctx.author).afk.clear()
         await ctx.send("I removed your afk status.")
 
@@ -59,7 +61,9 @@ class Afk(commands.Cog):
                 return
             elif len(name) > 32:
                 return 
-            await ctx.author.edit(nick=name)
+            try:
+                await ctx.author.edit(nick=name)
+            except discord.errors.Forbidden #hiercahy
     
     @afk.command(name="sticky")
     async def sticky(self, ctx, sticky: Optional[bool] = None):
