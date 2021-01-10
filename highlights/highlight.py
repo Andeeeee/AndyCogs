@@ -15,7 +15,7 @@ class Highlight(commands.Cog):
 
         default_member = {
             "highlights": [],
-            "afk_time": 5, #minutes
+            "afk_time": 5, #minutesa
             "ignored": [],
             "last_message": None,
         }
@@ -121,6 +121,7 @@ class Highlight(commands.Cog):
                 return await ctx.send("This channel is already ignored.")
             else:
                 ignored.append(chan.id)
+                await self.config.member(ctx.author).ignored.set(ignored)
                 await ctx.send("I will no longer highlight messages in this channel")
     
     @highlight.command(name="unignore")
@@ -166,6 +167,8 @@ class Highlight(commands.Cog):
             if (datetime.utcnow().timestamp() - last_seen) < afk_time:
                 continue
             if message.author.id == user.id:
+                continue
+            if not message.channel.permissions_for(user).read_messages:
                 continue
 
             for hl in highlights["highlights"]:
