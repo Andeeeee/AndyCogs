@@ -1,21 +1,21 @@
 #Idea from Phen-Cogs https://github.com/phenom4n4n/phen-cogs/blob/master/disboardreminder/disboardreminder.py
 #Restart after cog unload code taken from https://github.com/Redjumpman/Jumper-Plugins/tree/V3/raffle
 #chatchart/bumpchart logic from https://github.com/aikaterna/aikaterna-cogs/tree/v3/chatchart
-#
-from datetime import datetime
-from io import BytesIO
+
 import asyncio
+from collections import Counter
+from datetime import datetime
 import discord
-from typing import Optional
+from io import BytesIO
 import matplotlib
 from redbot.core import Config
 from redbot.core import commands
 from redbot.core.utils.chat_formatting import pagify
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
-from collections import Counter
-
+from typing import Optional
 
 matplotlib.use("agg")
+
 import matplotlib.pyplot as plt
 
 plt.switch_backend("agg")
@@ -47,6 +47,7 @@ class DisboardReminder(commands.Cog):
         self.config.register_member(**default_member)
     
     @commands.group(name="bumpreminder", aliases=["bprm", "disboardreminder"])
+    @commands.guild_only()
     async def bumpreminder(self, ctx):
         if not ctx.invoked_subcommand:
             await ctx.send_help("bprm")
@@ -128,14 +129,13 @@ class DisboardReminder(commands.Cog):
     async def top(self, ctx, amt: Optional[int] = 30):
         """View the top bumpers of the server"""
         if amt < 1:
-            await ctx.send("You can't view nothing idiot.")
-            return 
-
+            return await ctx.send("You can't view nothing idiot.")
+        
         data = await self.config.all_members(ctx.guild)
         data = [(member, memberdata["bumps"]) for member, memberdata in data.items() if ctx.guild.get_member(member) is not None and memberdata["bumps"] > 0] #for when idiots leave the server and the mentions get fucky
         sorted_data = sorted(data[:amt], reverse=True, key=lambda m: m[1])
 
-        lb = []
+        lb = [] #leaderboard
 
         for number, member in enumerate(sorted_data, start=1):
             lb.append(f"{number}. <@!{member[0]}> has {member[1]} bumps.")
@@ -510,7 +510,6 @@ class DisboardReminder(commands.Cog):
             
             await channel.send(ty.replace("{member}", mention).replace("{guild}", message.guild.name).replace("{guild.id}", str(message.guild.id)))
 
-            
     
             if lock:
                 overwrites = message.channel.overwrites_for(message.guild.default_role)
