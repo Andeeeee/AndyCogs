@@ -64,7 +64,8 @@ class Afk(commands.Cog):
                 return 
             try:
                 await ctx.author.edit(nick=name)
-            except discord.errors.Forbidden #hiercahy
+            except discord.errors.Forbidden:
+                pass #hiercahy
     
     @afk.command(name="sticky")
     async def sticky(self, ctx, sticky: Optional[bool] = None):
