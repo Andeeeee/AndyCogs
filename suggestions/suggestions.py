@@ -22,6 +22,7 @@ class Suggestions(commands.Cog):
         self.config.register_guild(**default_guild)
     
     @commands.group(name="suggestions", aliases=["suggestset"])
+    @commands.guild_only()
     async def suggestions(self, ctx):
         if not ctx.invoked_subcommand:
             await ctx.send_help("suggestions")
@@ -118,6 +119,7 @@ class Suggestions(commands.Cog):
 
 
     @commands.command(name="suggest")
+    @commands.guild_only()
     @commands.cooldown(20, 1, BucketType.member)
     async def suggest(self, ctx, * , content = None):
         blacklist = await self.config.guild(ctx.guild).blacklist()
@@ -179,6 +181,7 @@ class Suggestions(commands.Cog):
             await ctx.message.delete()
     
     @commands.command(name="approve")
+    @commands.guild_only()
     @commands.mod_or_permissions(manage_guild=True)
     async def approve(self, ctx, number: Optional[int] = None, * , reason="No Reason Provided"):
         if not number:
@@ -228,6 +231,7 @@ class Suggestions(commands.Cog):
             await ctx.author.send("Your suggestion was approved!", embed=e)
         
     @commands.command(name="reject")
+    @commands.guild_only()
     @commands.mod_or_permissions(manage_guild=True)
     async def reject(self, ctx, number: Optional[int] = None, * , reason="No Reason Provided"):
         if not number:
