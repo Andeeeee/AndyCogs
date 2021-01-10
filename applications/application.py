@@ -1,14 +1,17 @@
+import asyncio
 import discord 
 from redbot.core import commands 
 from redbot.core.commands import BucketType
 from redbot.core import Config 
 from typing import Optional
-import asyncio
+
+async def is_guild_owner(ctx):
+    return ctx.author.id == ctx.guild.owner.id
 
 class Applications(commands.Cog):
     def __init__(self, bot):
         self.bot = bot 
-        self.config = Config.get_conf(self, identifier=160805014090190130501014, force_registration=True) #e
+        self.config = Config.get_conf(self, identifier=160805014090190130501014, force_registration=True)
 
         default_guild = {
             "questions" : [],
@@ -32,8 +35,7 @@ class Applications(commands.Cog):
 
         if role.startswith("<@&") and role.endswith(">"):
             role = role[3:-1]
-        
-
+            
         newrole = discord.utils.get(guild.roles, name=role)
 
         if newrole is None:
@@ -51,7 +53,6 @@ class Applications(commands.Cog):
         return None
     
 
-    
     @commands.group(name="appset", aliases=["application", "applicationset"])
     @commands.guild_only()
     async def appset(self, ctx):
@@ -99,6 +100,7 @@ class Applications(commands.Cog):
                 
     @appset.command(name="acceptrole", aliases=["role"])
     @commands.guild_only()
+    @commands.check(is_guild_owner)
     async def acceptrole(self, ctx, role: Optional[discord.Role] = None):
         """Sets the role that can accept members"""
         if ctx.author.id != ctx.guild.owner.id:
@@ -112,7 +114,7 @@ class Applications(commands.Cog):
     
     @appset.command(name="reset")
     @commands.guild_only()
-    @commands.admin_or_permissions(administrator=True)
+    @commands.check(is_guild_owner)
     async def appset_reset(self, ctx):
         """Resets everything for this server (applications)"""
         try:
@@ -240,7 +242,7 @@ class Applications(commands.Cog):
         await ctx.send(f"{ctx.author.mention} your custom questions", embed=e)
 
     @commands.command(name="apply")
-    @commands.cooldown(500, 1, BucketType.member)
+    @commands.cooldown(600, 1, BucketType.member)
     @commands.guild_only()
     async def apply(self, ctx):
         """Apply in your server"""
@@ -386,6 +388,7 @@ class Applications(commands.Cog):
         await ctx.send("Done.")
 
     @commands.command(name="deny")
+    @commands.guild_only()
     async def deny(self, ctx, member: Optional[discord.Member] = None):
         """Deny a member for a role"""
         acceptrole = await self.config.guild(ctx.guild).acceptrole()
@@ -431,6 +434,7 @@ class Applications(commands.Cog):
 
     
     @commands.command(name="fetchapp", aliases=["getapp", "review"])
+    @commands.guild_only()
     async def fetchapp(self, ctx, applicant: Optional[discord.Member] = None):
         acceptrole = await self.config.guild(ctx.guild).acceptrole()
 
