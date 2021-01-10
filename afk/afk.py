@@ -23,6 +23,7 @@ class Afk(commands.Cog):
         self.config.register_member(**default_member)
     
     @commands.group(name="afk")
+    @commands.guild_only()
     async def afk(self, ctx):
         """A group for settings custom responses when being pinged."""
         pass #just realized the bot sends help automatically if there isn't a subcmd invoked.
