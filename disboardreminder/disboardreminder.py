@@ -490,7 +490,10 @@ class DisboardReminder(commands.Cog):
         if (not message.author.id == 302050872383242240) and message.embeds:
             return
         
-        embeds = message.embeds[0]
+        try:
+            embeds = message.embeds[0]
+        except IndexError:
+            return
 
         if "Bump done" in embeds.description:
             last_bump = data["nextbump"]
