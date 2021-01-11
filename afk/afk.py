@@ -78,8 +78,8 @@ class Afk(commands.Cog):
             await ctx.send(f"I will no longer remove your afk status on message. You will have to manually run {ctx.prefix}afk off to turn this off.")
     
     
-    @commands.Cog.listener("on_message")
-    async def on_message(self, message):
+    @commands.Cog.listener("on_message_without_command")
+    async def on_message_without_command(self, message):
         if not message.guild:
             return 
         
