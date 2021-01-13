@@ -383,7 +383,6 @@ class DisboardReminder(commands.Cog):
                     await self.send_bumpmsg(guild)
                 else:
                     coros.append(self.start_timer(guild, timer))
-        await asyncio.gather(*coros)
         
         try:
             coros = []
@@ -404,11 +403,12 @@ class DisboardReminder(commands.Cog):
                     now = datetime.utcnow().timestamp() + 604800
                     await self.config.guild(guild).nextweeklyreset.set(now)
                     coros.append(self.weekly_timer(guild, now))
-            await asyncio.gather(*coros)
         
         except Exception as e:
             channel = self.bot.get_channel(779170774934093844)
             await channel.send(e)
+        
+        await asyncio.gather(*coros)
     
     async def send_bumpmsg(self, guild: discord.Guild):
         data = await self.config.guild(guild).all()
@@ -518,6 +518,11 @@ class DisboardReminder(commands.Cog):
 
             if data["nextweeklyreset"] is None:
                 reset = datetime.utcnow().timestamp() + 604800
+                await self.config.guild(message.guild).nextweeklyreset.set(reset)
+                await self.weekly_timer(message.guild, reset)
+
+            elif data["nextweeklyreset"] - datetime.utcnow().timestamp() <= 0:
+                reset = datetime.utcnow().timestamp() + 86400 
                 await self.config.guild(message.guild).nextweeklyreset.set(reset)
                 await self.weekly_timer(message.guild, reset)
                 
