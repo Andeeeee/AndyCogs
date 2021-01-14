@@ -510,6 +510,14 @@ class DisboardReminder(commands.Cog):
             
             await channel.send(ty.replace("{member}", mention).replace("{guild}", message.guild.name).replace("{guild.id}", str(message.guild.id)))
 
+            member = message.guild.get_member(memberid)
+            bumps = await self.config.member(member).bumps()
+            weekly_bumps = await self.config.member(member).weeklybumps()
+            bumps += 1
+            weekly_bumps += 1
+            await self.config.member(member).bumps.set(bumps)
+            await self.config.member(member).weeklybumps.set(weekly_bumps)
+            await self.start_timer(message.guild, next_bump)
     
             if lock:
                 overwrites = message.channel.overwrites_for(message.guild.default_role)
@@ -526,14 +534,6 @@ class DisboardReminder(commands.Cog):
                 await self.config.guild(message.guild).nextweeklyreset.set(reset)
                 await self.weekly_timer(message.guild, reset)
                 
-            member = message.guild.get_member(memberid)
-            bumps = await self.config.member(member).bumps()
-            weekly_bumps = await self.config.member(member).weeklybumps()
-            bumps += 1
-            weekly_bumps += 1
-            await self.config.member(member).bumps.set(bumps)
-            await self.config.member(member).weeklybumps.set(weekly_bumps)
-            await self.start_timer(message.guild, next_bump)
  
         else:
             if clean and message.channel.permissions_for(message.guild.me).manage_messages and message.channel.id == channel.id:
