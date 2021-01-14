@@ -509,15 +509,6 @@ class DisboardReminder(commands.Cog):
                 memberid = int(mention[2:-1])
             
             await channel.send(ty.replace("{member}", mention).replace("{guild}", message.guild.name).replace("{guild.id}", str(message.guild.id)))
-
-            member = message.guild.get_member(memberid)
-            bumps = await self.config.member(member).bumps()
-            weekly_bumps = await self.config.member(member).weeklybumps()
-            bumps += 1
-            weekly_bumps += 1
-            await self.config.member(member).bumps.set(bumps)
-            await self.config.member(member).weeklybumps.set(weekly_bumps)
-            await self.start_timer(message.guild, next_bump)
     
             if lock:
                 overwrites = message.channel.overwrites_for(message.guild.default_role)
@@ -528,11 +519,16 @@ class DisboardReminder(commands.Cog):
                 reset = datetime.utcnow().timestamp() + 604800
                 await self.config.guild(message.guild).nextweeklyreset.set(reset)
                 await self.weekly_timer(message.guild, reset)
+            
+            member = message.guild.get_member(memberid)
+            bumps = await self.config.member(member).bumps()
+            weekly_bumps = await self.config.member(member).weeklybumps()
+            bumps += 1
+            weekly_bumps += 1
+            await self.config.member(member).bumps.set(bumps)
+            await self.config.member(member).weeklybumps.set(weekly_bumps)
+            await self.start_timer(message.guild, next_bump)
 
-            elif data["nextweeklyreset"] - datetime.utcnow().timestamp() <= 0:
-                reset = datetime.utcnow().timestamp() + 86400 
-                await self.config.guild(message.guild).nextweeklyreset.set(reset)
-                await self.weekly_timer(message.guild, reset)
                 
  
         else:
