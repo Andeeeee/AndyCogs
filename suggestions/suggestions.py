@@ -165,7 +165,7 @@ class Suggestions(commands.Cog):
             author_url = ctx.author.avatar_url
             footer = f"ID: {ctx.author.id}"
         
-        e = discord.Embed(title=f"Suggetion #{total}", color=discord.Color.green(), description=content)
+        e = discord.Embed(title=f"Suggestion #{total}", color=discord.Color.green(), description=content)
         e.set_author(name=author, url=author_url)
         e.set_footer(text=footer)
 
@@ -279,7 +279,10 @@ class Suggestions(commands.Cog):
 
         dm = await self.config.guild(ctx.guild).dm()
         if dm:
-            await ctx.author.send("Your suggestion was denied.", embed=e)
+            author = ctx.guild.get_member(author)
+            if not author:
+                return 
+            await author.send("Your suggestion was denied.", embed=e)
         
         
 
