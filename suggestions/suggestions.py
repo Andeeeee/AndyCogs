@@ -285,13 +285,13 @@ class Suggestions(commands.Cog):
 
         dm = await self.config.guild(ctx.guild).dm()
 
-        await ctx.send("Approved this sugegstion.")
+        await ctx.send("Rejected this sugegstion.")
         
         if dm:
             author = ctx.guild.get_member(author)
             if not author:
                 return 
-            await author.send("Your suggestion was denied.", embed=e)
+            await author.send("Your suggestion was rejected.", embed=e)
         
         
 
