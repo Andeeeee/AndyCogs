@@ -228,6 +228,9 @@ class Suggestions(commands.Cog):
 
         dm = await self.config.guild(ctx.guild).dm()
         if dm:
+            author = ctx.guild.get_member(author)
+            if not author:
+                return 
             await ctx.author.send("Your suggestion was approved!", embed=e)
         
     @commands.command(name="reject")
