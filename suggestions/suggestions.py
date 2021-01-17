@@ -231,7 +231,7 @@ class Suggestions(commands.Cog):
             author = ctx.guild.get_member(author)
             if not author:
                 return 
-            await ctx.author.send("Your suggestion was approved!", embed=e)
+            await author.send("Your suggestion was approved!", embed=e)
         
     @commands.command(name="reject")
     @commands.guild_only()
