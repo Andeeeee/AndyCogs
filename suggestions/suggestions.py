@@ -227,11 +227,14 @@ class Suggestions(commands.Cog):
                 await newchannel.send(embed=e)
 
         dm = await self.config.guild(ctx.guild).dm()
+        await ctx.send("Approved this suggestion.")
         if dm:
             author = ctx.guild.get_member(author)
             if not author:
                 return 
             await author.send("Your suggestion was approved!", embed=e)
+        
+
         
     @commands.command(name="reject")
     @commands.guild_only()
@@ -281,6 +284,9 @@ class Suggestions(commands.Cog):
                 await newchannel.send(embed=e)
 
         dm = await self.config.guild(ctx.guild).dm()
+
+        await ctx.send("Approved this sugegstion.")
+        
         if dm:
             author = ctx.guild.get_member(author)
             if not author:
