@@ -375,7 +375,7 @@ class Giveaways(commands.Cog):
         self,
         ctx,
         time: str,
-        winners: Optional[int] = 1,
+        winners: str = "1",
         role: Optional[FuzzyRole] = None,
         *,
         title="Giveaway!",
@@ -391,14 +391,20 @@ class Giveaways(commands.Cog):
         --ping: Specify True or False after this flag, if a pingrole for your server is set, it will ping that role.
 
         Flags need to be seperated from the normal arguments with `|`
+        Specify `none` to the requirement to remove fuzzyrole converters and not have a role requirement
         
         Example:
-        `.g start 10m 1 @Owners lots of yummy coins | --ping True --msg I-will-eat-these-coins --donor @Andee#8552 --amt 50000 --note COINS`
-        
+        `.g start 10m 1 @Owners lots of yummy coins | --ping True --msg I-will-eat-these-coins --donor @Andee#8552 --amt 50000 --note COINS_ARE_YUMMY`
+        `.g start 10m 1w none coffee`
         """
         title = title.split("|")
         title = title[0]
         flags = ctx.message.content.split("|")
+        winners = winners.rstrip("w")
+
+        if not str(winners).isdigit():
+            return await ctx.send(f"I could not get an amount of winners from {winners}")
+        winners = int(winners)
 
         if len(flags) == 1:
             flags = {
@@ -411,6 +417,7 @@ class Giveaways(commands.Cog):
 
         else:
             parser = argparse.ArgumentParser(description="argparse")
+
             parser.add_argument("--ping", nargs="?", type=bool, default=False,
                                 help="Toggles whether to pong the pingrole or not")
             parser.add_argument("--msg", nargs='?', type=str, default=None,
@@ -437,7 +444,7 @@ class Giveaways(commands.Cog):
                     pass
                     
             except BaseException as e:
-                await ctx.send("I encountered an error while parsing flags, please check to make sure the types are correct")
+                return await ctx.send("I encountered an error while parsing flags, please check to make sure the types are correct")
 
         guild = ctx.guild
         data = await self.config.guild(guild).all()
