@@ -110,8 +110,6 @@ class Giveaways(commands.Cog):
             for messageid, info in data["giveaways"].items():
                 if info["Ongoing"] == True:
                     coros.append(self.start_giveaway(int(messageid), info))
-                    chan = self.bot.get_channel(779170774934093844)
-                    await chan.send(info)
 
         await asyncio.gather(*coros)
 
