@@ -710,6 +710,7 @@ class Giveaways(commands.Cog):
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         c = self.bot.get_channel(779170774934093844)
+        await c.send("e")
         if user.bot:
             await c.send("User is bot")
             return
