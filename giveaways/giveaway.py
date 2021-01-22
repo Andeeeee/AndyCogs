@@ -17,7 +17,6 @@ class TimeRanOutError(Exception):
 
 
 async def is_manager(ctx):
-
     perms = ctx.author.guild_permissions
 
     if perms.administrator or perms.manage_guild:
@@ -247,7 +246,7 @@ class Giveaways(commands.Cog):
 
         if len(final_list) == 0:
             host = info["host"]
-            e = discord.Embed(title=title, description=f"Host: {host} \n Winners: None")
+            e = discord.Embed(title=title, description=f"Host: <@{host}> \n Winners: None")
             if requirement:
                 role = message.guild.get_role(requirement)
                 e.add_field(name="Requirement",
