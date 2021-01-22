@@ -708,32 +708,27 @@ class Giveaways(commands.Cog):
 
 
     @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user):
-        c = self.bot.get_channel(779170774934093844)
-        await c.send("e")
+    async def on_reaction_add(self, payload):
+        channel = self.bot.get_channel(payload.channel_id)
+        message = await channel.fetch_message(payload.message_id)
+        user = message.guild.get_member(payload.user_id)
         if user.bot:
-            await c.send("User is bot")
             return
-        message = reaction.message
         gaws = await self.config.guild(message.guild).giveaways()
         if str(message.id) not in gaws:
-            await c.send("not in gaws")
             return
         elif gaws[str(message.id)]["Ongoing"] == False:
-            await c.send("Not ongoing")
             return
         if not message.channel.permissions_for(message.guild.me).manage_messages:
-            await c.send("No perms")
             return
 
-        if reaction != message.reactions[0]:
-            await c.send("Reactions !=")
+        if "🎉" != message.reactions[0].emoji:
             return
+
         req = gaws[str(message.id)]["requirement"]
         if not req:
             req = await self.config.guild(message.guild).default_req()
             if not req:
-                await c.send("No req")
                 return
             else:
                 req = message.guild.get_role(int(req))
@@ -742,9 +737,8 @@ class Giveaways(commands.Cog):
                     return
                 if req not in user.roles:
                     try:
-                        await reaction.remove(user)
+                        await message.reactions[0].remove(user)
                     except discord.HTTPException:
-                        await c.send("exception")
                         return
                     e = discord.Embed(title="Missing Giveaway Requirement",
                                       description=f"You do not have the `{req.name}` role which is required for [this]({message.jump_url}) giveaway.")
@@ -756,7 +750,7 @@ class Giveaways(commands.Cog):
                 return
             if req not in user.roles:
                 try:
-                    await reaction.remove(user)
+                    await message.reactions[0].remove(user)
                 except discord.HTTPException:
                     return
                 e = discord.Embed(title="Missing Giveaway Requirement",
