@@ -722,7 +722,7 @@ class Giveaways(commands.Cog):
         if not message.channel.permissions_for(message.guild.me).manage_messages:
             return
 
-        if "tada" != payload.emoji.name or "\U0001f389" != payload.emoji.name or "🎉" != payload.emoji.name:
+        if "tada" != payload.emoji.name or "\U0001f389" != payload.emoji.name or "🎉" != payload.emoji.name or 'PARTY POPPER' != payload.emoji.name:
             return
 
         req = gaws[str(message.id)]["requirement"]
