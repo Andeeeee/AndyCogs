@@ -722,7 +722,7 @@ class Giveaways(commands.Cog):
         if not message.channel.permissions_for(message.guild.me).manage_messages:
             return
 
-        if "🎉" != message.reactions[0].emoji:
+        if "🎉" != payload.emoji:
             return
 
         req = gaws[str(message.id)]["requirement"]
