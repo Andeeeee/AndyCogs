@@ -33,7 +33,7 @@ async def is_manager(ctx):
     if not role:
         await cog.config.guild(ctx.guild).manager.clear()
         return
-    if role not in ctx.author.roless:
+    if role not in ctx.author.roles:
         return False
     return True
 
