@@ -23,7 +23,7 @@ async def is_manager(ctx):
     if perms.administrator or perms.manage_guild:
         return True
 
-    cog = await ctx.bot.get_cog("Giveaways")
+    cog = ctx.bot.get_cog("Giveaways")
 
     role = await cog.config.guild(ctx.guild).manager()
 
@@ -347,7 +347,8 @@ class Giveaways(commands.Cog):
     async def defaultrequirement(self, ctx, role: Optional[discord.Role] = None):
         """The default requirement for giveaways"""
         if not role:
-            return await ctx.send("This isn't a role")
+            await self.config.guild(ctx.guild).default_req.clear()
+            return await ctx.send("I will no longer have default requirements")
 
         await self.config.guild(ctx.guild).default_req.set(role.id)
 
