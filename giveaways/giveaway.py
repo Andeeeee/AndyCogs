@@ -286,11 +286,19 @@ class Giveaways(commands.Cog):
                 if not host:
                     pass 
                 else:
+                    e = discord.Embed(
+                        title=f"Your giveaway has ended",
+                        description=f"Your giveaway for {title} in {message.guild.name} has ended. The winners were {winners}\n{message.jump_url}"
+                    )
                     await host.send(f"Your giveaway for {title} has ended. The winners were {winners}. \n {message.jump_url}")
             if dmwin:
                 for mention in final_list:
                     mention = message.guild.get_member(int(mention.lstrip("<@!").lstrip("<@").rstrip(">")))
-                    await mention.send(f"You are one of the winners for {title}. \n{message.jump_url}")
+                    e = discord.Embed(
+                        title=f"You won a giveaway!",
+                        description=f"You won the giveaway for {title} in {message.guild.name}.\n{message.jump_url}"
+                    )
+                    await mention.send(embed=e)
 
     def cog_unload(self):
         self.giveaway_task.cancel()
