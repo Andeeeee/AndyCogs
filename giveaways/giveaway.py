@@ -262,11 +262,10 @@ class Giveaways(commands.Cog):
         else:
             winners = ", ".join(final_list)
             host = info["host"]
-            host = f"<@{host}>"
 
             e = discord.Embed(
                 title=title,
-                description=f"Winner(s): {winners}\nHost: {host}",
+                description=f"Winner(s): {winners}\nHost: <@{host}>",
             )
 
             if requirement:
