@@ -15,7 +15,7 @@ class Highlight(commands.Cog):
 
         default_member = {
             "highlights": [],
-            "afk_time": 5, #minutesa
+            "afk_time": 600, 
             "ignored": [],
             "last_message": None,
         }
@@ -28,6 +28,7 @@ class Highlight(commands.Cog):
             time = msg.created_at.strftime("%H:%M:%S")
             l.append(f"**[{time}] {msg.author.name}:** {msg.content[:200]}")
         e = discord.Embed(title=f"**{hl}**", description='\n'.join(l[::-1]), color=discord.Color.green())
+        e.add_field(name="Source", value="Click [here](m.jump_url)")
         return e
     
     @commands.group(name="highlight", aliases=["hl", "highlights"])
@@ -147,7 +148,7 @@ class Highlight(commands.Cog):
             await ctx.send(f"I will only highlight messages if you have been afk for longer than {time} minutes.")
 
     @commands.Cog.listener()
-    async def on_message_without_command(self, message):
+    async def on_message(self, message):
         if message.guild is None:
             return
         if message.author.bot:
@@ -163,8 +164,9 @@ class Highlight(commands.Cog):
             if message.channel.id in ignored:
                 continue
             last_seen = await self.config.member(user).last_message() or 1
+            last_seen = datetime.fromtimestamp(last_seen)
             afk_time = await self.config.member(user).afk_time()
-            if (datetime.utcnow().timestamp() - last_seen) < afk_time:
+            if (datetime.utcnow() - last_seen).total_seconds() < afk_time:
                 continue
             if message.author.id == user.id:
                 continue
