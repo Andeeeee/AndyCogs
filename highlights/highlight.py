@@ -28,7 +28,7 @@ class Highlight(commands.Cog):
             time = msg.created_at.strftime("%H:%M:%S")
             l.append(f"**[{time}] {msg.author.name}:** {msg.content[:200]}")
         e = discord.Embed(title=f"**{hl}**", description='\n'.join(l[::-1]), color=discord.Color.green())
-        e.add_field(name="Source", value="Click [here](m.jump_url)")
+        e.add_field(name="Source", value=f"[Click here]({m.jump_url})")
         return e
     
     @commands.group(name="highlight", aliases=["hl", "highlights"])
