@@ -51,7 +51,9 @@ class Giveaways(commands.Cog):
             "pingrole": None,
             "delete": True,
             "default_req": None,
-            "giveaways": {}
+            "giveaways": {},
+            "dmwin": True,
+            "dmhost": True
         }
 
         default_member = {
@@ -278,6 +280,19 @@ class Giveaways(commands.Cog):
             await message.edit(content="Giveaway Ended", embed=e)
             await message.channel.send(f"The winners for the **{title}** giveaway are \n{winners}\n{message.jump_url}")
 
+            dmhost = await self.config.guild(message.guild).dmhost()
+            dmwin = await self.config.guild(message.guild).dmwin()
+            if dmhost:
+                host = message.guild.get_member(int(host))
+                if not host:
+                    pass 
+                else:
+                    await host.send(f"Your giveaway for {title} has ended. The winners were {winners}. \n {message.jump_url}")
+            if dmwin:
+                for mention in final_list:
+                    mention = message.guild.get_member(int(mention.lstrip("<@!").lstrip("<@").rstrip(">")))
+                    await mention.send(f"You are one of the winners for {title}. \n{message.jump_url}")
+
     def cog_unload(self):
         self.giveaway_task.cancel()
 
@@ -366,6 +381,24 @@ class Giveaways(commands.Cog):
         else:
             await self.config.guild(ctx.guild).delete.set(True)
             await ctx.send("I will now delete invocation messages when creating giveaways")
+    
+    @giveawayset.command(name="dmhost")
+    async def dmhost(self, ctx, dmhost: Optional[bool] = True):
+        if not dmhost:
+            await self.config.guild(ctx.guild).dmhost.set(False)
+            await ctx.send("I will no longer dm hosts")
+        else:
+            await self.config.guild(ctx.guild).dmhost.set(True)
+            await ctx.send("I will now dm hosts")
+    
+    @giveawayset.command(name="dmwin")
+    async def dmwin(self, ctx, dmwin: Optional[bool] = True):
+        if not dmwin:
+            await self.config.guild(ctx.guild).dmwin.set(False)
+            await ctx.send("I will no longer dm winners")
+        else:
+            await self.config.guild(ctx.guild).dmwin.set(True)
+            await ctx.send("I will now dm winners")
 
 #-------------------------------------giveaways---------------------------------
     @commands.group(name="giveaway", aliases=["g"])
