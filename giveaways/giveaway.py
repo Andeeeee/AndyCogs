@@ -296,7 +296,7 @@ class Giveaways(commands.Cog):
                     mention = message.guild.get_member(int(mention.lstrip("<@!").lstrip("<@").rstrip(">")))
                     e = discord.Embed(
                         title=f"You won a giveaway!",
-                        description=f"You won the giveaway for {title} in {message.guild.name}.\n[Click here for the original message]({message.jump_url})]"
+                        description=f"You won the giveaway for {title} in {message.guild.name}.\n[Click here for the original message]({message.jump_url})"
                     )
                     await mention.send(embed=e)
 
