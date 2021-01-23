@@ -334,6 +334,7 @@ class Giveaways(commands.Cog):
         await ctx.send(f"**{role.name}** can now create giveaways, end them, and reroll them")
 
     @giveawayset.command(name="pingrole")
+    @commands.admin_or_permissions(administrator=True)
     async def cmd_pingrole(self, ctx, role: Optional[discord.Role] = None):
         """Set the role to ping if a ping is used"""
         if not role:
@@ -344,6 +345,7 @@ class Giveaways(commands.Cog):
         await ctx.send(f"**{role.name}** will now be pinged if a ping is specified")
 
     @giveawayset.command(name="defaultrequirement", aliases=["requirement", "defaultreq"])
+    @commands.admin_or_permissions(administrator=True)
     async def defaultrequirement(self, ctx, role: Optional[discord.Role] = None):
         """The default requirement for giveaways"""
         if not role:
@@ -355,6 +357,7 @@ class Giveaways(commands.Cog):
         await ctx.send(f"The default role requirement is now **{role.name}**")
 
     @giveawayset.command(name="delete")
+    @commands.admin_or_permissions(administrator=True)
     async def cmd_delete(self, ctx, delete: Optional[bool] = True):
         """Toggle whether to delete the giveaway creation message"""
         if not delete:
