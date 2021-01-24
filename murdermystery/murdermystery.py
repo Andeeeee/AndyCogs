@@ -20,8 +20,8 @@ class MurderMystery(commands.Cog):
             "rounds": {},
             "maxplayers": 69, 
             "waittime": 90,
-            "roundtime": 20,
-            "discusstime"
+            "roundtime": 60,
+            "discusstime": 20,
             "Session": {"Players": [], "Active": False, "detective": None, "murderer": None, "killed": []},
         }
 
@@ -99,12 +99,6 @@ class MurderMystery(commands.Cog):
         vote [userid] - userid is the ID of the user you choose to vote. You can discuss with the group becuase it has a DM check. If the vote is unanimous, you win.
         kill [userid] - Murderer only, type this in DMs and it will kill the user when everyone makes their move
         detect [userid] - kills someone, if its the murderer, you win, if you guess wrong, you wait another turn before guessing. (You can still vote).
-
-        Games End Scenarios:
-        The detective finds the murderer
-        The murderer kills everyone
-        There are less than or equal to 4 people left (if the murderer or detective kills someone or if the group votes the wrong person.)
-        The murderer kills himself 
         """
         settings = await self.config.guild(ctx.guild).all()
         if await self.game_check(ctx, settings):
