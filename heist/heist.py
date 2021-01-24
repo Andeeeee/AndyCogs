@@ -76,7 +76,7 @@ class Heist(commands.Cog):
         four_minutes: Optional[bool] = False,
         role: Optional[discord.Role] = None,
         *,
-        flags,
+        flags = "",
     ):
         """Starts a heist, when dankmemer sends the heist message, it will unlock the channel
         for a role, or for everyone, if four_minutes is True, it will lock in four minutes.
