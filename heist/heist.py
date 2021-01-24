@@ -164,7 +164,7 @@ class Heist(commands.Cog):
         else:
             heist_message = f"Channel unlocked for `{role.name}`! Locking in {formatted_time}"
 
-        if args["time"] and firstrole:
+        if args["time"] and args["firstrole"]:
             overwrites = ctx.channel.overwrites_for(firstrole)
             overwrites.send_messages = True
             try:
@@ -187,7 +187,7 @@ class Heist(commands.Cog):
 
         await asyncio.sleep(time)
 
-        if args["time"] and firstrole:
+        if args["time"] and args["firstrole"]:
             overwrites = ctx.channel.overwrites_for(firstrole)
             overwrites.send_messages = False
             try:
@@ -206,4 +206,4 @@ class Heist(commands.Cog):
         except (discord.errors.Forbidden, discord.HTTPException):
                 return await ctx.send("I do not have permissions to do this or an internal server error occured. Try again.")      
 
-        await channel.send("Times Up. Channel Locked.")       
+        await ctx.channel.send("Times Up. Channel Locked.")       
