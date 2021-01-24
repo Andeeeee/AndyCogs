@@ -4,31 +4,31 @@ appset
 
 Settings for your servers applications
 
-------------------
+^^^^^^^^^^^^^^
 channel [discord.TextChannel]
-------------------
+^^^^^^^^^^^^^^
 
 Set the channel applications go to. 
 Leave blank to clear and stop applications.
 
-------------------
+^^^^^^^^^^^^^^
 resultchannel [discord.TextChannel]
-------------------
+^^^^^^^^^^^^^^
 Set the channel where application results go to.
 
 [usermention] was accepted/denied by [approved/denyer] with the reason [reason]
 
-------------------
+^^^^^^^^^^^^^^
 acceptrole [discord.Role]
-------------------
+^^^^^^^^^^^^^^
 
 Server Owner can set this. The role that can accept and deny users.
 
 Discord Hierachy checks still apply.
 
---------------
+^^^^^^^^^^^^^^
 questions/custom
---------------
+^^^^^^^^^^^^^^
 
 Set the questions or custom questions for your server.
 
@@ -36,53 +36,33 @@ The bot will ask you each question, and you answer it with the question you want
 
 Type <i> done </i> whenever you are done
 
-^^^^^^^^^^^
-Embed Block
-^^^^^^^^^^^
-
-.. autoclass:: tags.blocks.EmbedBlock
-
 ^^^^^^^^^^^^^^
-Redirect Block
+settings
 ^^^^^^^^^^^^^^
 
-.. autoclass:: tags.blocks.RedirectBlock
-
-^^^^^^^^^^^^
-Delete Block
-^^^^^^^^^^^^
-
-.. autoclass:: tags.blocks.DeleteBlock
+View server settings
 
 ^^^^^^^^^^^^^^
-React Block
+positions
 ^^^^^^^^^^^^^^
 
-.. autoclass:: tags.blocks.ReactBlock
+View the available positions
 
 ^^^^^^^^^^^^^^
-ReactU Block
+apply
 ^^^^^^^^^^^^^^
 
-.. autoclass:: tags.blocks.ReactUBlock
-
---------------
-Utility Blocks
---------------
-
-The following utility blocks extend the power of tags that interface 
-with bot commands.
-
-.. _CommandBlock:
-
-^^^^^^^^^^^^^
-Command Block
-^^^^^^^^^^^^^
-
-.. autoclass:: tags.blocks.CommandBlock
+Apply in the server
 
 ^^^^^^^^^^^^^^
-Override Block
+deny [discord.Member]
 ^^^^^^^^^^^^^^
 
-.. autoclass:: tags.blocks.OverrideBlock
+Deny a user for an application. The bot will ask you for a reason. You can't deny users if they haven't applied.
+
+^^^^^^^^^^^^^^
+accept [discord.Member]
+^^^^^^^^^^^^^^
+
+Accept a user for an application. The bot will ask you which role to accept from the server positions.
+
