@@ -19,18 +19,12 @@ AndyCogs docs
     
 .. toctree::
    :maxdepth: 2
-   :caption: Applications Documentation
+   :caption: Tags Documentation
 
-   channel
-   resultchannel
-   directmessage
-   addposition
-   removeposition
-   questions
-   reset
-   acceptrole
-   positions
-   settings
+   blocks
+   tse_blocks
+   default_variables
+   parsing_blocks
 
 Indices and tables
 ==================
