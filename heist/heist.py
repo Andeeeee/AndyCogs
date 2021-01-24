@@ -136,7 +136,7 @@ class Heist(commands.Cog):
         if args["time"] >= time:
             return await ctx.send("The delay time for firstrole cannot be greater than or equal to the heist time.")
         
-        if args["time"] and firstrole:
+        if args["time"] and args["firstrole"]:
             time = time - args["time"]
         else:
             return await ctx.send("The time or the firstrole was specified without the other argument. If one is provided, both must.")
