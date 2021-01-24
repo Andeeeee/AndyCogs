@@ -1,7 +1,8 @@
-AndyCogs docs
+
+AndyCogs & Hades Documentation
 =====================================
 
-.. image:: https://media.discordapp.net/attachments/779170774934093844/802970577547165746/blobsmile.jpg
+.. image:: https://i.imgur.com/dIOX12K.png
     :target: https://github.com/AndyButAnnoying/AndyCogs
     :alt: AndyCogs
 
@@ -16,15 +17,17 @@ AndyCogs docs
 .. image:: https://img.shields.io/badge/discord-py-blue.svg
     :target: https://github.com/Rapptz/discord.py
     :alt: discord.py
-    
+
+.. image:: https://readthedocs.org/projects/andycogs/badge/?version=latest
+    :target: https://andycogs.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
 .. toctree::
    :maxdepth: 2
    :caption: Tags Documentation
 
-   blocks
-   tse_blocks
-   default_variables
-   parsing_blocks
+   applications
+   applicationcommands
 
 Indices and tables
 ==================
