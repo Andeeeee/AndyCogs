@@ -138,8 +138,6 @@ class Heist(commands.Cog):
         
         if args["time"] and args["firstrole"]:
             time = time - args["time"]
-        else:
-            return await ctx.send("The time or the firstrole was specified without the other argument. If one is provided, both must.")
         
         waittime = await self.config.guild(ctx.guild).waittime()
 
