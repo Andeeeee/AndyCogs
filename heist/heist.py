@@ -171,8 +171,6 @@ class Heist(commands.Cog):
                 await ctx.channel.set_permissions(firstrole, overwrite=overwrites)
             except (discord.errors.Forbidden, discord.HTTPException):
                 return await ctx.send("I do not have permissions to do this or an internal server error occured. Try again.")
-            
-            await ctx.channel.send(heist_message, allowed_mentions=mentions)
 
             await asyncio.sleep(args["time"])
         
@@ -184,7 +182,7 @@ class Heist(commands.Cog):
                 return await ctx.send("I do not have permissions to do this or an internal server error occured. Try again.")             
                 
         await ctx.channel.set_permissions(role, overwrite=overwrites)
-
+        await ctx.channel.send(heist_message, allowed_mentions=mentions)
         await asyncio.sleep(time)
 
         if args["time"] and args["firstrole"]:
