@@ -2,8 +2,8 @@
     "name": "Giveaways",
     "short": "Host giveaways",
     "description": "Host Giveaways for your server with features and requirements!",
-    "end_user_data_statement": "This cog will store your servers giveaways, may store a LOT if you have a lot of servers",
-    "install_msg": "Check out `[p]gset]` to set your settings",   
+    "end_user_data_statement": "This cog will store your servers giveaways",
+    "install_msg": "Check out `[p]gset]` to set your settings. If you reload this cog, it has a restart logic, sadly, reloads also trigger this, resulting in more of the tasks, so after 4 or so reloads you should restart the bot to make sure 5 giveaway messages dont flood",   
     "author": [
         "Andy"
     ],
