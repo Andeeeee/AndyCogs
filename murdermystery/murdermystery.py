@@ -81,7 +81,7 @@ class MurderMystery(commands.Cog):
         if number <= 10 or number > 600:
             return await ctx.send("Can't have a time less than 10 seconds or greater than 5 minutes")
         await self.config.guild(ctx.guild).discusstime.set(number)
-        await ctx.send(f"The round time has been set to {number}")
+        await ctx.send(f"The discuss time has been set to {number}")
 
     @commands.guild_only()
     @commands.command(name="joinmurder")
