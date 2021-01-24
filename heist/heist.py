@@ -131,7 +131,9 @@ class Heist(commands.Cog):
             
             if not firstrole:
                 return await ctx.send("`{0}` was not recognized as a role").format(args["firstrole"])
-        
+        else:
+            firstrole = None 
+
         if not role:
             role = ctx.guild.default_role 
 
@@ -145,7 +147,7 @@ class Heist(commands.Cog):
         if args["time"] >= time:
             return await ctx.send("The delay time for firstrole cannot be greater than or equal to the heist time.")
         
-        if args["time"] and args["firstrole"]:
+        if args["time"] and firstrole:
             time = time - args["time"]
         
         waittime = await self.config.guild(ctx.guild).waittime()
@@ -173,7 +175,7 @@ class Heist(commands.Cog):
         else:
             heist_message = f"Channel unlocked for `{role.name}`! Locking in {formatted_time}"
 
-        if args["time"] and args["firstrole"]:
+        if args["time"] and firstrole:
             overwrites = ctx.channel.overwrites_for(firstrole)
             overwrites.send_messages = True
             try:
@@ -194,7 +196,7 @@ class Heist(commands.Cog):
         await ctx.channel.send(heist_message, allowed_mentions=mentions)
         await asyncio.sleep(time)
 
-        if args["time"] and args["firstrole"]:
+        if args["time"] and firstrole:
             overwrites = ctx.channel.overwrites_for(firstrole)
             overwrites.send_messages = False
             try:
