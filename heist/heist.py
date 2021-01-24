@@ -75,13 +75,13 @@ class Heist(commands.Cog):
         ctx,
         four_minutes: Optional[bool] = False,
         role: Optional[discord.Role] = None,
-        *,
-        flags = "",
     ):
         """Starts a heist, when dankmemer sends the heist message, it will unlock the channel
         for a role, or for everyone, if four_minutes is True, it will lock in four minutes.
 
         Flags:
+        Flags should be seperated from the main content with | 
+
         --firstrole: Specify the role to unlock before unlocking the role specified
         --time: Specify the time the firstrole should have before the normal role unlocks
 
@@ -90,6 +90,8 @@ class Heist(commands.Cog):
         """
 
         parser = argparse.ArgumentParser(description="argparse")
+
+        flags = ctx.message.content.split("|")
  
         parser.add_argument(
             "--firstrole",
@@ -107,10 +109,17 @@ class Heist(commands.Cog):
             help="The time before the role unlocks.",
         )
         
-        try:
-            args = vars(parser.parse_args(flags))
-        except:
-            return await ctx.send("I had trouble parsing flags. Please try again")
+        if len(flags) == 1:
+            args = {
+                "firstrole": None,
+                "time": 20,
+            }
+        else:
+            try:
+                args = vars(parser.parse_args(flags.split()))
+            except:
+                return await ctx.send("I had trouble parsing flags. Please try again.")
+        
 
         if args["firstrole"]:
             firstrole = args["firstrole"].lstrip("<@&").rstrip(">")
@@ -160,7 +169,7 @@ class Heist(commands.Cog):
                 await self.config.guild(ctx.guild).pingrole.clear()
                 heist_message = f"Channel unlocked for `{role.name}`! Locking in {formatted_time}"
             else:
-                heist_message = f"{pingrole.mention}: Channel unlocked for `{role.name}`! Locking in {formatted_time} seconds"
+                heist_message = f"{pingrole.mention}: Channel unlocked for `{role.name}`! Locking in {formatted_time}"
         else:
             heist_message = f"Channel unlocked for `{role.name}`! Locking in {formatted_time}"
 
