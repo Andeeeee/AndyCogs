@@ -233,7 +233,7 @@ class Giveaways(commands.Cog):
         if reroll == -1:
             pass
         else:
-            winners == reroll
+            winners = reroll
         for i in range(winners):
             if len(winners_list) == 0:
                 continue
