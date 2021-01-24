@@ -1,1 +1,20 @@
 
+{
+    "name": "highlights",
+    "short": "highlight words",
+    "description": "Highlight words of your choice.",
+    "end_user_data_statement": "This cog will store basically nothing.",
+    "install_msg": "Run `[p]murdermystery` to set your server settings and `joinmurder` to start or join a game!",   
+    "author": [
+        "Andy"
+    ],
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "fun", "games
+    ],
+    "min_bot_version": "3.4.5",
+    "hidden": false,
+    "disabled": false,
+    "type": "COG"
+}
