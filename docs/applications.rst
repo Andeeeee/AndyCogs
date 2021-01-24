@@ -34,7 +34,7 @@ Set the questions or custom questions for your server.
 
 The bot will ask you each question, and you answer it with the question you want. Max of 20 questions.
 
-Type <i> done </i> whenever you are done
+Type done whenever you are done
 
 ^^^^^^^^^^^^^^
 settings
