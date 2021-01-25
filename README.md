@@ -30,6 +30,9 @@
 | DisboardReminder | Reminds servers to run `!d bump` every 2 hours after the last bump. Credits to [Phen-Cogs](https://github.com/phenom4n4n/phen-cogs) for inspiration. |
 |Highlights | Send DMs when a highlighted word is triggered |
 | Suggestions | Suggest things for your server |
+| MurderMystery | A fun murder mystery game with some among-us themes mixed |
+| Giveaways | Create giveaways for your server with flags, storage, and other options. |
+| Heist | DankMemer (discord bot) heists made easier with pingroles, auto unlock/lock, four_minutes, and flags like firstrole and time. |
 
 
 # Support and Issues
