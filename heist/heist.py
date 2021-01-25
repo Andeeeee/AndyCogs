@@ -162,9 +162,7 @@ class Heist(commands.Cog):
             message = await self.bot.wait_for("message", check=check, timeout=waittime)
         except asyncio.TimeoutError:
             return await ctx.send("Uh oh. No heist found. Try again later")
-        
-        await ctx.send(firstrole)
-        await ctx.send(args["time"])
+
         
         mentions = discord.AllowedMentions(roles=True, everyone=False)
         pingrole = await self.config.guild(ctx.guild).pingrole()
