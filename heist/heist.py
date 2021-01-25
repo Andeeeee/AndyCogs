@@ -116,7 +116,7 @@ class Heist(commands.Cog):
             }
         else:
             try:
-                args = vars(parser.parse_args(flags.split()))
+                args = vars(parser.parse_args(flags[1].split()))
             except:
                 return await ctx.send("I had trouble parsing flags. Please try again.")
         
