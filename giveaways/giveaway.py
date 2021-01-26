@@ -239,7 +239,7 @@ class Giveaways(commands.Cog):
                 continue
             count = 0
             win = choice(winners_list)
-            while win in winners_list:
+            while win in final_list:
                 win = choice(winners_list)
                 count += 1
                 if count >= 6:
@@ -634,7 +634,7 @@ class Giveaways(commands.Cog):
         
         formatted_notes = "\n\n".join(formatted_notes)
 
-        if len(formatted_notes) == 0:
+        if len(formatted_notes) <= 2048:
             embeds = []
             pages = list(pagify(formatted_notes))
             for i, page in enumerate(pages, start=1):
