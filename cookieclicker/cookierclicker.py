@@ -33,10 +33,10 @@ class CookieClicker(commands.Cog):
         }
 
         default_global = {
-            "autoclicker": 20,
-            "grandma": 50,
-            "megaclicker": 250,
-            "superclicker": 1000,
+            "autoclicker": 50,
+            "grandma": 200,
+            "megaclicker": 1000,
+            "superclicker": 5000,
         }
 
         default_channel = {
@@ -56,9 +56,9 @@ class CookieClicker(commands.Cog):
     
     async def addcookies(self, user: int, amount: int):
         cookies = await self.config.user_from_id(user).cookies()
-        cookies += amount
+        cookies += amount 
         await self.config.user_from_id(user).cookies.set(cookies)
-    
+
     async def autocookie(self):
         await self.bot.wait_until_ready()
         self.autotask.start()
