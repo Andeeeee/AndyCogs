@@ -222,7 +222,7 @@ class MurderMystery(commands.Cog):
                         await ctx.send("You guessed the wrong person, you need to wait until next turn to keep guessing")
                         await self.config.member(ctx.author).wrong.set(False)
                         continue
-                    if user.id != settings["murderer"]:
+                    if user.id != settings["detective"]:
                         await user.send("You can't do this. You just wasted a turn")
                         continue 
                     response = response.split()
