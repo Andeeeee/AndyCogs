@@ -34,9 +34,10 @@ class CookieClicker(commands.Cog):
 
         default_global = {
             "autoclicker": 50,
-            "grandma": 200,
-            "megaclicker": 1000,
-            "superclicker": 5000,
+            "grandma": 500,
+            "megaclicker": 2000,
+            "superclicker": 6000,
+            "epicclicker": 10000,
         }
 
         default_channel = {
@@ -48,6 +49,7 @@ class CookieClicker(commands.Cog):
             "grandma",
             "megaclicker",
             "superclicker",
+            "epicclicker"
         ]
 
         self.config.register_user(**default_user)
@@ -100,7 +102,7 @@ class CookieClicker(commands.Cog):
     async def cc_buy(self, ctx, item: Optional[FuzzyItem] = None, amount: Optional[StrippedInteger] = 1):
         """Buy things from the cookieclicker shop!"""
         if not item:
-            return await ctx.send(f"You need to specify something to buy {item}")
+            return await ctx.send(f"You need to specify something to buy")
         
         prices = await self.config.all()
         price = prices[item]

@@ -21,6 +21,7 @@ class FuzzyItem(Converter):
             "grandma",
             "megaclicker",
             "superclicker",
+            "epicclicker"
         ]
 
         result = []
