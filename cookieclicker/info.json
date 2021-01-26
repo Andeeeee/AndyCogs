@@ -1,0 +1,19 @@
+{
+    "name": "cookieclicker",
+    "short": "fun games of cookieclicker",
+    "description": "set custom responses when idiots ping you and more!",
+    "end_user_data_statement": "This cog may result in heavy reaction spam and a lot of user data. install at your own risk",
+    "install_msg": "Thanks for installing! Get started with `[p]cookieclicker start`",   
+    "author": [
+        "Andy"
+    ],
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "fun","games", "game"
+    ],
+    "min_bot_version": "3.4.6.dev1",
+    "hidden": false,
+    "disabled": false,
+    "type": "COG"
+}
