@@ -634,7 +634,7 @@ class Giveaways(commands.Cog):
         
         formatted_notes = "\n\n".join(formatted_notes)
 
-        if len(formatted_notes) <= 2048:
+        if len(formatted_notes) >= 2048:
             embeds = []
             pages = list(pagify(formatted_notes))
             for i, page in enumerate(pages, start=1):
