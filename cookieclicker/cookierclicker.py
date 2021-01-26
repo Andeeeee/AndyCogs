@@ -29,15 +29,20 @@ class CookieClicker(commands.Cog):
 
         default_user = {
             "cookies": 0,
-            "items": {}
+            "items": {},
         }
 
         default_global = {
-            "autoclicker": 50,
+            "cursor": 50,
             "grandma": 500,
             "megaclicker": 2000,
             "superclicker": 6000,
             "epicclicker": 10000,
+            "factory": 50000,
+            "ultraclicker": 125000,
+            "godclicker": 500000,
+            "spamclicker": 1000000,
+            "holyclicker": 1500000,
         }
 
         default_channel = {
@@ -45,11 +50,17 @@ class CookieClicker(commands.Cog):
         }
         
         self.items = [
-            "autoclicker",
+            "cursor",
             "grandma",
             "megaclicker",
             "superclicker",
-            "epicclicker"
+            "epicclicker",
+            "farm"
+            "factory",
+            "ultraclicker",
+            "godclickers",
+            "spamclicker",
+            "holyclicker"
         ]
 
         self.config.register_user(**default_user)
@@ -203,15 +214,29 @@ class CookieClicker(commands.Cog):
         for userid, info in (await self.config.all_users()).items():
             userid = int(userid)
             data = info["items"]
-            if data.get("autoclicker", 0) > 0:
-                await self.addcookies(userid, (60 * data["autoclicker"]))
+            if data.get("cursor", 0) > 0:
+                await self.addcookies(userid, (30 * data["cursor"]))
             if data.get("grandma", 0) > 0:
-                await self.addcookies(userid, (140 * data["grandma"]))
+                await self.addcookies(userid, (70 * data["grandma"]))
             if data.get("megaclicker", 0) > 0:
-                await self.addcookies(userid, (300 * data["megaclicker"]))
+                await self.addcookies(userid, (150 * data["megaclicker"]))
             if data.get("superclicker", 0) > 0:
-                await self.addcookies(userid, (700 * data["superclicker"]))
-    
+                await self.addcookies(userid, (350 * data["superclicker"]))
+            if data.get("epicclicker", 0) > 0:
+                await self.addcookies(userid, (750 * data["epicclicker"]))
+            if data.get("farm", 0) > 0:
+                await self.addcookies(userid, (1500 * data["farm"]))
+            if data.get("factory", 0) > 0:
+                await self.addcookies(userid, (3000 * data["factory"]))
+            if data.get("ultraclicker", 0) > 0:
+                await self.addcookies(userid, (5000 * data["ultraclicker"]))
+            if data.get("godclicker", 0) > 0:
+                await self.addcookies(userid, (10000 * data["godclicker"]))
+            if data.get("spamclicker", 0) > 0:
+                await self.addcookies(userid, (20000 * data["spamclicker"]))
+            if data.get("holyclicker", 0) > 0:
+                await self.addcookies(userid, (30000 * data["holyclicker"]))
+      
     async def cancel_session(self, messageid: int, channelid: int):
         sessions = await self.config.channel_from_id(channelid).sessions()
         sessions.pop(str(messageid))

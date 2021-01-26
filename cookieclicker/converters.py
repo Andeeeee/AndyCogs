@@ -17,11 +17,16 @@ class FuzzyItem(Converter):
     """
     async def convert(self, ctx: commands.Context, argument: str) -> str:
         items = [
-            "autoclicker",
+            "cursor",
             "grandma",
             "megaclicker",
             "superclicker",
-            "epicclicker"
+            "epicclicker",
+            "factory",
+            "ultraclicker",
+            "godclicker",
+            "spamclicker",
+            "holyclicker"
         ]
 
         result = []
