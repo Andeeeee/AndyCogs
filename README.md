@@ -36,7 +36,8 @@
 
 
 # Support and Issues
-If you have want to request something just join the [support server](https://discord.gg/nVcZQt7mqk) becuase I don't check PR's.
+If you have want to request something just join the [support server](https://discord.gg/nVcZQt7mqk) or make a PR here. If there is an issue, you can open an issue on this repo instead of [being dicks in #testing](https://discord.com/channels/133049272517001216/133251234164375552/803711239590903858)
 
 # Credits
 Credits to many other cog creators for ideas, snippets of code, and generally just inspiration.
+
