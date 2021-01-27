@@ -601,22 +601,23 @@ class Giveaways(commands.Cog):
     
     @giveaway.command(name="ping")
     async def g_ping(self, ctx, * , message: str = None):
+        m = discord.AllowedMentions(roles=True, everyone=False)
         await ctx.message.delete()
         pingrole = await self.config.guild(ctx.guild).pingrole()
         if not pingrole:
             try:
-                return await ctx.send(message)
+                return await ctx.send(message, allowed_mentions=m)
             except discord.HTTPException:
                 return 
         role = ctx.guild.get_role(pingrole)
         if not role:
             await self.config.guild(ctx.guild).pingrole.clear()
             try:
-                return await ctx.send(message)
+                return await ctx.send(message, allowed_mentions=m)
             except discord.HTTPException:
                 return 
         try:
-            await ctx.send(f"{role.mention} {message}")
+            await ctx.send(f"{role.mention} {message}", allowed_mentions=m)
         except discord.HTTPException:
             return 
 
