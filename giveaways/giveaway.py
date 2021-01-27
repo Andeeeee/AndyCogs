@@ -604,12 +604,21 @@ class Giveaways(commands.Cog):
         await ctx.message.delete()
         pingrole = await self.config.guild(ctx.guild).pingrole()
         if not pingrole:
-            return await ctx.send(message)
+            try:
+                return await ctx.send(message)
+            except discord.HTTPException:
+                return 
         role = ctx.guild.get_role(pingrole)
         if not role:
             await self.config.guild(ctx.guild).pingrole.clear()
-            return await ctx.send(message)
-        await ctx.send(f"{role.mention} {message}")
+            try:
+                return await ctx.send(message)
+            except discord.HTTPException:
+                return 
+        try:
+            await ctx.send(f"{role.mention} {message}")
+        except discord.HTTPException:
+            return 
 
 #-------------------------------------gprofile---------------------------------
 
