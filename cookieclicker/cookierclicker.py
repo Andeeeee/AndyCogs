@@ -7,7 +7,7 @@ from .converters import FuzzyItem
 
 class StrippedInteger(Converter):
     async def convert(self, ctx, argument: str) -> int:
-        argument = argument.replace(",", "").rstrip(".0")
+        argument = argument.replace(",", "")
 
         if not str(argument).isdigit():
             raise BadArgument(f"{argument} was not recognized as a digit")
@@ -139,7 +139,7 @@ class CookieClicker(commands.Cog):
     async def cc_sell(self, ctx, item: Optional[FuzzyItem] = None, amount: Optional[StrippedInteger] = 1):
         """Sell items for 1/3 the normal price"""
         if not item:
-            return await ctx.send(f"You need to specify something to buy {item}")
+            return await ctx.send(f"You need to specify something to sell.")
         
         prices = await self.config.all()
         price = prices[item]
@@ -281,6 +281,28 @@ class CookieClicker(commands.Cog):
         
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
+        sessions = await self.config.channel_from_id(payload.channel_id).sessions()
+        if str(payload.message_id) not in sessions:
+            return 
+        elif sessions[str(payload.message_id)]["user"] != payload.user_id:
+            return 
+            
+        guild = self.bot.get_guild(payload.guild_id)
+        if guild.get_member(payload.user_id) is None:
+            return 
+            
+        if str(payload.emoji) == "🛑":
+            await self.cancel_session(payload.message_id, payload.channel_id)
+            return 
+        elif str(payload.emoji) == "🍪":
+            await self.addcookies(payload.user_id, 1)
+            return   
+        elif str(payload.emoji) == "🏆":
+            await self.edit_cookie_message(payload.message_id, payload.channel_id, payload.user_id)
+            return 
+    
+    @commands.Cog.listener()
+    async def on_raw_reaction_remove(self, payload):
         sessions = await self.config.channel_from_id(payload.channel_id).sessions()
         if str(payload.message_id) not in sessions:
             return 
