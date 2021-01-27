@@ -76,9 +76,6 @@ class Giveaways(commands.Cog):
 
         return int(time[:-1]) * conversions[time[-1]]
 
-    async def convert_fuzzy_role(self, role: FuzzyRole):
-        return role
-
     def display_time(self, seconds: int) -> str:
         """
         Turns seconds into human readable time.
@@ -294,6 +291,8 @@ class Giveaways(commands.Cog):
             if dmwin:
                 for mention in final_list:
                     mention = message.guild.get_member(int(mention.lstrip("<@!").lstrip("<@").rstrip(">")))
+                    if not mention:
+                        continue
                     e = discord.Embed(
                         title=f"You won a giveaway!",
                         description=f"You won the giveaway for {title} in {message.guild.name}.\n[Click here for the original message]({message.jump_url})"
@@ -391,6 +390,7 @@ class Giveaways(commands.Cog):
     
     @giveawayset.command(name="dmhost")
     async def dmhost(self, ctx, dmhost: Optional[bool] = True):
+        """Toggle whether to DM the host when the giveaway ends"""
         if not dmhost:
             await self.config.guild(ctx.guild).dmhost.set(False)
             await ctx.send("I will no longer dm hosts")
@@ -400,6 +400,7 @@ class Giveaways(commands.Cog):
     
     @giveawayset.command(name="dmwin")
     async def dmwin(self, ctx, dmwin: Optional[bool] = True):
+        """Toggles whether to DM the winners of the giveaway"""
         if not dmwin:
             await self.config.guild(ctx.guild).dmwin.set(False)
             await ctx.send("I will no longer dm winners")
@@ -572,6 +573,7 @@ class Giveaways(commands.Cog):
     
     @giveaway.command(name="end")
     async def g_end(self, ctx, messageid: Optional[int] = None):
+        """End a giveaway"""
         if not messageid:
             return await ctx.send("You need to supply a valid message ID for this to work")
         gaws = await self.config.guild(ctx.guild).giveaways()
@@ -584,6 +586,7 @@ class Giveaways(commands.Cog):
     
     @giveaway.command(name="reroll")
     async def g_reroll(self, ctx, messageid: Optional[int] = None, winners: Optional[int] = 1):
+        """Reroll a giveaway"""
         if not messageid:
             return await ctx.send("You need to supply a valid message id.")
         elif winners <= 0:
@@ -595,6 +598,18 @@ class Giveaways(commands.Cog):
             return await ctx.send(f"This giveaway has not yet ended, you can end it with `{ctx.prefix}g end {messageid}`")
         else:
             await self.end_giveaway(messageid, gaws[str(messageid)], winners)
+    
+    @giveaway.command(name="ping")
+    async def g_ping(self, ctx, * , message: str = None):
+        await ctx.message.delete()
+        pingrole = await self.config.guild(ctx.guild).pingrole()
+        if not pingrole:
+            return await ctx.send(message)
+        role = ctx.guild.get_role(pingrole)
+        if not role:
+            await self.config.guild(ctx.guild).pingrole.clear()
+            return await ctx.send(message)
+        await ctx.send(f"{role.mention} {message}")
 
 #-------------------------------------gprofile---------------------------------
 
