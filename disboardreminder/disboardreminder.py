@@ -1,7 +1,8 @@
-#Idea from Phen-Cogs https://github.com/phenom4n4n/phen-cogs/blob/master/disboardreminder/disboardreminder.py
-#Restart after cog unload code taken from https://github.com/Redjumpman/Jumper-Plugins/tree/V3/raffle
-#chatchart/bumpchart logic from https://github.com/aikaterna/aikaterna-cogs/tree/v3/chatchart
+# Idea from Phen-Cogs https://github.com/phenom4n4n/phen-cogs/blob/master/disboardreminder/disboardreminder.py
+# Restart after cog unload code taken from https://github.com/Redjumpman/Jumper-Plugins/tree/V3/raffle
+# chatchart/bumpchart logic from https://github.com/aikaterna/aikaterna-cogs/tree/v3/chatchart
 
+import matplotlib.pyplot as plt
 import asyncio
 from collections import Counter
 from datetime import datetime
@@ -16,25 +17,25 @@ from typing import Optional
 
 matplotlib.use("agg")
 
-import matplotlib.pyplot as plt
 
 plt.switch_backend("agg")
 
+
 class DisboardReminder(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot 
+        self.bot = bot
         self.load_check = self.bot.loop.create_task(self.bump_restart())
-        self.config = Config.get_conf(self, identifier=160805014090190130501014, force_registration=True)
-        
+        self.config = Config.get_conf(
+            self, identifier=160805014090190130501014, force_registration=True)
 
         default_guild = {
-            "role": None, 
+            "role": None,
             "clean": False,
             "channel": None,
             "msg": "It's been 2 hours since someone bumped us on DISBOARD, could someone run !d bump here?",
             "ty": "{member} thanks for bumping our server! I'll notify you in 2 hours to bump again.",
             "nextbump": None,
-            "nextweeklyreset": None, 
+            "nextweeklyreset": None,
             "lock": False,
         }
 
@@ -45,13 +46,13 @@ class DisboardReminder(commands.Cog):
 
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
-    
+
     @commands.group(name="bumpreminder", aliases=["bprm", "disboardreminder"])
     @commands.guild_only()
     async def bumpreminder(self, ctx):
         if not ctx.invoked_subcommand:
             await ctx.send_help("bprm")
-    
+
     @bumpreminder.command(name="channel", aliases=["chan"])
     @commands.admin_or_permissions(manage_guild=True)
     async def bumpreminder_channel(self, ctx, channel: Optional[discord.TextChannel] = None):
@@ -65,7 +66,7 @@ class DisboardReminder(commands.Cog):
             else:
                 await self.config.guild(ctx.guild).channel.set(channel.id)
                 await ctx.send(f"I will now send bumpreminders in <#{channel.id}>")
-    
+
     @bumpreminder.command(name="role", aliases=["pingrole"])
     @commands.admin_or_permissions(manage_guild=True)
     async def bumpreminder_role(self, ctx, role: Optional[discord.Role] = None):
@@ -76,7 +77,7 @@ class DisboardReminder(commands.Cog):
         else:
             await self.config.guild(ctx.guild).role.set(role.id)
             await ctx.send(f"I will now pong **{role.name}** for bumpreminders.")
-    
+
     @bumpreminder.command(name="autoclean", aliases=["clean"])
     @commands.admin_or_permissions(manage_guild=True)
     async def autoclean(self, ctx, clean: Optional[bool] = None):
@@ -102,10 +103,10 @@ class DisboardReminder(commands.Cog):
         else:
             await self.config.guild(ctx.guild).lock.set(True)
             await ctx.send("I will now lock the bump channel")
-    
+
     @bumpreminder.command(name="message", aliases=["msg", "bumpmsg", "bumpmessage"])
     @commands.admin_or_permissions(manage_guild=True)
-    async def bumpreminder_message(self, ctx, * , message = None):
+    async def bumpreminder_message(self, ctx, *, message=None):
         """Changes the bump message"""
         if not message:
             await self.config.guild(ctx.guild).msg.set("It's been 2 hours since someone bumped us on DISBOARD, could someone run !d bump here?")
@@ -113,10 +114,10 @@ class DisboardReminder(commands.Cog):
         else:
             await self.config.guild(ctx.guild).msg.set(message)
             await ctx.send(f"Your message is now `{message}`")
-    
+
     @bumpreminder.command(name="tymessage", aliases=["thankyou"])
     @commands.admin_or_permissions(manage_guild=True)
-    async def tymessage(self, ctx, * , message = None):
+    async def tymessage(self, ctx, *, message=None):
         """Changes the message sent when someone bumps. Use {member} for the member who bumped, and {guildid} or {guild.id} for your server id."""
         if not message:
             await self.config.guild(ctx.guild).ty.set("{member} thanks for bumping our server! I'll notify you in 2 hours to bump again.")
@@ -124,26 +125,27 @@ class DisboardReminder(commands.Cog):
         else:
             await self.config.guild(ctx.guild).ty.set(message)
             await ctx.send(f"Your message is now `{message}`")
-        
+
     @bumpreminder.command(name="top")
     async def top(self, ctx, amt: Optional[int] = 30):
         """View the top bumpers of the server"""
         if amt < 1:
             return await ctx.send("You can't view nothing idiot.")
-        
+
         data = await self.config.all_members(ctx.guild)
-        data = [(member, memberdata["bumps"]) for member, memberdata in data.items() if ctx.guild.get_member(member) is not None and memberdata["bumps"] > 0] #for when idiots leave the server and the mentions get fucky
+        data = [(member, memberdata["bumps"]) for member, memberdata in data.items() if ctx.guild.get_member(
+            member) is not None and memberdata["bumps"] > 0]  # for when idiots leave the server and the mentions get fucky
         sorted_data = sorted(data[:amt], reverse=True, key=lambda m: m[1])
 
-        lb = [] #leaderboard
+        lb = []  # leaderboard
 
         for number, member in enumerate(sorted_data, start=1):
             lb.append(f"{number}. <@!{member[0]}> has {member[1]} bumps.")
 
         if len(lb) == 0:
             await ctx.send("It seems that this server does not have any registered bumps.")
-            return 
-        
+            return
+
         lb = "\n".join(lb)
         pages = []
         lb_pages = pagify(lb)
@@ -152,7 +154,8 @@ class DisboardReminder(commands.Cog):
         total = len(lb_pages)
 
         for number, page in enumerate(lb_pages, start=1):
-            e = discord.Embed(title="Bump Leaderboard", description=page, color=discord.Color.green())
+            e = discord.Embed(title="Bump Leaderboard",
+                              description=page, color=discord.Color.green())
             e.set_footer(text=f"{number} out of {total} pages.")
             pages.append(e)
         await menu(ctx, pages, DEFAULT_CONTROLS)
@@ -162,7 +165,8 @@ class DisboardReminder(commands.Cog):
         """Bumpreminders for weekly"""
         if not ctx.invoked_subcommand:
             data = await self.config.all_members(ctx.guild)
-            data = [(member, memberdata["weeklybumps"]) for member, memberdata in data.items() if ctx.guild.get_member(member) is not None and memberdata["weeklybumps"] > 0]
+            data = [(member, memberdata["weeklybumps"]) for member, memberdata in data.items(
+            ) if ctx.guild.get_member(member) is not None and memberdata["weeklybumps"] > 0]
             sorted_data = sorted(data, reverse=True, key=lambda m: m[1])
 
             if len(sorted_data) == 0:
@@ -175,7 +179,7 @@ class DisboardReminder(commands.Cog):
 
             if len(lb) == 0:
                 return await ctx.send("This server has no tracked weekly bumps")
-            
+
             lb = "\n".join(lb)
             pages = []
             lb_pages = pagify(lb)
@@ -184,11 +188,12 @@ class DisboardReminder(commands.Cog):
             total = len(lb_pages)
 
             for number, page in enumerate(lb_pages, start=1):
-                e = discord.Embed(title="Bump Leaderboard", description=page, color=discord.Color.green())
+                e = discord.Embed(title="Bump Leaderboard",
+                                  description=page, color=discord.Color.green())
                 e.set_footer(text=f"{number} out of {total} pages.")
                 pages.append(e)
             await menu(ctx, pages, DEFAULT_CONTROLS)
-    
+
     @weekly.command(name="chart")
     async def weekly_chart(self, ctx):
         """Basically bumpreminder chart but for weekly bumps"""
@@ -213,7 +218,7 @@ class DisboardReminder(commands.Cog):
             chart = self.create_chart(count)
         except Exception as e:
             await ctx.send(f"Uh oh, something borked, \n {e}")
-            return 
+            return
 
         await ctx.send(file=discord.File(chart, "chart.png"))
 
@@ -223,12 +228,12 @@ class DisboardReminder(commands.Cog):
         """Reset your weekly data early"""
         await ctx.send("I've reset the weekly data. It will reset again in 1 week unless ended early.")
         await self.reset_weekly(ctx.guild)
-    
+
     @bumpreminder.command(name="chart")
     async def chart(self, ctx):
         """View the bumpers in a chart, looks better"""
         """Thanky Thanky Aikaterna for the chatchart. Code can be viewed here: https://github.com/aikaterna/aikaterna-cogs/blob/v3/chatchart/chatchart.py"""
-   
+
         try:
             data = await self.config.all_members(ctx.guild)
             if not data:
@@ -250,10 +255,10 @@ class DisboardReminder(commands.Cog):
             chart = self.create_chart(count)
         except Exception as e:
             await ctx.send(f"Uh oh, something borked, \n {e}")
-            return 
+            return
 
         await ctx.send(file=discord.File(chart, "chart.png"))
-    
+
     @bumpreminder.command(name="settings", aliases=["showsettings"])
     async def bumpreminder_settings(self, ctx):
         data = await self.config.guild(ctx.guild).all()
@@ -275,7 +280,7 @@ class DisboardReminder(commands.Cog):
                 role = "Not Found"
         else:
             role = "Not Set"
-        
+
         clean = data["clean"]
         msg = data["msg"]
         msg = f"```{msg}```"
@@ -287,8 +292,8 @@ class DisboardReminder(commands.Cog):
         nextbump = data["nextbump"]
         nextreset = data["nextweeklyreset"]
 
-
-        e = discord.Embed(title=f"Bumpreminder Settings for {ctx.guild.name}", color=discord.Color.green())
+        e = discord.Embed(
+            title=f"Bumpreminder Settings for {ctx.guild.name}", color=discord.Color.green())
         e.add_field(name="Channel", value=channel)
         e.add_field(name="Role", value=role)
         e.add_field(name="Clean", value=clean)
@@ -304,16 +309,16 @@ class DisboardReminder(commands.Cog):
         pages = []
         pages.append(e)
 
-        e2 = discord.Embed(title="Bumpreminder Settings Page 2", color=discord.Color.green())
+        e2 = discord.Embed(title="Bumpreminder Settings Page 2",
+                           color=discord.Color.green())
         e2.add_field(name="Next Weekly Reset", value=nextreset)
         if nextreset is not None:
             nextreset = datetime.fromtimestamp(nextreset)
-            e2.timestamp = nextreset 
+            e2.timestamp = nextreset
             e2.set_footer(text="Next Weekly reset is at")
         pages.append(e2)
-        
+
         await menu(ctx, pages, DEFAULT_CONTROLS)
-        
 
     @staticmethod
     def create_chart(data: Counter):
@@ -322,7 +327,8 @@ class DisboardReminder(commands.Cog):
         most_common = data.most_common()
         total = sum(data.values())
         sizes = [(x[1] / total) * 100 for x in most_common][:20]
-        labels = [f"{x[0]} {round(sizes[index], 1):g}%" for index, x in enumerate(most_common[:20])]
+        labels = [f"{x[0]} {round(sizes[index], 1):g}%" for index, x in enumerate(
+            most_common[:20])]
         title = plt.title("Top Bumpers", color="white")
         title.set_va("top")
         title.set_ha("center")
@@ -365,7 +371,7 @@ class DisboardReminder(commands.Cog):
         plt.savefig(image_object, format="PNG", facecolor="#36393E")
         image_object.seek(0)
         return image_object
-    
+
     async def bump_restart(self):
         channel = self.bot.get_channel(779170774934093844)
         await self.bot.wait_until_ready()
@@ -383,18 +389,20 @@ class DisboardReminder(commands.Cog):
                     await self.send_bumpmsg(guild)
                 else:
                     coros.append(self.start_timer(guild, timer))
-        
+
+        await asyncio.gather(*coros)
+
         try:
             coros = []
             data = await self.config.all_guilds()
             for guildid, guilddata in data.items():
                 guild = self.bot.get_guild(guildid)
                 if not guild:
-                    continue 
+                    continue
                 timer = guilddata["nextweeklyreset"]
                 if timer:
                     now = datetime.utcnow().timestamp()
-                    remaining = timer - now 
+                    remaining = timer - now
                     if remaining <= 0:
                         await self.reset_weekly(guild)
                     else:
@@ -403,13 +411,13 @@ class DisboardReminder(commands.Cog):
                     now = datetime.utcnow().timestamp() + 604800
                     await self.config.guild(guild).nextweeklyreset.set(now)
                     coros.append(self.weekly_timer(guild, now))
-        
+
         except Exception as e:
             channel = self.bot.get_channel(779170774934093844)
             await channel.send(e)
-        
+
         await asyncio.gather(*coros)
-    
+
     async def send_bumpmsg(self, guild: discord.Guild):
         data = await self.config.guild(guild).all()
         channel = guild.get_channel(data["channel"])
@@ -421,40 +429,42 @@ class DisboardReminder(commands.Cog):
             role = guild.get_role(data["role"])
             if role is not None:
                 message = f"{role.mention} {data['msg']}"
-                allowed_mentions = discord.AllowedMentions(roles=True, everyone=False)
+                allowed_mentions = discord.AllowedMentions(
+                    roles=True, everyone=False)
                 await channel.send(message, allowed_mentions=allowed_mentions)
             else:
                 await self.config.guild(guild).set(None)
 
         elif channel:
             message = data["msg"]
-            allowed_mentions = discord.AllowedMentions(roles=True, everyone=False)
+            allowed_mentions = discord.AllowedMentions(
+                roles=True, everyone=False)
             try:
                 await channel.send(message, allowed_mentions=allowed_mentions)
             except discord.errors.Forbidden:
                 await self.config.guild(guild).channel.set(None)
         else:
             await self.config.guild(guild).channel.set(None)
-            
+
         if data["lock"]:
             overwrites = channel.overwrites_for(guild.default_role)
             overwrites.send_messages = None
             await channel.set_permissions(guild.default_role, overwrite=overwrites)
-                
+
         await self.config.guild(guild).nextbump.set(None)
-    
+
     async def start_timer(self, guild: discord.Guild, remaining):
         remaining = int(remaining)
         date = datetime.fromtimestamp(remaining)
         await discord.utils.sleep_until(date)
         await self.send_bumpmsg(guild)
-    
+
     async def weekly_timer(self, guild: discord.Guild, remaining):
         remaining = int(remaining)
         date = datetime.fromtimestamp(remaining)
         await discord.utils.sleep_until(date)
         await self.reset_weekly(guild)
-    
+
     async def reset_weekly(self, guild: discord.Guild):
         for member in guild.members:
             await self.config.member(member).weeklybumps.clear()
@@ -463,19 +473,19 @@ class DisboardReminder(commands.Cog):
         await self.weekly_timer(guild, next_reset)
 
     @commands.Cog.listener("on_message")
-    async def on_message(self, message): #The real shit
+    async def on_message(self, message):  # The real shit
         if message.guild is None:
-            return 
+            return
 
         data = await self.config.guild(message.guild).all()
 
         if data["channel"] is None:
-            return 
+            return
         elif self.bot.get_channel(data["channel"]) is None:
-            return 
+            return
         else:
             channel = self.bot.get_channel(data["channel"])
-        
+
         clean = data["clean"]
         ty = data["ty"]
         lock = data["lock"]
@@ -483,13 +493,16 @@ class DisboardReminder(commands.Cog):
         if clean and message.author.id != message.guild.me.id and message.author.id != 302050872383242240 and message.channel.id == channel.id:
             if message.channel.permissions_for(message.guild.me).manage_messages:
                 await asyncio.sleep(2)
-                await message.delete() 
+                await message.delete()
             else:
                 pass
-        
+
         if (not message.author.id == 302050872383242240) and message.embeds:
             return
         
+        if len(message.embeds) == 0:
+            return 
+
         embeds = message.embeds[0]
 
         if "Bump done" in embeds.description:
@@ -507,11 +520,12 @@ class DisboardReminder(commands.Cog):
                 memberid = int(mention[3:-1])
             else:
                 memberid = int(mention[2:-1])
-            
+
             await channel.send(ty.replace("{member}", mention).replace("{guild}", message.guild.name).replace("{guild.id}", str(message.guild.id)))
-    
+
             if lock:
-                overwrites = message.channel.overwrites_for(message.guild.default_role)
+                overwrites = message.channel.overwrites_for(
+                    message.guild.default_role)
                 overwrites.send_messages = False
                 await channel.set_permissions(message.guild.default_role, overwrite=overwrites)
 
@@ -519,7 +533,7 @@ class DisboardReminder(commands.Cog):
                 reset = datetime.utcnow().timestamp() + 604800
                 await self.config.guild(message.guild).nextweeklyreset.set(reset)
                 await self.weekly_timer(message.guild, reset)
-            
+
             member = message.guild.get_member(memberid)
             bumps = await self.config.member(member).bumps()
             weekly_bumps = await self.config.member(member).weeklybumps()
@@ -529,13 +543,10 @@ class DisboardReminder(commands.Cog):
             await self.config.member(member).weeklybumps.set(weekly_bumps)
             await self.start_timer(message.guild, next_bump)
 
-                
- 
         else:
             if clean and message.channel.permissions_for(message.guild.me).manage_messages and message.channel.id == channel.id:
                 await asyncio.sleep(2)
                 await message.delete()
-        
 
     def cog_unload(self):
         self.__unload()
