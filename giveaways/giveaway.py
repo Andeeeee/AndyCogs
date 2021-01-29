@@ -111,29 +111,9 @@ class Giveaways(commands.Cog):
             for messageid, info in data["giveaways"].items():
                 if info["Ongoing"] == True:
                     coros.append(self.start_giveaway(int(messageid), info))
-
-        self.delete_giveaway.start()
         await asyncio.gather(*coros)
     
-    @tasks.loop(minutes=5)
-    async def delete_giveaway(self):
-        try:
-            for guild, data in (await self.config.all_guilds()).items():
-                for messageid, info in data["giveaways"].items():
-                    if info["Ongoing"] == False:
-                        del data["giveaways"][messageid]
-                    else:
-                        channel = self.bot.get_channel(info["channel"])
-                        if not channel:
-                            del data["giveaways"][messageid]
-                        try:
-                            m = await channel.fetch_message(int(messageid))
-                        except discord.NotFound:
-                            del data["giveaways"][messageid]
-                await self.config.guild_from_id(int(guild)).giveaways.set(data["giveaways"])
-        except Exception as e:
-            c = self.bot.get_channel(779170774934093844)
-            await ctx.send(e)
+    
     async def start_giveaway(self, messageid: int, info):
         channel = self.bot.get_channel(info["channel"])
 
@@ -659,63 +639,65 @@ class Giveaways(commands.Cog):
     
     @giveaway.command(name="list")
     async def g_list(self, ctx, can_join=False):
-        await ctx.trigger_typing()
-        giveaway_list = []
-        gaws = await self.config.guild(ctx.guild).giveaways()
-        for messageid, info in gaws.items():
-            if not can_join:
-                channel = info["channel"]
-                channel = self.bot.get_channel(channel)
-                if not channel:
+        async with ctx.typing():
+            giveaway_list = []
+            gaws = await self.config.guild(ctx.guild).giveaways()
+            for messageid, info in gaws.items():
+                if not info["Ongoing"]:
                     continue
-                try:
-                    m = await channel.fetch_message(messageid)
-                except discord.NotFound:
-                    continue
-                title = info["title"]
-                requirement = info["requirement"]
-                if not requirement:
+                if not can_join:
+                    channel = info["channel"]
+                    channel = self.bot.get_channel(channel)
+                    if not channel:
+                        continue
+                    try:
+                        m = await channel.fetch_message(messageid)
+                    except discord.NotFound:
+                        continue
+                    title = info["title"]
+                    requirement = info["requirement"]
+                    if not requirement:
+                        header = f"[{title}]({m.jump_url})"
+                        header += ":white_check_mark: You can join this giveaway"
+                        giveaway_list.append(header)
+                        continue
+                    req = ctx.guild.get_role(requirement)
+                    if not req:
+                        continue
                     header = f"[{title}]({m.jump_url})"
-                    header += ":white_check_mark: You can join this giveaway"
-                    giveaway_list.append(header)
-                    continue
-                req = ctx.guild.get_role(requirement)
-                if not req:
-                    continue
-                header = f"[{title}]({m.jump_url})"
-                if req in ctx.author.roles:
-                    header += ":white_check_mark: You can join this giveaway"
-                else:
-                    header += ":negative_squared_cross_mark: You cannot join this giveaway"
+                    if req in ctx.author.roles:
+                        header += " :white_check_mark: You can join this giveaway"
+                    else:
+                        header += " :negative_squared_cross_mark: You cannot join this giveaway"
 
-                giveaway_list.append(header)
-            else:
-                channel = info["channel"]
-                channel = self.bot.get_channel(channel)
-                if not channel:
-                    continue
-                try:
-                    m = await channel.fetch_message(messageid)
-                except discord.NotFound:
-                    continue 
-                title = info["title"]
-                requirement = info["requirement"]
-                header = f"[{title}]({m.jump_url})"
-                if not requirement:
-                    header += ":white_check_mark: You can join this giveaway"
                     giveaway_list.append(header)
-                    continue
-                req = ctx.guild.get_role(requirement)
-                if not req:
-                    header += ":white_check_mark: You can join this giveaway"
-                    giveaway_list.append(header)
-                    continue
-                if req in ctx.author.roles:
-                    header += ":white_check_mark: You can join this giveaway"
                 else:
-                    continue 
+                    channel = info["channel"]
+                    channel = self.bot.get_channel(channel)
+                    if not channel:
+                        continue
+                    try:
+                        m = await channel.fetch_message(messageid)
+                    except discord.NotFound:
+                        continue 
+                    title = info["title"]
+                    requirement = info["requirement"]
+                    header = f"[{title}]({m.jump_url})"
+                    if not requirement:
+                        header += " :white_check_mark: You can join this giveaway"
+                        giveaway_list.append(header)
+                        continue
+                    req = ctx.guild.get_role(requirement)
+                    if not req:
+                        header += " :white_check_mark: You can join this giveaway"
+                        giveaway_list.append(header)
+                        continue
+                    if req in ctx.author.roles:
+                        header += " :white_check_mark: You can join this giveaway"
+                    else:
+                        continue 
 
-                giveaway_list.append(header)
+                    giveaway_list.append(header)
         
         formatted_giveaways = "\n".join(giveaway_list)
         if len(formatted_giveaways) > 2048:
