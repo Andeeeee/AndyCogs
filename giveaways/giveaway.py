@@ -120,16 +120,16 @@ class Giveaways(commands.Cog):
         for guild, data in (await self.config.all_guilds()).items():
             for messageid, info in data["giveaways"].items():
                 if info["Ongoing"] == False:
-                    data["giveaways"].pop(messageid)
+                    del data["giveaways"][messageid]
                 else:
                     channel = self.bot.get_channel(info["channel"])
                     if not channel:
-                        data["giveaways"].pop(messageid)
+                        del data["giveaways"][messageid]
                     try:
                         m = await channel.fetch_message(int(messageid))
                     except discord.NotFound:
-                        data["giveaways"].pop(messageid)
-            await self.config.guild_from_id(guild).giveaways.set(data["giveaways"])
+                        del data["giveaways"][messageid]
+            await self.config.guild_from_id(int(guild)).giveaways.set(data["giveaways"])
 
     async def start_giveaway(self, messageid: int, info):
         channel = self.bot.get_channel(info["channel"])
@@ -137,7 +137,10 @@ class Giveaways(commands.Cog):
         if not channel:
             return
 
-        message = await channel.fetch_message(messageid)
+        try:
+            message = await channel.fetch_message(messageid)
+        except discord.NotFound:
+            return 
 
         if not message:
             return
@@ -428,6 +431,11 @@ class Giveaways(commands.Cog):
         else:
             await self.config.guild(ctx.guild).dmwin.set(True)
             await ctx.send("I will now dm winners")
+    
+    @giveawayset.command(name="clearall")
+    async def clearall(self, ctx):
+        await self.config.guild(ctx.guild).giveaways.clear()
+        await ctx.send("Cleared.")
 
 #-------------------------------------giveaways---------------------------------
     @commands.group(name="giveaway", aliases=["g"])
