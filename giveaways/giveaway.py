@@ -635,6 +635,9 @@ class Giveaways(commands.Cog):
         for messageid, info in gaws.items():
             if not can_join:
                 channel = info["channel"]
+                channel = self.bot.get_channel(channel)
+                if not channel:
+                    continue
                 try:
                     m = await channel.fetch_message(messageid)
                 except discord.NotFound:
@@ -658,6 +661,9 @@ class Giveaways(commands.Cog):
                 giveaway_list.append(header)
             else:
                 channel = info["channel"]
+                channel = self.bot.get_channel(channel)
+                if not channel:
+                    continue
                 try:
                     m = await channel.fetch_message(messageid)
                 except discord.NotFound:
