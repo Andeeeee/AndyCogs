@@ -641,8 +641,10 @@ class Giveaways(commands.Cog):
     async def g_list(self, ctx, can_join=False):
         async with ctx.typing():
             giveaway_list = []
+            counter = 0
             gaws = await self.config.guild(ctx.guild).giveaways()
             for messageid, info in gaws.items():
+                counter += 1
                 if not info["Ongoing"]:
                     continue
                 if not can_join:
@@ -668,7 +670,7 @@ class Giveaways(commands.Cog):
                     if req in ctx.author.roles:
                         header += " :white_check_mark: You can join this giveaway"
                     else:
-                        header += " :negative_squared_cross_mark: You cannot join this giveaway"
+                        header += " :octagonal_sign: You cannot join this giveaway"
 
                     giveaway_list.append(header)
                 else:
