@@ -115,7 +115,7 @@ class Giveaways(commands.Cog):
         self.delete_giveaway.start()
         await asyncio.gather(*coros)
     
-    @tasks.loop(hours=1)
+    @tasks.loop(minutes=5)
     async def delete_giveaway(self):
         for guild, data in (await self.config.all_guilds()).items():
             for messageid, info in data["giveaways"].items():
@@ -656,6 +656,7 @@ class Giveaways(commands.Cog):
     
     @giveaway.command(name="list")
     async def g_list(self, ctx, can_join=False):
+        await ctx.trigger_typing()
         giveaway_list = []
         gaws = await self.config.guild(ctx.guild).giveaways()
         for messageid, info in gaws.items():
