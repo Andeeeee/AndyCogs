@@ -661,7 +661,7 @@ class Giveaways(commands.Cog):
                     if not channel:
                         continue
                     try:
-                        m = await channel.fetch_message(messageid)
+                        m = await channel.fetch_message(int(messageid))
                     except discord.NotFound:
                         continue
                     title = info["title"]
@@ -687,7 +687,7 @@ class Giveaways(commands.Cog):
                     if not channel:
                         continue
                     try:
-                        m = await channel.fetch_message(messageid)
+                        m = await channel.fetch_message(int(messageid))
                     except discord.NotFound:
                         continue
                     title = info["title"]
