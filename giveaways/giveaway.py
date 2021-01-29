@@ -654,7 +654,7 @@ class Giveaways(commands.Cog):
                     channel = self.bot.get_channel(channel)
                     if not channel:
                         continue
-                    m = f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}{messageid}"
+                    jump_url = f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}{messageid}"
                     title = info["title"]
                     requirement = info["requirement"]
                     if not requirement:
@@ -677,7 +677,7 @@ class Giveaways(commands.Cog):
                     channel = self.bot.get_channel(channel)
                     if not channel:
                         continue
-                    m = f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}{messageid}"
+                    jump_url = f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}{messageid}"
                     title = info["title"]
                     requirement = info["requirement"]
                     header = f"[{title}]({jump_url})"
