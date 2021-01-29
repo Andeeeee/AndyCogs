@@ -629,7 +629,7 @@ class Giveaways(commands.Cog):
             return 
     
     @giveaway.command(name="list")
-    async def g_list(self, ctx, * , can_join=False):
+    async def g_list(self, ctx, can_join=False):
         giveaway_list = []
         gaws = await self.config.guild(ctx.guild).giveaways()
         for messageid, info in gaws.items():
