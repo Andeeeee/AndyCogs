@@ -154,7 +154,8 @@ class Heist(commands.Cog):
 
         correct_answer = "is starting a bank robbery"
 
-        await ctx.send("Waiting for the heist message...")
+        await ctx.send("Waiting for the heist message...") 
+        
         
         def check(m):
             return m.author.id == 270904126974590976 and m.channel == ctx.channel and correct_answer in m.content and m.channel.last_message is not None and m.channel.last_message.content.startswith("pls heist") #imagine changing danks prefix
@@ -183,7 +184,7 @@ class Heist(commands.Cog):
                 await ctx.channel.set_permissions(firstrole, overwrite=overwrites)
             except (discord.errors.Forbidden, discord.HTTPException):
                 return await ctx.send("I do not have permissions to do this or an internal server error occured. Try again.")
-
+            await ctx.send(f"Channel Unlocked for `{firstrole.name}`!")
             await asyncio.sleep(args["time"])
         
         overwrites = ctx.channel.overwrites_for(role)
