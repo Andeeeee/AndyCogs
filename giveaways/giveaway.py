@@ -17,6 +17,8 @@ class TimeRanOutError(Exception):
 
 
 async def is_manager(ctx):
+    if not ctx.guild:
+        return False
     perms = ctx.author.guild_permissions
 
     if perms.administrator or perms.manage_guild:
@@ -339,6 +341,7 @@ class Giveaways(commands.Cog):
 #-------------------------------------gset---------------------------------
 
     @commands.group(name="giveawayset", aliases=["gset"])
+    @commands.guild_only()
     async def giveawayset(self, ctx):
         """Set your server settings for giveaways"""
         pass
@@ -410,11 +413,12 @@ class Giveaways(commands.Cog):
 
 #-------------------------------------giveaways---------------------------------
     @commands.group(name="giveaway", aliases=["g"])
-    @commands.check(is_manager)
+    @commands.guild_only()
     async def giveaway(self, ctx):
         pass
 
     @giveaway.command(name="start")
+    @commands.check(is_manager)
     async def g_start(
         self,
         ctx,
@@ -572,6 +576,7 @@ class Giveaways(commands.Cog):
         await self.start_giveaway(int(msg), gaws[msg])
     
     @giveaway.command(name="end")
+    @commands.check(is_manager)
     async def g_end(self, ctx, messageid: Optional[int] = None):
         """End a giveaway"""
         if not messageid:
@@ -585,6 +590,7 @@ class Giveaways(commands.Cog):
             await self.end_giveaway(messageid, gaws[str(messageid)])
     
     @giveaway.command(name="reroll")
+    @commands.check(is_manager)
     async def g_reroll(self, ctx, messageid: Optional[int] = None, winners: Optional[int] = 1):
         """Reroll a giveaway"""
         if not messageid:
@@ -600,6 +606,7 @@ class Giveaways(commands.Cog):
             await self.end_giveaway(messageid, gaws[str(messageid)], winners)
     
     @giveaway.command(name="ping")
+    @commands.check(is_manager)
     async def g_ping(self, ctx, * , message: str = None):
         m = discord.AllowedMentions(roles=True, everyone=False)
         await ctx.message.delete()
@@ -698,6 +705,7 @@ class Giveaways(commands.Cog):
 #-------------------------------------gprofile---------------------------------
 
     @commands.group(name="giveawayprofile", aliases=["gprofile"])
+    @commands.guild_only()
     async def giveawayprofile(self, ctx):
         if not ctx.invoked_subcommand:
             donated = await self.config.member(ctx.author).donated()
