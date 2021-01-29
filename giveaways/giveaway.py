@@ -645,7 +645,13 @@ class Giveaways(commands.Cog):
             giveaway_list = []
             counter = 0
             gaws = await self.config.guild(ctx.guild).giveaways()
+            startmessage = await ctx.send("0 giveaways gatbered")
             for messageid, info in gaws.items():
+                try:
+                    if counter%3 == 0:
+                        await startmessage.edit(content=f"{counter} messages gathered")
+                except ZeroDivisionError:
+                    pass
                 counter += 1
                 if not info["Ongoing"]:
                     continue
