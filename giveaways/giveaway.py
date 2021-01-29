@@ -658,7 +658,7 @@ class Giveaways(commands.Cog):
                     requirement = info["requirement"]
                     if not requirement:
                         header = f"[{title}]({m.jump_url})"
-                        header += ":white_check_mark: You can join this giveaway"
+                        header += " :white_check_mark: You can join this giveaway"
                         giveaway_list.append(header)
                         continue
                     req = ctx.guild.get_role(requirement)
