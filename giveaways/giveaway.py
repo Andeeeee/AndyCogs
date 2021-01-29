@@ -649,7 +649,7 @@ class Giveaways(commands.Cog):
             for messageid, info in (await self.config.guild(ctx.guild).giveaways()).items():
                 counter += 1
                 if counter%25 == 0:
-                    await msg.edit(f"{counter} messages cached")
+                    await msg.edit(content=f"{counter} messages cached")
                 if messageid not in self.cache:
                     messageid = str(messageid)
                     channel = self.bot.get_channel(info["channel"])
@@ -658,6 +658,8 @@ class Giveaways(commands.Cog):
                     except discord.NotFound:
                         continue 
                     self.cache[messageid] = m
+        
+        await ctx.send("Cached")
     
     @giveaway.command(name="list")
     @commands.cooldown(1, 30, commands.BucketType.member)
