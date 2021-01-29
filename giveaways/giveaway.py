@@ -673,7 +673,10 @@ class Giveaways(commands.Cog):
                             m = await channel.fetch_message(int(messageid))
                             self.cache[messageid] = m
                         except discord.NotFound:
+                            gaws.pop(str(messageid))
+                            await self.config.guild(ctx.guild).giveaways.set(gaws)
                             continue
+                        
                     title = info["title"]
                     requirement = info["requirement"]
                     if not requirement:
