@@ -65,6 +65,8 @@ class Giveaways(commands.Cog):
             "notes": [],
         }
 
+        self.cache = {}
+
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
 
@@ -582,6 +584,8 @@ class Giveaways(commands.Cog):
             prev += 1
             await self.config.member(ctx.author).hosted.set(prev)
 
+        self.cache[str(msg)] = gaw_msg 
+        
         await self.start_giveaway(int(msg), gaws[msg])
     
     @giveaway.command(name="end")
@@ -660,10 +664,13 @@ class Giveaways(commands.Cog):
                     channel = self.bot.get_channel(channel)
                     if not channel:
                         continue
-                    try:
-                        m = await channel.fetch_message(int(messageid))
-                    except discord.NotFound:
-                        continue
+                    m = self.cache.get(messageid)
+                    if not m:
+                        try:
+                            m = await channel.fetch_message(int(messageid))
+                            self.cache[messageid] = m
+                        except discord.NotFound:
+                            continue
                     title = info["title"]
                     requirement = info["requirement"]
                     if not requirement:
@@ -686,10 +693,13 @@ class Giveaways(commands.Cog):
                     channel = self.bot.get_channel(channel)
                     if not channel:
                         continue
-                    try:
-                        m = await channel.fetch_message(int(messageid))
-                    except discord.NotFound:
-                        continue
+                    m = self.cache.get(messageid)
+                    if not m:
+                        try:
+                            m = await channel.fetch_message(int(messageid))
+                            self.cache[messageid] = m
+                        except discord.NotFound:
+                            continue
                     title = info["title"]
                     requirement = info["requirement"]
                     header = f"[{title}]({m.jump_url})"
