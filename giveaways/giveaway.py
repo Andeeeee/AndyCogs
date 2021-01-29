@@ -648,8 +648,8 @@ class Giveaways(commands.Cog):
             startmessage = await ctx.send("0 giveaways gatbered")
             for messageid, info in gaws.items():
                 try:
-                    if counter%3 == 0:
-                        await startmessage.edit(content=f"{counter} messages gathered")
+                    if counter%10 == 0:
+                        await startmessage.edit(content=f"{counter} messages out of {len(gaws.values())} messages gathered")
                 except ZeroDivisionError:
                     pass
                 counter += 1
