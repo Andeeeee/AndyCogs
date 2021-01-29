@@ -646,7 +646,7 @@ class Giveaways(commands.Cog):
         async with ctx.typing():
             msg = await ctx.send("0 giveaways cached")
             counter = 0
-            for messageid, info in (await self.config.guild(ctx.guild).giveaways().items():
+            for messageid, info in (await self.config.guild(ctx.guild).giveaways()).items():
                 counter += 1
                 if counter%25 == 0:
                     await msg.edit(f"{counter} messages cached")
