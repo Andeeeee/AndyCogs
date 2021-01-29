@@ -638,6 +638,8 @@ class Giveaways(commands.Cog):
             return 
     
     @giveaway.command(name="list")
+    @commands.cooldown(1, 30, commands.BucketType.member)
+    @commands.max_concurrency(2, commands.BucketType.user)
     async def g_list(self, ctx, can_join=False):
         async with ctx.typing():
             giveaway_list = []
@@ -652,21 +654,18 @@ class Giveaways(commands.Cog):
                     channel = self.bot.get_channel(channel)
                     if not channel:
                         continue
-                    try:
-                        m = await channel.fetch_message(messageid)
-                    except discord.NotFound:
-                        continue
+                    m = f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}{messageid}"
                     title = info["title"]
                     requirement = info["requirement"]
                     if not requirement:
-                        header = f"[{title}]({m.jump_url})"
+                        header = f"[{title}]({jump_url})"
                         header += " :white_check_mark: You can join this giveaway"
                         giveaway_list.append(header)
                         continue
                     req = ctx.guild.get_role(requirement)
                     if not req:
                         continue
-                    header = f"[{title}]({m.jump_url})"
+                    header = f"[{title}]({jump_url})"
                     if req in ctx.author.roles:
                         header += " :white_check_mark: You can join this giveaway"
                     else:
@@ -678,13 +677,10 @@ class Giveaways(commands.Cog):
                     channel = self.bot.get_channel(channel)
                     if not channel:
                         continue
-                    try:
-                        m = await channel.fetch_message(messageid)
-                    except discord.NotFound:
-                        continue 
+                    m = f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}{messageid}"
                     title = info["title"]
                     requirement = info["requirement"]
-                    header = f"[{title}]({m.jump_url})"
+                    header = f"[{title}]({jump_url})"
                     if not requirement:
                         header += " :white_check_mark: You can join this giveaway"
                         giveaway_list.append(header)
