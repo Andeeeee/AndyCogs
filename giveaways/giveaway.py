@@ -632,7 +632,7 @@ class Giveaways(commands.Cog):
     async def g_list(self, ctx, * , can_join=False):
         giveaway_list = []
         gaws = await self.config.guild(ctx.guild).giveaways()
-        for messageid, info in gaws:
+        for messageid, info in gaws.items():
             if not can_join:
                 channel = info["channel"]
                 try:
