@@ -747,7 +747,7 @@ class Giveaways(commands.Cog):
         await startmessage.delete()
         for item in del_list:
             gaws.pop(item)
-        await self.config.guild(ctx.guild).gaws.set(gaws)
+        await self.config.guild(ctx.guild).giveaways.set(gaws)
         
         formatted_giveaways = "\n".join(giveaway_list)
         if len(formatted_giveaways) > 2048:
