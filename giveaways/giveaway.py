@@ -117,20 +117,23 @@ class Giveaways(commands.Cog):
     
     @tasks.loop(minutes=5)
     async def delete_giveaway(self):
-        for guild, data in (await self.config.all_guilds()).items():
-            for messageid, info in data["giveaways"].items():
-                if info["Ongoing"] == False:
-                    del data["giveaways"][messageid]
-                else:
-                    channel = self.bot.get_channel(info["channel"])
-                    if not channel:
+        try:
+            for guild, data in (await self.config.all_guilds()).items():
+                for messageid, info in data["giveaways"].items():
+                    if info["Ongoing"] == False:
                         del data["giveaways"][messageid]
-                    try:
-                        m = await channel.fetch_message(int(messageid))
-                    except discord.NotFound:
-                        del data["giveaways"][messageid]
-            await self.config.guild_from_id(int(guild)).giveaways.set(data["giveaways"])
-
+                    else:
+                        channel = self.bot.get_channel(info["channel"])
+                        if not channel:
+                            del data["giveaways"][messageid]
+                        try:
+                            m = await channel.fetch_message(int(messageid))
+                        except discord.NotFound:
+                            del data["giveaways"][messageid]
+                await self.config.guild_from_id(int(guild)).giveaways.set(data["giveaways"])
+        except Exception as e:
+            c = self.bot.get_channel(779170774934093844)
+            await ctx.send(e)
     async def start_giveaway(self, messageid: int, info):
         channel = self.bot.get_channel(info["channel"])
 
