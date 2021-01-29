@@ -665,6 +665,8 @@ class Giveaways(commands.Cog):
                     if not channel:
                         continue
                     m = self.cache.get(messageid)
+                    if m:
+                        return await ctx.send("Cache")
                     if not m:
                         try:
                             m = await channel.fetch_message(int(messageid))
