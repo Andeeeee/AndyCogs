@@ -668,7 +668,7 @@ class Giveaways(commands.Cog):
                     req = ctx.guild.get_role(requirement)
                     if not req:
                         continue
-                    header = f"[{title}]({jump_url})"
+                    header = f"[{title}]({m.jump_url})"
                     if req in ctx.author.roles:
                         header += " :white_check_mark: You can join this giveaway"
                     else:
