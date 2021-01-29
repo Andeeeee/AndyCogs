@@ -640,6 +640,25 @@ class Giveaways(commands.Cog):
         except discord.HTTPException:
             return 
     
+    @giveaway.command(name="forcecache")
+    @commands.is_owner()
+    async def forcecache(self, ctx):
+        async with ctx.typing():
+            msg = await ctx.send("0 giveaways cached")
+            counter = 0
+            for messageid, info in (await self.config.guild(ctx.guild).giveaways().items():
+                counter += 1
+                if counter%25 == 0:
+                    await msg.edit(f"{counter} messages cached")
+                if messageid not in self.cache:
+                    messageid = str(messageid)
+                    channel = self.bot.get_channel(info["channel"])
+                    try:
+                        m = await channel.fetch_message(int(messageid))
+                    except discord.NotFound:
+                        continue 
+                    self.cache[messageid] = m
+    
     @giveaway.command(name="list")
     @commands.cooldown(1, 30, commands.BucketType.member)
     @commands.max_concurrency(2, commands.BucketType.user)
