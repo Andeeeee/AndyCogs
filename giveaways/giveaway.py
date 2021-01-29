@@ -343,7 +343,6 @@ class Giveaways(commands.Cog):
         previous = await self.config.member(user).donated()
         previous += amt
         await self.config.member(user).donated.set(previous)
-
 #-------------------------------------gset---------------------------------
 
     @commands.group(name="giveawayset", aliases=["gset"])
@@ -647,6 +646,7 @@ class Giveaways(commands.Cog):
     async def g_list(self, ctx, can_join=False):
         async with ctx.typing():
             giveaway_list = []
+            del_list = []
             counter = 0
             gaws = await self.config.guild(ctx.guild).giveaways()
             startmessage = await ctx.send("0 giveaways gatbered")
@@ -673,8 +673,7 @@ class Giveaways(commands.Cog):
                             m = await channel.fetch_message(int(messageid))
                             self.cache[messageid] = m
                         except discord.NotFound:
-                            gaws.pop(str(messageid))
-                            await self.config.guild(ctx.guild).giveaways.set(gaws)
+                            del_list.append(str(messageid))
                             continue
                         
                     title = info["title"]
@@ -705,6 +704,7 @@ class Giveaways(commands.Cog):
                             m = await channel.fetch_message(int(messageid))
                             self.cache[messageid] = m
                         except discord.NotFound:
+                            del_list.append(str(messageid))
                             continue
                     title = info["title"]
                     requirement = info["requirement"]
@@ -726,6 +726,9 @@ class Giveaways(commands.Cog):
                     giveaway_list.append(header)
         
         await startmessage.delete()
+        for item in del_list:
+            gaws.pop(item)
+        await self.config.guild(ctx.guild).gaws.set(gaws)
         
         formatted_giveaways = "\n".join(giveaway_list)
         if len(formatted_giveaways) > 2048:
