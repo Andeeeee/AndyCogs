@@ -2,6 +2,7 @@ import asyncio
 import argparse
 from datetime import datetime, timedelta
 import discord
+from discord.ext import tasks
 from discord.utils import sleep_until
 from redbot.core import commands, Config
 from typing import Optional, Union
@@ -111,7 +112,16 @@ class Giveaways(commands.Cog):
                 if info["Ongoing"] == True:
                     coros.append(self.start_giveaway(int(messageid), info))
 
+        self.delete_giveaway.start()
         await asyncio.gather(*coros)
+    
+    @tasks.loop(hours=1)
+    async def delete_giveaway(self):
+        for guild, data in (await self.config.all_guilds()).items():
+            for messageid, info in data["giveaways"].items():
+                if info["Ongoing"] == False:
+                    data["giveaways"].pop(messageid)
+            await self.config.guild_from_id(guild).giveaways.set(data["giveaways"])
 
     async def start_giveaway(self, messageid: int, info):
         channel = self.bot.get_channel(info["channel"])
