@@ -719,6 +719,8 @@ class Giveaways(commands.Cog):
 
                     giveaway_list.append(header)
         
+        await startmessage.delete()
+        
         formatted_giveaways = "\n".join(giveaway_list)
         if len(formatted_giveaways) > 2048:
             pages = list(pagify(formatted_giveaways))
