@@ -620,6 +620,80 @@ class Giveaways(commands.Cog):
             await ctx.send(f"{role.mention} {message}", allowed_mentions=m)
         except discord.HTTPException:
             return 
+    
+    @giveaway.command(name="list")
+    async def g_list(self, ctx, * , can_join=False):
+        giveaway_list = []
+        gaws = await self.config.guild(ctx.guild).giveaways()
+        for messageid, info in gaws:
+            if not can_join:
+                channel = info["channel"]
+                try:
+                    m = await channel.fetch_message(messageid)
+                except discord.NotFound:
+                    continue
+                title = info["title"]
+                requirement = info["requirement"]
+                if not requirement:
+                    header = f"[{title}]({m.jump_url})"
+                    header += ":white_check_mark: You can join this giveaway"
+                    giveaway_list.append(header)
+                    continue
+                req = ctx.guild.get_role(requirement)
+                if not req:
+                    continue
+                header = f"[{title}]({m.jump_url})"
+                if req in ctx.author.roles:
+                    header += ":white_check_mark: You can join this giveaway"
+                else:
+                    header += ":negative_squared_cross_mark: You cannot join this giveaway"
+
+                giveaway_list.append(header)
+            else:
+                channel = info["channel"]
+                try:
+                    m = await channel.fetch_message(messageid)
+                except discord.NotFound:
+                    continue 
+                title = info["title"]
+                requirement = info["requirement"]
+                header = f"[{title}]({m.jump_url})"
+                if not requirement:
+                    header += ":white_check_mark: You can join this giveaway"
+                    giveaway_list.append(header)
+                    continue
+                req = ctx.guild.get_role(requirement)
+                if not req:
+                    header += ":white_check_mark: You can join this giveaway"
+                    giveaway_list.append(header)
+                    continue
+                if req in ctx.author.roles:
+                    header += ":white_check_mark: You can join this giveaway"
+                else:
+                    continue 
+
+                giveaway_list.append(header)
+        
+        formatted_giveaways = "\n".join(giveaway_list)
+        if len(formatted_giveaways) > 2048:
+            pages = list(pagify(formatted_giveaways))
+            embeds = []
+            
+            for i, page in enumerate(pages, start=1):
+                e = discord.Embed(
+                    title=f"Giveaways Page {i}/{len(pages)}",
+                    description=page,
+                    color=discord.Color.green()
+                )
+                embeds.append(e)
+            await menu(ctx, embeds, DEFAULT_CONTROLS)
+        else:
+            e = discord.Embed(
+                title="Giveaway Page 1",
+                description=formatted_giveaways,
+                color=discord.Color.green()
+            )
+            await ctx.send(embed=e)
 
 #-------------------------------------gprofile---------------------------------
 
