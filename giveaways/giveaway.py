@@ -651,6 +651,7 @@ class Giveaways(commands.Cog):
             gaws = await self.config.guild(ctx.guild).giveaways()
             startmessage = await ctx.send("0 giveaways gatbered")
             for messageid, info in gaws.items():
+                messageid = str(messageid)
                 try:
                     if counter%10 == 0:
                         await startmessage.edit(content=f"{counter} messages out of {len(gaws.values())} messages gathered")
