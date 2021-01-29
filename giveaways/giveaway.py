@@ -654,11 +654,14 @@ class Giveaways(commands.Cog):
                     channel = self.bot.get_channel(channel)
                     if not channel:
                         continue
-                    jump_url = f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{messageid}"
+                    try:
+                        m = await channel.fetch_message(messageid)
+                    except discord.NotFound:
+                        continue
                     title = info["title"]
                     requirement = info["requirement"]
                     if not requirement:
-                        header = f"[{title}]({jump_url})"
+                        header = f"[{title}]({m.jump_url})"
                         header += " :white_check_mark: You can join this giveaway"
                         giveaway_list.append(header)
                         continue
@@ -677,10 +680,13 @@ class Giveaways(commands.Cog):
                     channel = self.bot.get_channel(channel)
                     if not channel:
                         continue
-                    jump_url = f"https://discord.com/channels/{ctx.guild.id}/{channel.id}/{messageid}"
+                    try:
+                        m = await channel.fetch_message(messageid)
+                    except discord.NotFound:
+                        continue
                     title = info["title"]
                     requirement = info["requirement"]
-                    header = f"[{title}]({jump_url})"
+                    header = f"[{title}]({m.jump_url})"
                     if not requirement:
                         header += " :white_check_mark: You can join this giveaway"
                         giveaway_list.append(header)
