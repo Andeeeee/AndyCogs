@@ -121,6 +121,14 @@ class Giveaways(commands.Cog):
             for messageid, info in data["giveaways"].items():
                 if info["Ongoing"] == False:
                     data["giveaways"].pop(messageid)
+                else:
+                    channel = self.bot.get_channel(info["channel"])
+                    if not channel:
+                        data["giveaways"].pop(messageid)
+                    try:
+                        m = await channel.fetch_message(int(messageid))
+                    except discord.NotFound:
+                        data["giveaways"].pop(messageid)
             await self.config.guild_from_id(guild).giveaways.set(data["giveaways"])
 
     async def start_giveaway(self, messageid: int, info):
@@ -148,7 +156,7 @@ class Giveaways(commands.Cog):
                 return
 
             elif gaws[str(messageid)]["Ongoing"] == False:
-                return
+                return 
 
             remaining = datetime.fromtimestamp(endtime) - datetime.utcnow()
             pretty_time = self.display_time(round(remaining.total_seconds()))
