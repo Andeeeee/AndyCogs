@@ -110,9 +110,15 @@ class DankUtilities(commands.Cog):
     
     @tradeshop.command(name="post")
     async def post(self, ctx):
+        """Post your trade ad either in the current channel or to the servers set channel"""
         channel = await self.config.guild(ctx.guild).channel()
         if not channel:
             channel = ctx.channel 
+        else:
+            channel = self.bot.get_channel(channel)
+            if not channel:
+                await self.config.guild(ctx.guild).channel.clear()
+                channel = ctx.channel
         
         if not channel.permissions_for(ctx.me).send_messages:
             if channel == ctx.channel:
