@@ -1,9 +1,9 @@
 {
-    "name": "Giveaways",
-    "short": "Host giveaways",
-    "description": "Host Giveaways for your server with features and requirements!",
-    "end_user_data_statement": "This cog will store your servers giveaways, may store a LOT if you have a lot of servers",
-    "install_msg": "Check out `[p]gset]` to set your settings",   
+    "name": "DankUtilities",
+    "short": "Various dankmemer utilities like trades",
+    "description": "DankMemer trade stuff and other things",
+    "end_user_data_statement": "This cog will store basically nothing for servers/guilds.",
+    "install_msg": "tenkyu for installing. Get started with `[p]help tradeshop`",   
     "author": [
         "Andy"
     ],
