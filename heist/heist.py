@@ -158,7 +158,7 @@ class Heist(commands.Cog):
         
         
         def check(m):
-            return m.author.id == 270904126974590976 and m.channel == ctx.channel and correct_answer in m.content and m.channel.last_message is not None and m.channel.last_message.content.startswith("pls heist") #imagine changing danks prefix
+            return m.author.id == 270904126974590976 and m.channel == ctx.channel and correct_answer in m.content and m.channel.last_message is not None and not m.channel.last_message.content.startswith("pls say") 
         try:
             message = await self.bot.wait_for("message", check=check, timeout=waittime)
         except asyncio.TimeoutError:
