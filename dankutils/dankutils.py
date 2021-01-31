@@ -20,7 +20,7 @@ class DankUtilities(commands.Cog):
             "reputation": 0,
             "title": "{user}'s shop",
             "description": "{user} doesn't have a shop...",
-            "color": None,
+            "color": 0x000000,
             "entries": [],
             "reviews": {}, #coming soon...
         }
@@ -72,7 +72,7 @@ class DankUtilities(commands.Cog):
             await self.config.user(ctx.author).color.clear()
             await ctx.send(f"I will no longer have colors on your trade embed")
         else:
-            await self.config.user(ctx.author).color.set(color)
+            await self.config.user(ctx.author).color.set(color.value)
             await ctx.send(f"Your color is now {color}")
     
     @tradeshop.command(name="reputation", aliases=["rep"])
