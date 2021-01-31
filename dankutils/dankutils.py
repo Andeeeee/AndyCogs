@@ -92,7 +92,7 @@ class DankUtilities(commands.Cog):
         data = await self.config.user(member).all()
 
         e = discord.Embed(
-            title=data["title"].replace("{user}", member.mention),
+            title=data["title"].replace("{user}", member.name),
             description=data["description"].replace("{user}", member.mention),
             color=data["color"]
         )
@@ -128,7 +128,7 @@ class DankUtilities(commands.Cog):
         data = await self.config.user(ctx.author).all()
 
         e = discord.Embed(
-            title=data["title"].replace("{user}", ctx.author.mention),
+            title=data["title"].replace("{user}", ctx.author.name),
             description=data["description"].replace("{user}", ctx.author.mention),
             color=data["color"]
         )
