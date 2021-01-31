@@ -97,7 +97,7 @@ class DankUtilities(commands.Cog):
             color=data["color"]
         )
 
-        formatted_entries = ""
+        formatted_entries = "Nothing Here"
 
         for i, entry in enumerate(data["entries"], start=1):
             formatted_entries += f"{i}. {entry}\n"
