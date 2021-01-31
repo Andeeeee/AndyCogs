@@ -144,8 +144,8 @@ class DankUtilities(commands.Cog):
 
         try:
             await channel.send(embed=e)
-        except (discord.errors.Forbidden, discord.HTTPException):
-            return 
+        except (discord.errors.Forbidden, discord.HTTPException) as e:
+            return await ctx.send(e)
         
     
     @commands.command(name="trade", cooldown_after_parsing=True)
