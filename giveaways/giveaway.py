@@ -415,11 +415,6 @@ class Giveaways(commands.Cog):
         else:
             await self.config.guild(ctx.guild).dmwin.set(True)
             await ctx.send("I will now dm winners")
-    
-    @giveawayset.command(name="clearall")
-    async def clearall(self, ctx):
-        await self.config.guild(ctx.guild).giveaways.clear()
-        await ctx.send("Cleared.")
 
 #-------------------------------------giveaways---------------------------------
     @commands.group(name="giveaway", aliases=["g"])
@@ -620,6 +615,7 @@ class Giveaways(commands.Cog):
     @giveaway.command(name="ping")
     @commands.check(is_manager)
     async def g_ping(self, ctx, * , message: str = None):
+        """Ping the pingrole for your server with an optional message, it wont send anything if there isn't a pingrole"""
         m = discord.AllowedMentions(roles=True, everyone=False)
         await ctx.message.delete()
         pingrole = await self.config.guild(ctx.guild).pingrole()
@@ -643,6 +639,7 @@ class Giveaways(commands.Cog):
     @giveaway.command(name="forcecache")
     @commands.is_owner()
     async def forcecache(self, ctx):
+        """Owner Utility to force a cache on a server in case something broke or you reloaded the cog and need it needs to be cached"""
         async with ctx.typing():
             msg = await ctx.send("0 giveaways cached")
             counter = 0
@@ -665,12 +662,13 @@ class Giveaways(commands.Cog):
     @commands.cooldown(1, 30, commands.BucketType.member)
     @commands.max_concurrency(2, commands.BucketType.user)
     async def g_list(self, ctx, can_join=False):
+        """List the giveways in the server. Specify True for can_join paramater to only list the ones you can join"""
         async with ctx.typing():
             giveaway_list = []
             del_list = []
             counter = 0
             gaws = await self.config.guild(ctx.guild).giveaways()
-            startmessage = await ctx.send("0 giveaways gatbered")
+            startmessage = await ctx.send("0 giveaways gathered")
             for messageid, info in gaws.items():
                 messageid = str(messageid)
                 try:
@@ -775,6 +773,7 @@ class Giveaways(commands.Cog):
     @commands.group(name="giveawayprofile", aliases=["gprofile"])
     @commands.guild_only()
     async def giveawayprofile(self, ctx):
+        """View your giveaway donations and notes"""
         if not ctx.invoked_subcommand:
             donated = await self.config.member(ctx.author).donated()
             format_donated = "{:,}".format(donated)
@@ -798,6 +797,7 @@ class Giveaways(commands.Cog):
     
     @giveawayprofile.command(name="notes")
     async def gprofile_notes(self, ctx):
+        """View your giveaway notes"""
         notes = await self.config.member(ctx.author).notes()
         if len(notes) == 0:
             return await ctx.send("You have no notes")
@@ -834,10 +834,12 @@ class Giveaways(commands.Cog):
     @commands.group(name="giveawaystore", aliases=["gstore"])
     @commands.check(is_manager)
     async def giveawaystore(self, ctx):
+        """Manage donation and note tracking for members"""
         pass 
     
     @giveawaystore.command(name="clear")
     async def gstore_clear(self, ctx, member: Optional[discord.Member] = None):
+        """Clear everything for a member"""
         if not member:
             return await ctx.send("A member needs to be specified after this")
         else:
@@ -856,6 +858,7 @@ class Giveaways(commands.Cog):
     
     @giveawaystore.group(name="donate")
     async def donate(self, ctx):
+        """A group for managing giveway donations/amounts"""
         pass
     
     @donate.command(name="add")
@@ -876,6 +879,7 @@ class Giveaways(commands.Cog):
     
     @donate.command(name="remove")
     async def donate_remove(self, ctx, member: Optional[discord.Member] = None, amt: str = None):
+        """Remove a certain amount from a members donation amount"""
         if not member:
             return await ctx.send("A member needs to be specified after this")
         if not amt:
@@ -894,10 +898,12 @@ class Giveaways(commands.Cog):
     
     @giveawaystore.group(name="note")
     async def note(self, ctx):
+        """A group for managing giveaway notes"""
         pass 
 
     @note.command(name="add")
     async def note_add(self, ctx, member: Optional[discord.Member] = None , * , note: str = None):
+        """Add a note to a member"""
         if not member:
             return await ctx.send("A member needs to be specified.")
         if not note:
@@ -909,7 +915,8 @@ class Giveaways(commands.Cog):
         await ctx.send("Added a note.")
     
     @note.command(name="remove")
-    async def note_remove(self, ctx, member: Optional[discord.Member] = None , * , note: Optional[int] = None):
+    async def note_remove(self, ctx, member: Optional[discord.Member] = None , note: Optional[int] = None):
+        """Remove a note from a member, you can do `[p]gprofile notes @member` to find the note ID, and specify that for the note param"""
         if not member:
             return await ctx.send("A member needs to be specified.")
         if not note:
