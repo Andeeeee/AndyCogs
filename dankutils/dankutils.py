@@ -6,7 +6,7 @@ import asyncio
 class DankUtilities(commands.Cog):
     def __init__(self, bot):
         self.bot = bot 
-        self.Config = Config.get_conf(
+        self.config = Config.get_conf(
             self,
             identifier=160805014090190130501014,
             force_registration=True,
