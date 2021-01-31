@@ -140,12 +140,13 @@ class DankUtilities(commands.Cog):
 
 
         e.add_field(name="Entries", value=formatted_entries[:2000], inline=False)
-        e.add_field(name="Reputation", value=data["reputation"], inline=False)
+        e.add_field(name="Reputation", value=str(data["reputation"]), inline=False)
 
         try:
             await channel.send(embed=e)
         except (discord.errors.Forbidden, discord.HTTPException):
             return 
+        
     
     @commands.command(name="trade", cooldown_after_parsing=True)
     @commands.max_concurrency(1, commands.BucketType.channel)
