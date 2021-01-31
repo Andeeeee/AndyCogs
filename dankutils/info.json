@@ -1,0 +1,19 @@
+{
+    "name": "Giveaways",
+    "short": "Host giveaways",
+    "description": "Host Giveaways for your server with features and requirements!",
+    "end_user_data_statement": "This cog will store your servers giveaways, may store a LOT if you have a lot of servers",
+    "install_msg": "Check out `[p]gset]` to set your settings",   
+    "author": [
+        "Andy"
+    ],
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "utility", "fun", "meme"
+    ],
+    "min_bot_version": "3.4.5",
+    "hidden": false,
+    "disabled": false,
+    "type": "COG"
+}
