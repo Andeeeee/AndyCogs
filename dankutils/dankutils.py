@@ -57,7 +57,7 @@ class DankUtilities(commands.Cog):
         await self.config.user(ctx.author).description.set(description)
     
     @tradeshop.command(name="add")
-    async def tradeshop_add(self, ctx, text: str = None):
+    async def tradeshop_add(self, ctx, * , text: str = None):
         """Add an entry to your tradeshop"""
         if not text:
             return await ctx.send("You need to specify some text for this entry!")
