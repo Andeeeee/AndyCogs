@@ -97,10 +97,13 @@ class DankUtilities(commands.Cog):
             color=data["color"]
         )
 
-        formatted_entries = "Nothing Here"
+        formatted_entries = ""
 
         for i, entry in enumerate(data["entries"], start=1):
             formatted_entries += f"{i}. {entry}\n"
+        
+        if len(formatted_entries) == 0:
+            formatted_entries = "Nothing Here"
 
 
         e.add_field(name="Entries", value=formatted_entries[:2000], inline=False)
@@ -133,10 +136,13 @@ class DankUtilities(commands.Cog):
             color=data["color"]
         )
 
-        formatted_entries = "Nothing Here"
+        formatted_entries = ""
 
         for i, entry in enumerate(data["entries"], start=1):
             formatted_entries += f"{i}. {entry}\n"
+        
+        if len(formatted_entries) == 0:
+            formatted_entries = "Nothing Here"
 
 
         e.add_field(name="Entries", value=formatted_entries[:2000], inline=False)
@@ -146,6 +152,19 @@ class DankUtilities(commands.Cog):
             await channel.send(embed=e)
         except (discord.errors.Forbidden, discord.HTTPException):
             return 
+    
+    @tradeshop.command(name="remove")
+    async def remove(self, ctx, number: Optional[int] = None):
+        """Remove an entry"""
+        if not number:
+            return await ctx.send(f"You need to specify a number after this!")
+        entries = await self.config.user(ctx.author).entries()
+        if len(entries) < number - 1:
+            return await ctx.send("This isn't in your entries!")
+        
+        async with self.config.user(ctx.author).entries() as entries:
+            entries.pop(number - 1)
+        await ctx.send("This entry has been removed")
         
     
     @commands.command(name="trade", cooldown_after_parsing=True)
