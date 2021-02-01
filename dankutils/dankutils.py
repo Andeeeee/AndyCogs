@@ -159,7 +159,7 @@ class DankUtilities(commands.Cog):
         if not number:
             return await ctx.send(f"You need to specify a number after this!")
         entries = await self.config.user(ctx.author).entries()
-        if len(entries) < number - 1:
+        if number > len(entries):
             return await ctx.send("This isn't in your entries!")
         
         async with self.config.user(ctx.author).entries() as entries:
