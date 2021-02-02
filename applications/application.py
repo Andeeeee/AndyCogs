@@ -193,22 +193,10 @@ class Applications(commands.Cog):
             await self.config.guild(ctx.guild).positions.set(positions)
             await ctx.send(f"Removed **{role.name}** from the position list")
     
-    @appset.command(name="roles")
-    async def roles(self, ctx):
-        """View server roles that can be accepted"""
-        positions = await self.config.guild(ctx.guild).positions()
-        if len(positions) == 0:
-            await ctx.send("This guild has no positions.")
-        else:
-            e = discord.Embed(title="Positions", color=discord.Color.green())
-            for i in range(len(positions)):
-                e.add_field(name=f"Position {i+1}", value=positions[i])
-            await ctx.send(embed=e)
-    
     @appset.command(name="positions")
     async def positions(self, ctx):
         """View positions you can apply for"""
-        questions = await self.config.guild(ctx.guild).positions()
+        questions = await self.config.guild(ctx.guild).questions()
         formatted_list = "\n".join([p.lower() for p in questions.items()])
         e = discord.Embed(
             title="Available positions",
