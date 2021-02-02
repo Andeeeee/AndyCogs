@@ -287,7 +287,7 @@ class Applications(commands.Cog):
             await ctx.send("Uh oh, looks like the application channel for this server isn't set. Please ask an admin or above to set one.")
             return 
         questions = await self.config.guild(ctx.guild).questions()
-        if position not in questions:
+        if position.lower() not in questions:
             return await ctx.send("This position doesn't exist...")
 
         if len(questions) == 0:
@@ -308,7 +308,7 @@ class Applications(commands.Cog):
 
         answers = []
 
-        for question in questions:
+        for question in questions[position.lower()]:
             await ctx.author.send(question)
             try:
                 def check(message):
