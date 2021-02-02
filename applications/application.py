@@ -14,7 +14,7 @@ class Applications(commands.Cog):
         self.config = Config.get_conf(self, identifier=160805014090190130501014, force_registration=True)
 
         default_guild = {
-            "questions" : [],
+            "questions" : {},
             "channel": None,
             "resultchannel": None,
             "acceptrole": None,
@@ -193,9 +193,9 @@ class Applications(commands.Cog):
             await self.config.guild(ctx.guild).positions.set(positions)
             await ctx.send(f"Removed **{role.name}** from the position list")
     
-    @appset.command(name="positions")
-    async def positions(self, ctx):
-        """View server positions"""
+    @appset.command(name="roles")
+    async def roles(self, ctx):
+        """View server roles that can be accepted"""
         positions = await self.config.guild(ctx.guild).positions()
         if len(positions) == 0:
             await ctx.send("This guild has no positions.")
@@ -205,12 +205,58 @@ class Applications(commands.Cog):
                 e.add_field(name=f"Position {i+1}", value=positions[i])
             await ctx.send(embed=e)
     
+    @appset.command(name="positions")
+    async def positions(self, ctx):
+        """View positions you can apply for"""
+        questions = await self.config.guild(ctx.guild).positions()
+        formatted_list = "\n".join(p.name.lower() for p in questions.items())
+        e = discord.Embed(
+            title="Available positions",
+            description=formatted_list,
+            color=discord.Color.blurple()
+        )
+        await ctx.send(embed=e)
+    
+    @appset.command(name="create")
+    async def create(self, ctx, name: str):
+        """Create a set of applications"""
+        allquestions = await self.config.guild(ctx.guild).questions()
+        if name in allquestions:
+            return await ctx.send(f"This already exists, remove it with {ctx.prefix}appset remove {name}")
+        allquestions[name.lower()] = [
+                "What name do you prefer to go by?",
+                "What age are you?",
+                "What time zone are you in?",
+                "Which position/role are you applying for?",
+                "Do you have any previous experience with this position or role? If so, please describe.",
+                "What bots are you most familiar and experienced with?",
+                "What makes you special? Why should we pick you for this role",
+                "Which hours can you be active daily?",
+                "How many days of the week can you be online?",
+                "Any final comments or things that we should be aware of?",
+            ]
+        
+        await ctx.send(f"Done. Set the questions with {ctx.prefix}appset questions {name}")
+    
+    @appset.command(name="remove")
+    async def remove(self, ctx, name: str):
+        """Remove a set of applications"""
+        allquestions = await self.config.guild(ctx.guild).questions()
+        if name.lower() not in allquestions:
+            return await ctx.send("This does not exist")
+        del allquestions[name]
+        await ctx.send("Done.")
+        
     @appset.command(name="questions", aliases=["custom"])
     @commands.admin_or_permissions(manage_guild=True)
-    async def questions(self, ctx):
+    async def questions(self, ctx, questionset: str):
         """Set the custom application questions"""
         await ctx.send("Lets get started. I'll ask you for the questions, and they will be your questions, you can have up to 20 questions. Type `done` when you are done")
         questions = []
+        allquestions = await self.config.guild(ctx.guild).questions()
+        questionset = questionset.lower()
+        if questionset not in allquestions:
+            return await ctx.send(f"This position does not exist. Its case sensitive. Type {ctx.prefix}appset positions for a list of positions. ")
 
         for i in range(20):
             await ctx.send(f"What will be question {i + 1}?")
@@ -231,8 +277,8 @@ class Applications(commands.Cog):
                 return
 
             questions.append(answer.content)
-        
-        await self.config.guild(ctx.guild).questions.set(questions)
+        allquestions[questionset] = questions
+        await self.config.guild(ctx.guild).questions.set(allquestions)
 
         e = discord.Embed(title="Custom Questions", color=discord.Color.green())
 
@@ -244,13 +290,15 @@ class Applications(commands.Cog):
     @commands.command(name="apply")
     @commands.cooldown(600, 1, BucketType.member)
     @commands.guild_only()
-    async def apply(self, ctx):
+    async def apply(self, ctx, position: str):
         """Apply in your server"""
         channel = await self.config.guild(ctx.guild).channel()
         if not channel:
             await ctx.send("Uh oh, looks like the application channel for this server isn't set. Please ask an admin or above to set one.")
             return 
         questions = await self.config.guild(ctx.guild).questions()
+        if position not in questions:
+            return await ctx.send("This position doesn't exist...")
 
         if len(questions) == 0:
             questions = [
@@ -287,7 +335,7 @@ class Applications(commands.Cog):
                 return 
             
             e = discord.Embed(title="New Application", color=discord.Color.green(),
-            description=f"User ID: {ctx.author.id}\nUser Name and Tag: {ctx.author}")
+            description=f"User ID: {ctx.author.id}\nUser Name and Tag: {ctx.author}\nPosition applying for: {position}")
 
             for i in range(len(questions)):
                 e.add_field(name=questions[i], value=answers[i], inline=False)
