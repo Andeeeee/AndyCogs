@@ -13,8 +13,6 @@ from redbot.core.utils.chat_formatting import pagify
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 
 
-class TimeRanOutError(Exception):
-    pass
 
 
 async def is_manager(ctx):
@@ -770,11 +768,15 @@ class Giveaways(commands.Cog):
 
 #-------------------------------------gprofile---------------------------------
 
-    @commands.group(name="giveawayprofile", aliases=["gprofile"])
+    @commands.group(name="giveawayprofile", aliases=["gprofile"], invoke_without_command=True)
     @commands.guild_only()
-    async def giveawayprofile(self, ctx):
+    async def giveawayprofile(self, ctx, member: Optional[discord.Member] = None):
         """View your giveaway donations and notes"""
         if not ctx.invoked_subcommand:
+            if not member:
+                pass 
+            else:
+                ctx.author = member
             donated = await self.config.member(ctx.author).donated()
             format_donated = "{:,}".format(donated)
             notes = await self.config.member(ctx.author).notes()
@@ -796,8 +798,10 @@ class Giveaways(commands.Cog):
             await ctx.send(embed=e)
     
     @giveawayprofile.command(name="notes")
-    async def gprofile_notes(self, ctx):
+    async def gprofile_notes(self, ctx, member: Optional[discord.Member] = None):
         """View your giveaway notes"""
+        if member:
+            ctx.author = member
         notes = await self.config.member(ctx.author).notes()
         if len(notes) == 0:
             return await ctx.send("You have no notes")
