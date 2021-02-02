@@ -307,8 +307,9 @@ class Applications(commands.Cog):
         await ctx.author.send("You've started the application process. You have a total of 3 minutes PER QUESTION.")
 
         answers = []
+        questions = questions[position.lower()]
 
-        for question in questions[position.lower()]:
+        for question in questions:
             await ctx.author.send(question)
             try:
                 def check(message):
@@ -334,7 +335,7 @@ class Applications(commands.Cog):
             await channel.send(embed=e)
             await ctx.author.send(f"Your application has been successfully sent to **{ctx.guild.name}**")
         except(Exception) as e:
-            await ctx.author.send(f"Uh oh, something borked. The error was \n {e}")
+            await ctx.author.send(f"Uh oh, something borked. The error was \n{e}")
 
     @commands.command(name="accept")
     @commands.guild_only()
