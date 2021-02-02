@@ -51,7 +51,7 @@ class DankUtilities(commands.Cog):
         pass 
 
     @tradeshop.command(name="description", aliases=["about"])
-    async def tradeshop_description(self, ctx, description: str = None):
+    async def tradeshop_description(self, ctx, * , description: str = None):
         """Set the embed description for tradeshop"""
         if not description:
             return await ctx.send("You need to specify a valid description after this")
