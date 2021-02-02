@@ -155,7 +155,7 @@ class Afk(commands.Cog):
                     continue 
                     
                 afk = datetime.utcnow() - datetime.fromtimestamp(afk)
-                afk = self.display_time(afk.total_seconds())
+                afk = self.display_time(round(afk.total_seconds()))
 
                 final_message.append(msg.replace("{author}", user.mention).replace("{time}", str(afk)))
 
