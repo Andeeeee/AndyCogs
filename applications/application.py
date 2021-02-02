@@ -278,7 +278,7 @@ class Applications(commands.Cog):
         await ctx.send(f"{ctx.author.mention} your custom questions", embed=e)
 
     @commands.command(name="apply")
-    @commands.cooldown(600, 1, BucketType.member)
+    @commands.cooldown(1, 300, BucketType.member)
     @commands.guild_only()
     async def apply(self, ctx, position: str):
         """Apply in your server"""
