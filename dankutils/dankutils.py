@@ -56,6 +56,7 @@ class DankUtilities(commands.Cog):
         if not description:
             return await ctx.send("You need to specify a valid description after this")
         await self.config.user(ctx.author).description.set(description)
+        await ctx.send(f"Done.")
     
     @tradeshop.command(name="add")
     async def tradeshop_add(self, ctx, * , text: str = None):
