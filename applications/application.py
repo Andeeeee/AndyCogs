@@ -197,7 +197,7 @@ class Applications(commands.Cog):
     async def positions(self, ctx):
         """View positions you can apply for"""
         questions = await self.config.guild(ctx.guild).questions()
-        formatted_list = "\n".join([p.lower() for p in questions.items()])
+        formatted_list = "\n".join([p.lower() for p in questions.keys()])
         e = discord.Embed(
             title="Available positions",
             description=formatted_list,
