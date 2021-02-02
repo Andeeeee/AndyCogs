@@ -14,7 +14,7 @@ class Applications(commands.Cog):
         self.config = Config.get_conf(self, identifier=160805014090190130501014, force_registration=True)
 
         default_guild = {
-            "questions" : {},
+            "questions": {},
             "channel": None,
             "resultchannel": None,
             "acceptrole": None,
@@ -209,7 +209,7 @@ class Applications(commands.Cog):
     async def positions(self, ctx):
         """View positions you can apply for"""
         questions = await self.config.guild(ctx.guild).positions()
-        formatted_list = "\n".join(p.name.lower() for p in questions.items())
+        formatted_list = "\n".join([p.lower() for p in questions.items()])
         e = discord.Embed(
             title="Available positions",
             description=formatted_list,
@@ -221,7 +221,7 @@ class Applications(commands.Cog):
     async def create(self, ctx, name: str):
         """Create a set of applications"""
         allquestions = await self.config.guild(ctx.guild).questions()
-        if name in allquestions:
+        if name.lower() in allquestions:
             return await ctx.send(f"This already exists, remove it with {ctx.prefix}appset remove {name}")
         allquestions[name.lower()] = [
                 "What name do you prefer to go by?",
@@ -235,7 +235,7 @@ class Applications(commands.Cog):
                 "How many days of the week can you be online?",
                 "Any final comments or things that we should be aware of?",
             ]
-        
+        await self.config.guild(ctx.guild).questions.set(allquestions)
         await ctx.send(f"Done. Set the questions with {ctx.prefix}appset questions {name}")
     
     @appset.command(name="remove")
@@ -245,6 +245,7 @@ class Applications(commands.Cog):
         if name.lower() not in allquestions:
             return await ctx.send("This does not exist")
         del allquestions[name]
+        await self.config.guild(ctx.guild).questions.set(allquestions)
         await ctx.send("Done.")
         
     @appset.command(name="questions", aliases=["custom"])
