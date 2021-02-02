@@ -55,7 +55,7 @@ class Giveaways(commands.Cog):
             "default_req": None,
             "giveaways": {},
             "dmwin": True,
-            "dmhost": True
+            "dmhost": True,
         }
 
         default_member = {
