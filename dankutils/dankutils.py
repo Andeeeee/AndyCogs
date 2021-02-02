@@ -174,11 +174,11 @@ class DankUtilities(commands.Cog):
         """Trade with another user"""
         if not user:
             await ctx.send("You can't trade with nobody. Specify a members ID, name, or mention after this please.")
-            ctx.command.reset_cooldown
+            ctx.command.reset_cooldown(ctx)
             return 
         if not offer:
             await ctx.send("Make an offer, such as `I'll give you a santa hat`")
-            ctx.command.reset_cooldown
+            ctx.command.reset_cooldown(ctx)
             return 
 
         await ctx.send(f"{user.mention}: {ctx.author.mention} wants to trade {offer}. Do you accept?")
