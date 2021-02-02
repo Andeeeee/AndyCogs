@@ -268,7 +268,8 @@ class Applications(commands.Cog):
             answer = await self.bot.wait_for("message", check=check, timeout=60)
 
             if answer.content.lower() == "done":
-                await self.config.guild(ctx.guild).questions.set(questions)
+                allquestions[questionset] = questions
+                await self.config.guild(ctx.guild).questions.set(allquestions)
 
                 e = discord.Embed(title="Custom Questions", color=discord.Color.green())
 
