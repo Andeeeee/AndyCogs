@@ -1,0 +1,19 @@
+{
+    "name": "freeloadermode",
+    "short": "ban people who leave the server in x amount of time",
+    "description": "ban people who leave the server in x amount of time",
+    "end_user_data_statement": "stores nothing basically",
+    "install_msg": "Thanks for installing! Join my support server at <https://discord.gg/nVcZQt7mqk> or make a PR on my repo",   
+    "author": [
+        "Andy"
+    ],
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "utility"
+    ],
+    "min_bot_version": "3.4.5",
+    "hidden": false,
+    "disabled": false,
+    "type": "COG"
+}
