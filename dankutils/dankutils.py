@@ -4,6 +4,7 @@ from typing import Optional
 import asyncio
 
 class DankUtilities(commands.Cog):
+    """A cog for dankmemer trades and such"""
     def __init__(self, bot):
         self.bot = bot 
         self.config = Config.get_conf(
@@ -61,8 +62,9 @@ class DankUtilities(commands.Cog):
         """Add an entry to your tradeshop"""
         if not text:
             return await ctx.send("You need to specify some text for this entry!")
-        async with self.config.user(ctx.author).entries() as entries:
-            entries.append(text)
+        entries = await self.config.user(ctx.author).entries()
+        entries.append(text)
+        await self.config.user(ctx.author).entries.set(entries)
         await ctx.send(f"Entry Added.")
 
     @tradeshop.command(name="color")
@@ -180,6 +182,9 @@ class DankUtilities(commands.Cog):
             await ctx.send("Make an offer, such as `I'll give you a santa hat`")
             ctx.command.reset_cooldown(ctx)
             return 
+        
+        if user == ctx.author:
+            return await ctx.send("Trading with yourself lmao.")
 
         await ctx.send(f"{user.mention}: {ctx.author.mention} wants to trade {offer}. Do you accept?")
 
@@ -189,14 +194,16 @@ class DankUtilities(commands.Cog):
         try:
             resp = await self.bot.wait_for("message", check=check, timeout=60)
         except asyncio.TimeoutError:
-            ctx.command.reset_cooldown
+            ctx.command.reset_cooldown(ctx)
             return await ctx.send("The other user didn't reply. :(")
 
         if resp.content.lower() == "yes":
-            async with self.config.user(ctx.author).reputation() as rep:
-                rep += 1
-            async with self.config.user(user).reputation() as rep:
-                rep += 1
+            rep = await self.config.user(ctx.author).reputation()
+            rep += 1
+            await self.config.user(ctx.author).reputation.set(rep)
+            rep = await self.config.user(user).reputation()
+            rep += 1
+            await self.config.user(user).reputation.set(rep)
 
             await ctx.send(f"{user.name} agrees! You've both earned 1 reputation point")
         else:
