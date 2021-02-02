@@ -22,6 +22,30 @@ class Afk(commands.Cog):
 
         self.config.register_member(**default_member)
     
+    def display_time(self, seconds: int) -> str:
+        """
+        Turns seconds into human readable time.
+        """
+        message = ''
+
+        intervals = (
+            ('week', 604_800),  # 60 * 60 * 24 * 7
+            ('day',   86_400),  # 60 * 60 * 24
+            ('hour',   3_600),  # 60 * 60
+            ('minute',    60),
+            ('second',     1),
+        )
+
+        for name, amount in intervals:
+            n, seconds = divmod(seconds, amount)
+
+            if n == 0:
+                continue
+
+            message += f'{n} {name + "s" * (n != 1)} '
+
+        return message.strip()
+    
     @commands.group(name="afk")
     @commands.guild_only()
     async def afk(self, ctx):
@@ -114,7 +138,7 @@ class Afk(commands.Cog):
 
         for mention in mentions:
             for m in mention:
-                if m == "!":
+                if m == "!" or mention == "" or mention == " ":
                     continue
                 if m.startswith("<@!"):
                     userid = m[3:-1]
@@ -131,8 +155,7 @@ class Afk(commands.Cog):
                     continue 
                     
                 afk = datetime.utcnow() - datetime.fromtimestamp(afk)
-                afk = str(afk).split(".")
-                afk = afk[0]
+                afk = self.display_time(afk.total_seconds())
 
                 final_message.append(msg.replace("{author}", user.mention).replace("{time}", str(afk)))
 
