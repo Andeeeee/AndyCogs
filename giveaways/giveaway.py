@@ -483,7 +483,7 @@ class Giveaways(commands.Cog):
                                 help="Adds a note to the donor/hosts notes")
 
             try:
-                flags = vars(parser.parse_args(flags.split()))
+                flags, uk = vars(parser.parse_known_args(flags.split()))
 
                 if flags["donor"]:
                     donor = flags["donor"].lstrip("<@!").lstrip("<@").rstrip(">")
@@ -498,6 +498,7 @@ class Giveaways(commands.Cog):
                     pass
                     
             except Exception as exc:
+                await ctx.send(str(exc))
                 raise BadArgument() from exc
 
         guild = ctx.guild
