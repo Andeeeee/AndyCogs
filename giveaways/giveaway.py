@@ -459,7 +459,7 @@ class Giveaways(commands.Cog):
         if winners < 0:
             return await ctx.send("Can've have less than 1 winner")
 
-        if len(flags) == 1:
+        if len(flags) == 2:
             flags = {
                 "ping": False,
                 "msg": None,
@@ -483,7 +483,7 @@ class Giveaways(commands.Cog):
                                 help="Adds a note to the donor/hosts notes")
 
             try:
-                flags = vars(parser.parse_args(flags[1].split()))
+                flags = vars(parser.parse_args(flags.split()))
 
                 if flags["donor"]:
                     donor = flags["donor"].lstrip("<@!").lstrip("<@").rstrip(">")
