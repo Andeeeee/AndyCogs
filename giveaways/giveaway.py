@@ -55,7 +55,7 @@ class Giveaways(commands.Cog):
             "default_req": None,
             "giveaways": {},
             "dmwin": True,
-            "dmhost": True,
+            "dmhost": True
         }
 
         default_member = {
@@ -442,16 +442,15 @@ class Giveaways(commands.Cog):
         --msg: The message to send right after the giveaway starts. It will not take spaces, to add spaces, use `-` or `_` and the bot will replace those with spaces.
         --ping: Specify True or False after this flag, if a pingrole for your server is set, it will ping that role.
 
-        Flags need to be seperated from the normal arguments with `|`
         Specify `none` to the requirement to remove fuzzyrole converters and not have a role requirement
         
         Example:
         `.g start 10m 1 @Owners lots of yummy coins | --ping True --msg I-will-eat-these-coins --donor @Andee#8552 --amt 50000 --note COINS_ARE_YUMMY`
         `.g start 10m 1w none coffee`
         """
-        title = title.split("|")
+        title = title.split("--")
         title = title[0]
-        flags = ctx.message.content.split("|")
+        flags = ctx.message.content
         winners = winners.rstrip("w")
 
         if not str(winners).isdigit():
@@ -484,7 +483,7 @@ class Giveaways(commands.Cog):
                                 help="Adds a note to the donor/hosts notes")
 
             try:
-                flags = vars(parser.parse_args(flags[1].split()))
+                flags, uk = vars(parser.parse_known_args(flags[1].split()))
                 if flags["donor"]:
                     donor = flags["donor"].lstrip("<@!").lstrip("<@").rstrip(">")
                     if str(donor).isdigit():
