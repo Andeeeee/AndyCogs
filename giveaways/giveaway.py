@@ -12,6 +12,21 @@ from redbot.core.commands import BadArgument
 from redbot.core.utils.chat_formatting import pagify
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 
+giveaway_usage = """Start a giveaway in your server. Flags and Arguments will be explained below.
+
+        Flags:
+        --donor: Add a field with the donors mention. Additionally if you store an amount or note for this giveaway it will add to the donors storage.
+        --amt: The amount to store for gprofile/gstore. Must be an integer, 50k, 50M, etc are not accepted.
+        --note: The note to add to the host/donors notes. 
+        --msg: The message to send right after the giveaway starts. 
+        --ping: Specify True or False after this flag, if a pingrole for your server is set, it will ping that role.
+
+        Specify `none` to the requirement to remove fuzzyrole converters and not have a role requirement
+        
+        Example:
+        `.g start 10m 1 @Owners lots of yummy coins | --ping True --msg I-will-eat-these-coins --donor @Andee#8552 --amt 50000 --note COINS_ARE_YUMMY`
+        `.g start 10m 1w none coffee`"""
+
 class NoExitParser(argparse.ArgumentParser):
     def error(self, message):
         raise BadArgument()
@@ -69,20 +84,7 @@ class Giveaways(commands.Cog):
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
 
-        self.giveaway_usage = """Start a giveaway in your server. Flags and Arguments will be explained below.
-
-        Flags:
-        --donor: Add a field with the donors mention. Additionally if you store an amount or note for this giveaway it will add to the donors storage.
-        --amt: The amount to store for gprofile/gstore. Must be an integer, 50k, 50M, etc are not accepted.
-        --note: The note to add to the host/donors notes. 
-        --msg: The message to send right after the giveaway starts. 
-        --ping: Specify True or False after this flag, if a pingrole for your server is set, it will ping that role.
-
-        Specify `none` to the requirement to remove fuzzyrole converters and not have a role requirement
         
-        Example:
-        `.g start 10m 1 @Owners lots of yummy coins | --ping True --msg I-will-eat-these-coins --donor @Andee#8552 --amt 50000 --note COINS_ARE_YUMMY`
-        `.g start 10m 1w none coffee`"""
 
 #-------------------------------------Functions---------------------------------
     def convert_time(self, time: str):
@@ -440,7 +442,7 @@ class Giveaways(commands.Cog):
     async def giveaway(self, ctx):
         pass
 
-    @giveaway.command(name="start", usage=self.giveaway_usage)
+    @giveaway.command(name="start", usage=giveaway_usage)
     @commands.check(is_manager)
     async def g_start(
         self,
