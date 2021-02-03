@@ -473,13 +473,13 @@ class Giveaways(commands.Cog):
 
             parser.add_argument("--ping", nargs="?", type=bool, default=False,
                                 help="Toggles whether to pong the pingrole or not")
-            parser.add_argument("--msg", nargs='?', type=str, default=None,
+            parser.add_argument("--msg", nargs='*', type=str, default=None,
                                 help="Sends a message after the giveaway message")
             parser.add_argument("--donor", nargs='?', type=str,
                                 default=None, help="Adds a field with the donor")
             parser.add_argument("--amt", nargs='?', type=int,
                                 default=0, help="Stores the amount for this giveaway")
-            parser.add_argument("--note", nargs='?', type=str, default=None,
+            parser.add_argument("--note", nargs='*', type=str, default=None,
                                 help="Adds a note to the donor/hosts notes")
 
             try:
