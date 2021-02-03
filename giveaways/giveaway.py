@@ -445,8 +445,9 @@ class Giveaways(commands.Cog):
         Specify `none` to the requirement to remove fuzzyrole converters and not have a role requirement
         
         Example:
-        `.g start 10m 1 @Owners lots of yummy coins | --ping True --msg I-will-eat-these-coins --donor @Andee#8552 --amt 50000 --note COINS_ARE_YUMMY`
+        `.g start 10m 1 @Owners lots of yummy coins --ping True --msg I will eat these coins --donor @Andee#8552 --amt 50000 --note COINS ARE YUMMY`
         `.g start 10m 1w none coffee`
+
         """
         await ctx.send(embed=e)
 
