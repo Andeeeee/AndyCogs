@@ -76,7 +76,10 @@ class Giveaways(commands.Cog):
         conversion = time[-1]
 
         if conversion not in conversions:
-            return time[:-1]
+            try:
+                return int(time[:-1])
+            except ValueError:
+                return 1
 
         return int(time[:-1]) * conversions[time[-1]]
 
