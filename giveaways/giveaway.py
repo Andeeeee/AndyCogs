@@ -485,6 +485,9 @@ class Giveaways(commands.Cog):
             try:
                 flags, uk = parser.parse_known_args(flags[1].split())
                 flags = vars(flags)
+                await ctx.send(uk)
+                return await ctx.send(flags)
+
                 if flags["donor"]:
                     donor = flags["donor"].lstrip("<@!").lstrip("<@").rstrip(">")
                     if str(donor).isdigit():
