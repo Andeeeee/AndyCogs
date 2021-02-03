@@ -438,8 +438,8 @@ class Giveaways(commands.Cog):
         Flags:
         --donor: Add a field with the donors mention. Additionally if you store an amount or note for this giveaway it will add to the donors storage.
         --amt: The amount to store for gprofile/gstore. Must be an integer, 50k, 50M, etc are not accepted.
-        --note: The note to add to the host/donors notes. This will not accept spaces, if you want spaces, use `-` and `_` and it will subsitute spaces
-        --msg: The message to send right after the giveaway starts. It will not take spaces, to add spaces, use `-` or `_` and the bot will replace those with spaces.
+        --note: The note to add to the host/donors notes. 
+        --msg: The message to send right after the giveaway starts. 
         --ping: Specify True or False after this flag, if a pingrole for your server is set, it will ping that role.
 
         Specify `none` to the requirement to remove fuzzyrole converters and not have a role requirement
@@ -483,7 +483,8 @@ class Giveaways(commands.Cog):
                                 help="Adds a note to the donor/hosts notes")
 
             try:
-                flags, uk = vars(parser.parse_known_args(flags.split()))
+                flags, uk = parser.parse_known_args(flags.split())
+                flags = vars(flags)
 
                 if flags["donor"]:
                     donor = flags["donor"].lstrip("<@!").lstrip("<@").rstrip(">")
@@ -498,7 +499,6 @@ class Giveaways(commands.Cog):
                     pass
                     
             except Exception as exc:
-                await ctx.send(str(exc))
                 raise BadArgument() from exc
 
         guild = ctx.guild
