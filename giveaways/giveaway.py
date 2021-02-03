@@ -77,7 +77,7 @@ class Giveaways(commands.Cog):
 
         if conversion not in conversions:
             try:
-                return int(time[:-1])
+                return int(time)
             except ValueError:
                 return 1
 
