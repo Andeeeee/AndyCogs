@@ -325,7 +325,7 @@ class Giveaways(commands.Cog):
                     final_message += " "
 
         if msg:
-            final_message += msg.replace("_", " ").replace("-", " ")
+            final_message += "".join(msg)
 
         if final_message == "" or len(final_message) == 0:
             return
@@ -333,9 +333,9 @@ class Giveaways(commands.Cog):
         else:
             await ctx.send(final_message, allowed_mentions=allowed_mentions)
 
-    async def setnote(self, user: discord.Member, note: str):
+    async def setnote(self, user: discord.Member, note: list):
         notes = await self.config.member(user).notes()
-        notes.append(note)
+        notes.append("".join(note))
         await self.config.member(user).notes.set(notes)
 
     async def add_amount(self, user: discord.Member, amt: int):
