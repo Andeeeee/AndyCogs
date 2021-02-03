@@ -483,10 +483,7 @@ class Giveaways(commands.Cog):
                                 help="Adds a note to the donor/hosts notes")
 
             try:
-                flags, uk = parser.parse_known_args(flags[1].split())
-                flags = vars(flags)
-                await ctx.send(uk)
-                return await ctx.send(flags)
+                flags = vars(parser.parse_args(flags[1].split()))
 
                 if flags["donor"]:
                     donor = flags["donor"].lstrip("<@!").lstrip("<@").rstrip(">")
