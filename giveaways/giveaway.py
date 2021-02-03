@@ -483,7 +483,8 @@ class Giveaways(commands.Cog):
                                 help="Adds a note to the donor/hosts notes")
 
             try:
-                flags, uk = vars(parser.parse_known_args(flags[1].split()))
+                flags, uk = parser.parse_known_args(flags[1].split())
+                flags = vars(flags)
                 if flags["donor"]:
                     donor = flags["donor"].lstrip("<@!").lstrip("<@").rstrip(">")
                     if str(donor).isdigit():
