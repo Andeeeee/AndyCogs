@@ -124,6 +124,10 @@ class Afk(commands.Cog):
         else:
             await message.channel.send(f"Welcome back {message.author.mention}, I've removed your afk.")
             await self.config.member(message.author).afk.clear()
+            try:
+                await message.author.edit(nick=message.author.nick.replace("[afk]", ""))
+            except discord.errors.Forbidden:
+                pass
         
         final_message = []
         
