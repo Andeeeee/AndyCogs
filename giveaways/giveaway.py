@@ -476,7 +476,7 @@ class Giveaways(commands.Cog):
     ):
         """Start a giveaway in your server. Flags and Arguments are explained with .giveaway help
         """
-        await ctx.send(role)
+        return await ctx.send(role)
         title = title.split("--")
         title = title[0]
         flags = ctx.message.content
