@@ -35,6 +35,7 @@ class FuzzyRole(RoleConverter):
         argument = argument.split(";;")
         guild = ctx.guild
         result = []
+        sorted_results = []
         for arg in argument:
             for r in process.extract(
                 arg,
@@ -44,8 +45,9 @@ class FuzzyRole(RoleConverter):
             ):
                 result.append((r[2], r[1]))
 
-        if not result:
-            raise BadArgument(f'Role "{argument}" not found.' if self.response else None)
+            if not result:
+                raise BadArgument(f'Role "{argument}" not found.' if self.response else None)
 
-        sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
-        return sorted_result[:-1]
+            sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
+            sorted_results.append(sorted_result[0][0])
+        return sorted_results
