@@ -429,6 +429,7 @@ class Giveaways(commands.Cog):
     
     @giveaway.command(name="help")
     async def g_help(self, ctx):
+        """Explanation on how to start a giveaway"""
         e = discord.Embed(
             title="Giveaway Help",
             color=discord.Color.blurple(),
