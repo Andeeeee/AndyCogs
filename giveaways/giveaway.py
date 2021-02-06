@@ -618,7 +618,7 @@ class Giveaways(commands.Cog):
     
     @giveaway.command(name="reroll")
     @commands.check(is_manager)
-    async def g_reroll(self, ctx, messageid: Optional[int] = None, winners: Optional[int] = 1):
+    async def g_reroll(self, ctx, messageid: int, winners: Optional[int] = 1):
         """Reroll a giveaway"""
         if not messageid:
             return await ctx.send("You need to supply a valid message id.")
@@ -685,7 +685,7 @@ class Giveaways(commands.Cog):
     @giveaway.command(name="list")
     @commands.cooldown(1, 30, commands.BucketType.member)
     @commands.max_concurrency(2, commands.BucketType.user)
-    async def g_list(self, ctx, can_join = False):
+    async def g_list(self, ctx, can_join: bool = False):
         """List the giveways in the server. Specify True for can_join paramater to only list the ones you can join"""
         async with ctx.typing():
             giveaway_list = []
@@ -798,7 +798,7 @@ class Giveaways(commands.Cog):
             await ctx.send(embed=e)
     
     @giveaway.command(name="cancel")
-    async def cancel(self, ctx, giveaway: Optional[int] = None):
+    async def cancel(self, ctx, giveaway: int = None):
         """Cancel a giveaway"""
         gaws = await self.config.guild(ctx.guild).giveaways()
         giveaway = str(giveaway)
