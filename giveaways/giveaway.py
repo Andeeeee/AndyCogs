@@ -186,7 +186,7 @@ class Giveaways(commands.Cog):
             if info["requirement"]:
                 formatted_requirements = ""
                 for r in info["requirement"]:
-                    role = message.guild.get_role(r)
+                    role = message.guild.get_role(int(r))
                     if not role:
                         continue 
                     formatted_requirements += f"{r.mention} "
@@ -273,10 +273,16 @@ class Giveaways(commands.Cog):
             host = info["host"]
             e = discord.Embed(title=title, description=f"Host: <@{host}> \n Winners: None")
             if requirement:
-                role = message.guild.get_role(requirement)
+                formatted_requirements = ""
+                for r in requirement:
+                    role = message.guild.get_role(r)
+                    if not role:
+                        continue 
+                    formatted_requirements += f"{r.mention} "
                 e.add_field(name="Requirement",
-                            value=role.mention, inline=False)
-            elif donor:
+                            value=formatted_requirements, inline=False)
+
+            if donor:
                 donor = message.guild.get_member(donor)
                 e.add_field(name="Donor", value=donor.mention, inline=False)
             await channel.send(f"There were no valid entries for the **{title}** giveaway \n {message.jump_url}")
@@ -300,7 +306,7 @@ class Giveaways(commands.Cog):
                     formatted_requirements += f"{r.mention} "
                 e.add_field(name="Requirement",
                             value=formatted_requirements, inline=False)
-            elif donor:
+            if donor:
                 donor = message.guild.get_member(donor)
                 e.add_field(name="Donor", value=donor.mention, inline=False)
 
