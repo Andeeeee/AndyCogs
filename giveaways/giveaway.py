@@ -832,7 +832,7 @@ class Giveaways(commands.Cog):
 
         e = discord.Embed(
             title=data["title"],
-            description=f"Giveaway Cancelled",
+            description=f"Giveaway Cancelled\n",
             color=discord.Color.red(),
             timestamp=datetime.utcnow()
         )
