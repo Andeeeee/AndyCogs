@@ -27,29 +27,25 @@ class FuzzyRole(RoleConverter):
 
     def __init__(self, response: bool = True):
         self.response = response
-        super().__init__()
+        super().__init__() #e
 
     async def convert(self, ctx: commands.Context, argument: str) -> discord.Role:
         if argument.lower() == "none":
             return None
-        try:
-            basic_role = await super().convert(ctx, argument)
-        except BadArgument:
-            pass
-        else:
-            return basic_role
+        argument = argument.split(";;")
         guild = ctx.guild
         result = []
-        for r in process.extract(
-            argument,
-            {r: unidecode(r.name) for r in guild.roles},
-            limit=None,
-            score_cutoff=75,
-        ):
-            result.append((r[2], r[1]))
+        for arg in argument:
+            for r in process.extract(
+                arg,
+                {r: unidecode(r.name) for r in guild.roles},
+                limit=None,
+                score_cutoff=75,
+            ):
+                result.append((r[2], r[1]))
 
         if not result:
             raise BadArgument(f'Role "{argument}" not found.' if self.response else None)
 
         sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
-        return sorted_result[0][0]
+        return sorted_result
