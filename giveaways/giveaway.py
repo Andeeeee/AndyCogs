@@ -6,7 +6,7 @@ from discord.ext import tasks
 from discord.utils import sleep_until
 from redbot.core import commands, Config
 from typing import Optional, Union
-from random import choice
+from random import choice, randint
 from .converters import FuzzyRole
 from redbot.core.commands import BadArgument
 from redbot.core.utils.chat_formatting import pagify
@@ -158,13 +158,16 @@ class Giveaways(commands.Cog):
                 host = "Host Not Found"
             else:
                 host = host.mention
-            
-            if remaining.total_seconds() <= 30:
+            if remaining.total_seconds <= 10:
+                color = discord.Color.dark_red()
+            elif remaining.total_seconds() <= 30:
                 color = discord.Color.red()
             elif remaining.total_seconds() <= 240:
                 color = discord.Color.orange()
+            elif remaining.total_seconds() <= 600:
+                color = discord.Color.dark_green()
             else:
-                color = discord.Color.green()
+                color = discord.Color(value=random.randint(0x000000, 0xFFFFFF))
 
             e = discord.Embed(
                 title=info["title"], description="React with :tada: to enter! \n", color=color)
