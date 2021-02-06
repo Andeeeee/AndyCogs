@@ -749,7 +749,6 @@ class Giveaways(commands.Cog):
                     else:
                         header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
                         header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
-                        header += " :white_check_mark: You can join this giveaway\n"
                         header += " :octagonal_sign: You cannot join this giveaway\n"
 
                     giveaway_list.append(header)
@@ -777,11 +776,11 @@ class Giveaways(commands.Cog):
                         header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
                         header += " :white_check_mark: You can join this giveaway\n"
                         giveaway_list.append(header)
+                        continue
                     req = ctx.guild.get_role(requirement)
                     if not req:
                         header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
                         header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
-                        header += " :white_check_mark: You can join this giveaway\n"
                         header += " :white_check_mark: You can join this giveaway\n"
                         giveaway_list.append(header)
                         continue
@@ -789,7 +788,8 @@ class Giveaways(commands.Cog):
                         header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
                         header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
                         header += " :white_check_mark: You can join this giveaway\n"
-                        header += " :white_check_mark: You can join this giveaway\n"
+                        giveaway_list.append(header)
+                        continue
                     else:
                         continue 
 
