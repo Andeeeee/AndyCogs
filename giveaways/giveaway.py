@@ -189,7 +189,7 @@ class Giveaways(commands.Cog):
                     role = message.guild.get_role(int(r))
                     if not role:
                         continue 
-                    formatted_requirements += f"{r.mention} "
+                    formatted_requirements += f"{role.mention} "
                     e.add_field(name="Requirement",
                                 value=formatted_requirements, inline=False)
 
