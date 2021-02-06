@@ -456,6 +456,7 @@ class Giveaways(commands.Cog):
     @giveaway.command(name="clearended")
     @commands.admin_or_permissions(manage_guild=True)
     async def clearended(self, ctx):
+        """Clear the giveaways that have already ended in your server"""
         gaws = await self.config.guild(ctx.guild).giveaways()
         to_delete = []
         for messageid, info in gaws.items():
@@ -465,6 +466,7 @@ class Giveaways(commands.Cog):
         for messageid in to_delete:
             gaws.pop(messageid)
         await self.config.guild(ctx.guild).giveaways.set(gaws)
+        await ctx.send("Done.")
     
     @giveaway.command(name="help")
     async def g_help(self, ctx):
