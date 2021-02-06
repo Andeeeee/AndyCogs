@@ -986,6 +986,7 @@ class Giveaways(commands.Cog):
     
     @donate.command(name="add")
     async def donate_add(self, ctx, member: Optional[discord.Member] = None, amt: str = None):
+        """Add an amount to a users donations"""
         if not member:
             return await ctx.send("A member needs to be specified after this")
         if not amt:
