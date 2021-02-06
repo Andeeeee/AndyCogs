@@ -741,9 +741,6 @@ class Giveaways(commands.Cog):
                     if not req:
                         continue
                     header = f"[{title}]({m.jump_url})"
-                    header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
-                    header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
-                    header += " :white_check_mark: You can join this giveaway\n"
                     if req in ctx.author.roles:
                         header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
                         header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
@@ -776,7 +773,6 @@ class Giveaways(commands.Cog):
                     requirement = info["requirement"]
                     header = f"[{title}]({m.jump_url})"
                     if not requirement:
-                        header = f"[{title}]({m.jump_url})"
                         header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
                         header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
                         header += " :white_check_mark: You can join this giveaway\n"
