@@ -453,6 +453,19 @@ class Giveaways(commands.Cog):
     async def giveaway(self, ctx):
         pass
     
+    @giveaway.command(name="clearended")
+    @commands.admin_or_permissions(manage_guild=True)
+    async def clearended(self, ctx):
+        gaws = await self.config.guild(ctx.guild).giveaways()
+        to_delete = []
+        for messageid, info in gaws.items():
+            if not info["Ongoing"]:
+                to_delete.append(str(messageid))
+        
+        for messageid in to_delete:
+            gaws.pop(messageid)
+        await self.config.guild(ctx.guild).giveaways.set(gaws)
+    
     @giveaway.command(name="help")
     async def g_help(self, ctx):
         """Explanation on how to start a giveaway"""
