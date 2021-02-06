@@ -166,7 +166,7 @@ class Giveaways(commands.Cog):
             elif remaining.total_seconds() <= 600:
                 color = discord.Color.dark_green()
             else:
-                color = discord.Color(value=randint(0x000000, 0xFFFFFF))
+                color = discord.Color.green()
 
             e = discord.Embed(
                 title=info["title"], description="React with :tada: to enter! \n", color=color)
