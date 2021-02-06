@@ -460,7 +460,7 @@ class Giveaways(commands.Cog):
         gaws = await self.config.guild(ctx.guild).giveaways()
         to_delete = []
         for messageid, info in gaws.items():
-            if str(messageid) int dontclear:
+            if str(messageid) in dontclear:
                 continue
             if not info["Ongoing"]:
                 to_delete.append(str(messageid))
