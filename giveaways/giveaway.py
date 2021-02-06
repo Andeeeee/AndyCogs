@@ -455,11 +455,13 @@ class Giveaways(commands.Cog):
     
     @giveaway.command(name="clearended")
     @commands.admin_or_permissions(manage_guild=True)
-    async def clearended(self, ctx):
-        """Clear the giveaways that have already ended in your server"""
+    async def clearended(self, ctx, *dontclear):
+        """Clear the giveaways that have already ended in your server. Put all the message ids you dont want to clear after this to not clear them"""
         gaws = await self.config.guild(ctx.guild).giveaways()
         to_delete = []
         for messageid, info in gaws.items():
+            if str(messageid) int dontclear:
+                continue
             if not info["Ongoing"]:
                 to_delete.append(str(messageid))
         
