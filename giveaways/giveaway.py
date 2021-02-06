@@ -839,7 +839,12 @@ class Giveaways(commands.Cog):
         
         e.description += "Hosted By: <@{0}>\nCancelled By: {1}".format(data["host"], ctx.author.mention)
         e.set_footer(text="Cancelled at")
-        await m.edit(content="Giveaway Cancelled", embed=e)
+        try:
+            await m.edit(content="Giveaway Cancelled", embed=e)
+        except discord.NotFound:
+            return await ctx.send("I couldn't find this giveaway")
+        await ctx.send("Cancelled this giveaway")
+        
         
 #-------------------------------------gprofile---------------------------------
 
