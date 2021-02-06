@@ -111,13 +111,12 @@ class Giveaways(commands.Cog):
 
     async def giveaway_loop(self):
         await self.bot.wait_until_ready()
-        coros = []
+        self.tasks = []
 
         for guild, data in (await self.config.all_guilds()).items():
             for messageid, info in data["giveaways"].items():
                 if info["Ongoing"] == True:
-                    coros.append(self.start_giveaway(int(messageid), info))
-        await asyncio.gather(*coros)
+                    self.tasks.append(asyncio.create_task(self.start_giveaway(int(messageid), info)))
     
     
     async def start_giveaway(self, messageid: int, info):
@@ -314,6 +313,8 @@ class Giveaways(commands.Cog):
 
     def cog_unload(self):
         self.giveaway_task.cancel()
+        for task in self.tasks:
+            task.cancel()
 
     async def send_final_message(self, ctx, ping, msg):
         allowed_mentions = discord.AllowedMentions(roles=True, everyone=False)
