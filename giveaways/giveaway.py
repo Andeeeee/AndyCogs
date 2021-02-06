@@ -190,8 +190,8 @@ class Giveaways(commands.Cog):
                     if not role:
                         continue 
                     formatted_requirements += f"{role.mention} "
-                    e.add_field(name="Requirement",
-                                value=formatted_requirements, inline=False)
+                e.add_field(name="Requirement",
+                            value=formatted_requirements, inline=False)
 
             e.timestamp = datetime.fromtimestamp(endtime)
             winners = info["winners"]
