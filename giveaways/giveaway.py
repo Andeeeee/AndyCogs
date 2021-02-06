@@ -158,10 +158,9 @@ class Giveaways(commands.Cog):
                 host = "Host Not Found"
             else:
                 host = host.mention
-            if remaining.total_seconds() <= 10:
-                color = discord.Color.dark_red()
-            elif remaining.total_seconds() <= 30:
-                color = discord.Color.red()
+        
+            if remaining.total_seconds() <= 30:
+                color = discord.Color(value=0xFF0000)
             elif remaining.total_seconds() <= 240:
                 color = discord.Color.orange()
             elif remaining.total_seconds() <= 600:
