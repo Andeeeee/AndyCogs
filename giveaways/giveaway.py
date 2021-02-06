@@ -158,9 +158,16 @@ class Giveaways(commands.Cog):
                 host = "Host Not Found"
             else:
                 host = host.mention
+            
+            if remaining.total_seconds() <= 30:
+                color = discord.Color.red()
+            elif remaining.total_seconds() <= 240:
+                color = discord.Color.orange()
+            else:
+                color = discord.Color.green()
 
             e = discord.Embed(
-                title=info["title"], description="React with :tada: to enter! \n", color=discord.Color.green())
+                title=info["title"], description="React with :tada: to enter! \n", color=color)
 
             e.description += f"Time Left: {pretty_time} \n"
             e.description += f"Host: {host}"
