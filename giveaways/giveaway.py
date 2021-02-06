@@ -655,16 +655,20 @@ class Giveaways(commands.Cog):
         except discord.HTTPException:
             return 
     
-    @giveaway.command(name="forcecache")
+    @giveaway.command(name="cache")
     @commands.is_owner()
-    async def forcecache(self, ctx):
+    async def cache(self, ctx, active: bool = True):
         """Owner Utility to force a cache on a server in case something broke or you reloaded the cog and need it needs to be cached"""
         async with ctx.typing():
             msg = await ctx.send("0 giveaways cached")
             counter = 0
             for messageid, info in (await self.config.guild(ctx.guild).giveaways()).items():
                 counter += 1
-                if counter%25 == 0:
+                if active:
+                    if info["Ongoing"] == False:
+                        continue 
+                    
+                if counter % 25 == 0:
                     await msg.edit(content=f"{counter} messages cached")
                 if messageid not in self.cache:
                     messageid = str(messageid)
@@ -680,18 +684,17 @@ class Giveaways(commands.Cog):
     @giveaway.command(name="list")
     @commands.cooldown(1, 30, commands.BucketType.member)
     @commands.max_concurrency(2, commands.BucketType.user)
-    async def g_list(self, ctx, can_join=False):
+    async def g_list(self, ctx, can_join = False):
         """List the giveways in the server. Specify True for can_join paramater to only list the ones you can join"""
         async with ctx.typing():
             giveaway_list = []
-            del_list = []
             counter = 0
             gaws = await self.config.guild(ctx.guild).giveaways()
             startmessage = await ctx.send("0 giveaways gathered")
             for messageid, info in gaws.items():
                 messageid = str(messageid)
                 try:
-                    if counter%10 == 0:
+                    if counter % 10 == 0:
                         await startmessage.edit(content=f"{counter} messages out of {len(gaws.values())} messages gathered")
                 except ZeroDivisionError:
                     pass
@@ -709,13 +712,17 @@ class Giveaways(commands.Cog):
                             m = await channel.fetch_message(int(messageid))
                             self.cache[messageid] = m
                         except discord.NotFound:
-                            del_list.append(str(messageid))
+                            deleted_gaws = await self.config.guild(ctx.guild).giveaways()
+                            deleted_gaws.pop(messageid)
+                            await self.config.guild(ctx.guild).giveaways.set(deleted_gaws)
                             continue
                         
                     title = info["title"]
                     requirement = info["requirement"]
                     if not requirement:
                         header = f"[{title}]({m.jump_url})"
+                        header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
+                        header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
                         header += " :white_check_mark: You can join this giveaway"
                         giveaway_list.append(header)
                         continue
@@ -740,15 +747,20 @@ class Giveaways(commands.Cog):
                             m = await channel.fetch_message(int(messageid))
                             self.cache[messageid] = m
                         except discord.NotFound:
-                            del_list.append(str(messageid))
+                            deleted_gaws = await self.config.guild(ctx.guild).giveaways()
+                            deleted_gaws.pop(messageid)
+                            await self.config.guild(ctx.guild).giveaways.set(deleted_gaws)
                             continue
+
                     title = info["title"]
                     requirement = info["requirement"]
                     header = f"[{title}]({m.jump_url})"
                     if not requirement:
+                        header = f"[{title}]({m.jump_url})"
+                        header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
+                        header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
                         header += " :white_check_mark: You can join this giveaway"
                         giveaway_list.append(header)
-                        continue
                     req = ctx.guild.get_role(requirement)
                     if not req:
                         header += " :white_check_mark: You can join this giveaway"
@@ -762,9 +774,6 @@ class Giveaways(commands.Cog):
                     giveaway_list.append(header)
         
         await startmessage.delete()
-        for item in del_list:
-            gaws.pop(item)
-        await self.config.guild(ctx.guild).giveaways.set(gaws)
         
         formatted_giveaways = "\n".join(giveaway_list)
         if len(formatted_giveaways) > 2048:
@@ -786,7 +795,40 @@ class Giveaways(commands.Cog):
                 color=discord.Color.green()
             )
             await ctx.send(embed=e)
+    
+    @giveaway.command(name="cancel")
+    async def cancel(self, ctx, giveaway: Optional[int] = None):
+        """Cancel a giveaway"""
+        gaws = await self.config.guild(ctx.guild).giveaways()
+        giveaway = str(giveaway)
+        if str(giveaway) not in gaws.keys():
+            return await ctx.send("This giveaway does not exist")
+        if not gaws[giveaway]["Ongoing"]:
+            return await ctx.send("This giveaway has ended")
+        
+        data = gaws[giveaway]
+        chan = self.bot.get_channel(data["channel"])
+        if not chan:
+            return await ctx.send("This message is no longer available")
+        try:
+            m = self.cache.get(giveaway, await chan.fetch_message(int(giveaway)))
+        except discord.NotFound:
+            return await ctx.send("Couldn't find this giveaway")
 
+        gaws[giveaway]["Ongoing"] = False 
+        await self.config.guild(ctx.guild).giveaways.set(gaws)
+
+        e = discord.Embed(
+            title=data["title"],
+            description=f"Giveaway Cancelled",
+            color=discord.Color.red(),
+            timestamp=datetime.utcnow()
+        )
+        
+        e.description += "Hosted By: <@{0}>\nCancelled By: {1}".format(data["host"], ctx.author.mention)
+        e.set_footer(text="Cancelled at")
+        await m.edit(content="Giveaway Cancelled", embed=e)
+        
 #-------------------------------------gprofile---------------------------------
 
     @commands.group(name="giveawayprofile", aliases=["gprofile"], invoke_without_command=True)
