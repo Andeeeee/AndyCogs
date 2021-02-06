@@ -184,12 +184,14 @@ class Giveaways(commands.Cog):
                 e.add_field(name="Donor", value=donor, inline=False)
 
             if info["requirement"]:
-                req = message.guild.get_role(info["requirement"])
-                if not req:
-                    pass
-                else:
+                formatted_requirements = ""
+                for r in info["requirement"]:
+                    role = message.guild.get_role(r)
+                    if not role:
+                        continue 
+                    formatted_requirements += f"{r.mention} "
                     e.add_field(name="Requirement",
-                                value=req.mention, inline=False)
+                                value=formatted_requirements, inline=False)
 
             e.timestamp = datetime.fromtimestamp(endtime)
             winners = info["winners"]
@@ -239,9 +241,12 @@ class Giveaways(commands.Cog):
             if not requirement:
                 winners_list.append(user.mention)
             else:
-                role = message.guild.get_role(requirement)
-                if role not in user.roles:
-                    continue
+                for r in requirement:
+                    role = message.guild.get_role(r)
+                    if not role:
+                        continue
+                    if role not in user.roles:
+                        continue
                 else:
                     winners_list.append(user.mention)
 
@@ -287,9 +292,14 @@ class Giveaways(commands.Cog):
             )
 
             if requirement:
-                role = message.guild.get_role(requirement)
+                formatted_requirements = ""
+                for r in requirement:
+                    role = message.guild.get_role(r)
+                    if not role:
+                        continue 
+                    formatted_requirements += f"{r.mention} "
                 e.add_field(name="Requirement",
-                            value=role.mention, inline=False)
+                            value=formatted_requirements, inline=False)
             elif donor:
                 donor = message.guild.get_member(donor)
                 e.add_field(name="Donor", value=donor.mention, inline=False)
@@ -476,7 +486,6 @@ class Giveaways(commands.Cog):
     ):
         """Start a giveaway in your server. Flags and Arguments are explained with .giveaway help
         """
-        return await ctx.send(role)
         title = title.split("--")
         title = title[0]
         flags = ctx.message.content
@@ -543,7 +552,7 @@ class Giveaways(commands.Cog):
                 role = ctx.guild.get_role(role)
                 roleid = role.id
         else:
-            roleid = role.id
+            roleid = [r.id for r in role]
 
         e = discord.Embed(
             title=title,
@@ -1051,28 +1060,32 @@ class Giveaways(commands.Cog):
             if not req:
                 return
             else:
-                req = message.guild.get_role(int(req))
-                if not req:
+                for r in req:
+                    r = message.guild.get_role(int(r))
+                    if not req:
+                        await self.config.guild(message.guild).default_req.clear()
+                        return
+                    if req not in user.roles:
+                        try:
+                            await message.reactions[0].remove(user)
+                        except discord.HTTPException:
+                            return
+                        e = discord.Embed(title="Missing Giveaway Requirement",
+                                        description=f"You do not have the `{r.name}` role which is required for [this]({message.jump_url}) giveaway.")
+                        await user.send(embed=e)
+                        return 
+        else:
+            for r in req:
+                r = message.guild.get_role(int(r))
+                if not r:
                     await self.config.guild(message.guild).default_req.clear()
                     return
-                if req not in user.roles:
+                if r not in user.roles:
                     try:
                         await message.reactions[0].remove(user)
                     except discord.HTTPException:
                         return
                     e = discord.Embed(title="Missing Giveaway Requirement",
-                                      description=f"You do not have the `{req.name}` role which is required for [this]({message.jump_url}) giveaway.")
+                                    description=f"You do not have the `{r.name}` role which is required for [this]({message.jump_url}) giveaway.")
                     await user.send(embed=e)
-        else:
-            req = message.guild.get_role(int(req))
-            if not req:
-                await self.config.guild(message.guild).default_req.clear()
-                return
-            if req not in user.roles:
-                try:
-                    await message.reactions[0].remove(user)
-                except discord.HTTPException:
-                    return
-                e = discord.Embed(title="Missing Giveaway Requirement",
-                                  description=f"You do not have the `{req.name}` role which is required for [this]({message.jump_url}) giveaway.")
-                await user.send(embed=e)
+                    return 
