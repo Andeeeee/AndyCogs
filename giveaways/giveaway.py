@@ -167,7 +167,7 @@ class Giveaways(commands.Cog):
             elif remaining.total_seconds() <= 600:
                 color = discord.Color.dark_green()
             else:
-                color = discord.Color(value=random.randint(0x000000, 0xFFFFFF))
+                color = discord.Color(value=randint(0x000000, 0xFFFFFF))
 
             e = discord.Embed(
                 title=info["title"], description="React with :tada: to enter! \n", color=color)
@@ -809,7 +809,7 @@ class Giveaways(commands.Cog):
             await ctx.send(embed=e)
     
     @giveaway.command(name="cancel")
-    async def cancel(self, ctx, giveaway: int = None):
+    async def cancel(self, ctx, giveaway: int ):
         """Cancel a giveaway"""
         gaws = await self.config.guild(ctx.guild).giveaways()
         giveaway = str(giveaway)
