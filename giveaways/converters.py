@@ -31,7 +31,7 @@ class FuzzyRole(RoleConverter):
 
     async def convert(self, ctx: commands.Context, argument: str) -> list:
         if argument.lower() == "none":
-            return None
+            return "None"
         argument = argument.split(";;")
         sorted_results = []
         to_remove = []
