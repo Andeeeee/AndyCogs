@@ -40,6 +40,7 @@ class FuzzyRole(RoleConverter):
                 if str(arg).isdigit():
                     arg = int(arg)
                 basic_role = await super().convert(ctx, arg)
+                return basic_role
                 sorted_results.append(basic_role)
                 to_remove.append(arg)
             except BadArgument:
