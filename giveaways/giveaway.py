@@ -513,7 +513,6 @@ class Giveaways(commands.Cog):
         title = title[0]
         flags = ctx.message.content
         winners = winners.rstrip("w")
-        return await ctx.send(role)
 
         if not str(winners).isdigit():
             return await ctx.send(f"I could not get an amount of winners from {winners}")
