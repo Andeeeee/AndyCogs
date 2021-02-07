@@ -36,8 +36,6 @@ class FuzzyRole(RoleConverter):
         sorted_results = []
         to_remove = []
         for arg in argument:
-            if str(arg).isdigit():
-                arg = int(arg)
             try:
                 basic_role = await super().convert(ctx, arg)
                 sorted_results.append(basic_role)
@@ -46,12 +44,9 @@ class FuzzyRole(RoleConverter):
                 return "badarg"
                 
         return sorted_results
+        
         for arg in to_remove:
             argument.remove(arg)
-        
-
-        if len(argument) == 0:
-            return sorted_results
 
         guild = ctx.guild
         result = []
