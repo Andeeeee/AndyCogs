@@ -56,6 +56,7 @@ class FuzzyRole(RoleConverter):
                 if not result:
                     continue 
                 sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
+                return sorted_result
                 sorted_results.append(sorted_result[0][0])
         
         if len(sorted_results) == 0:
