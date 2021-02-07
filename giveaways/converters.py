@@ -42,7 +42,7 @@ class FuzzyRole(RoleConverter):
                 arg = int(arg)
                 for r in process.extract(
                 arg,
-                {r: unidecode(r.name) for r in guild.roles},
+                {r: unidecode(r.id) for r in guild.roles},
                 limit=None,
                 score_cutoff=75,
             ):
