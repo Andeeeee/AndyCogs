@@ -29,7 +29,7 @@ class FuzzyRole(RoleConverter):
         self.response = response
         super().__init__() 
 
-    async def convert(self, ctx: commands.Context, argument: str) -> discord.Role:
+    async def convert(self, ctx: commands.Context, argument: str) -> list:
         if argument.lower() == "none":
             return None
         argument = argument.split(";;")
@@ -41,13 +41,14 @@ class FuzzyRole(RoleConverter):
             try:
                 basic_role = await super().convert(ctx, arg)
             except BadArgument:
-                pass
+                return "badarg"
             else:
                 sorted_results.append(basic_role)
                 to_remove.append(arg)
-
+        return sorted_results
         for arg in to_remove:
             argument.remove(arg)
+        
 
         if len(argument) == 0:
             return sorted_results
