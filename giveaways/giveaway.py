@@ -770,6 +770,7 @@ class Giveaways(commands.Cog):
                         header += " :white_check_mark: You can join this giveaway\n"
                         giveaway_list.append(header)
                         continue
+
                     for r in requirement:
                         r = ctx.guild.get_role(r)
                         if not r:
@@ -777,8 +778,9 @@ class Giveaways(commands.Cog):
                         if r not in ctx.author.roles:
                             header += " :octagonal_sign: You cannot join this giveaway\n"
                             giveaway_list.append(header)
-                            continue 
-                    
+                            break
+                    if ":octagonal_sign:" in header:
+                        continue 
                     header += " :white_check_mark: You can join this giveaway\n"
                     
                     giveaway_list.append(header)
@@ -803,13 +805,17 @@ class Giveaways(commands.Cog):
                     header = f"[{title}]({m.jump_url})"
                     header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
                     header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
+                    holding = True
                     for r in requirement:
                         r = ctx.guild.get_role(r)
                         if not r:
                             continue 
                         if r not in ctx.author.roles:
+                            holding = False 
                             continue 
-
+                    
+                    if not holding:
+                        continue
                     header += " :white_check_mark: You can join this giveaway\n"
 
                     giveaway_list.append(header)
