@@ -35,24 +35,24 @@ class FuzzyRole(RoleConverter):
         argument = argument.split(";;")
         sorted_results = []
         to_remove = []
+        result = []
         for arg in argument:
-            try:
-                if str(arg).isdigit():
-                    arg = int(arg)
-                basic_role = await super().convert(ctx, arg)
-                return basic_role
-                sorted_results.append(basic_role)
-                to_remove.append(arg)
-            except BadArgument:
-                return "badarg"
-                
-        return sorted_results
+            for r in process.extract(
+                arg,
+                {r: unidecode(r.name) for r in ctx.guild.roles},
+                limit=None,
+                score_cutoff=75,
+            ):
+                result.append((r[2], r[1]))
+        
+            sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
+            sorted_results.append(sorted_result[0][0])
+            to_remove.append(arg)
         
         for arg in to_remove:
             argument.remove(arg)
 
         guild = ctx.guild
-        result = []
         for arg in argument:
             for r in process.extract(
                 arg,
@@ -62,9 +62,10 @@ class FuzzyRole(RoleConverter):
             ):
                 result.append((r[2], r[1]))
 
-            if not result:
-                raise BadArgument(f'Role "{argument}" not found.' if self.response else None)
-
             sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
             sorted_results.append(sorted_result[0][0])
-        return sorted_results
+        
+        if len(sorted) == 0:
+            return 
+
+        return sorted_results 
