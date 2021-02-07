@@ -34,14 +34,18 @@ class FuzzyRole(RoleConverter):
             return None
         argument = argument.split(";;")
         sorted_results = []
-        for arg in argument:
+        arguments = argument
+        for arg in arguments:
             try:
-                basic_role = await super().convert(ctx, argument)
+                basic_role = await super().convert(ctx, arg)
             except BadArgument:
                 pass
             else:
                 sorted_results.append(basic_role)
                 argument.remove(arg)
+
+        if len(argument) == 0:
+            return sorted_results
 
         guild = ctx.guild
         result = []
