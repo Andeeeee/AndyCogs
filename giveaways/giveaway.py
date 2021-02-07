@@ -763,27 +763,24 @@ class Giveaways(commands.Cog):
                         
                     title = info["title"]
                     requirement = info["requirement"]
-                    if not requirement:
-                        header = f"[{title}]({m.jump_url})"
-                        header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
-                        header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
+                    header = f"[{title}]({m.jump_url})"
+                    header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
+                    header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
+                    if len(requirement) == 0:
                         header += " :white_check_mark: You can join this giveaway\n"
                         giveaway_list.append(header)
                         continue
-                    req = ctx.guild.get_role(requirement)
-                    if not req:
-                        continue
-                    header = f"[{title}]({m.jump_url})"
-                    if req in ctx.author.roles:
-                        header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
-                        header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
-                        header += " :white_check_mark: You can join this giveaway\n"
-                        header += " :white_check_mark: You can join this giveaway\n"
-                    else:
-                        header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
-                        header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
-                        header += " :octagonal_sign: You cannot join this giveaway\n"
-
+                    for r in requirement:
+                        r = ctx.guild.get_role(requirement)
+                        if not r:
+                            continue 
+                        if r not in ctx.author.roles:
+                            header += " :octagonal_sign: You cannot join this giveaway\n"
+                            giveaway_list.append(header)
+                            continue 
+                    
+                    header += " :white_check_mark: You can join this giveaway\n"
+                    
                     giveaway_list.append(header)
                 else:
                     channel = info["channel"]
@@ -804,27 +801,16 @@ class Giveaways(commands.Cog):
                     title = info["title"]
                     requirement = info["requirement"]
                     header = f"[{title}]({m.jump_url})"
-                    if not requirement:
-                        header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
-                        header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
-                        header += " :white_check_mark: You can join this giveaway\n"
-                        giveaway_list.append(header)
-                        continue
-                    req = ctx.guild.get_role(requirement)
-                    if not req:
-                        header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
-                        header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
-                        header += " :white_check_mark: You can join this giveaway\n"
-                        giveaway_list.append(header)
-                        continue
-                    if req in ctx.author.roles:
-                        header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
-                        header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
-                        header += " :white_check_mark: You can join this giveaway\n"
-                        giveaway_list.append(header)
-                        continue
-                    else:
-                        continue 
+                    header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
+                    header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
+                    for r in requirement:
+                        r = ctx.guild.get_role(r)
+                        if not r:
+                            continue 
+                        if r not in ctx.author.roles:
+                            continue 
+
+                    header += " :white_check_mark: You can join this giveaway\n"
 
                     giveaway_list.append(header)
         
