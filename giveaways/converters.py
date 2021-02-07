@@ -34,8 +34,8 @@ class FuzzyRole(RoleConverter):
             return None
         argument = argument.split(";;")
         sorted_results = []
-        arguments = argument
-        for arg in arguments:
+        to_remove = []
+        for arg in argument:
             if str(arg).isdigit():
                 arg = int(arg)
             try:
@@ -44,7 +44,10 @@ class FuzzyRole(RoleConverter):
                 pass
             else:
                 sorted_results.append(basic_role)
-                argument.remove(arg)
+                to_remove.append(arg)
+
+        for arg in to_remove:
+            argument.remove(arg)
 
         if len(argument) == 0:
             return sorted_results
