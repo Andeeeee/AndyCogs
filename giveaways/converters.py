@@ -37,6 +37,7 @@ class FuzzyRole(RoleConverter):
         result = []
         guild = ctx.guild
         for arg in argument:
+            args = args.lstrip("<@&").rstrip(">")
             if str(arg).isdigit():
                 arg = guild.get_role(int(arg))
                 if not arg:
@@ -53,8 +54,8 @@ class FuzzyRole(RoleConverter):
                 ):
                     result.append((r[2], r[1]))
 
-            sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
-            sorted_results.append(sorted_result[0][0])
+                sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
+                sorted_results.append(sorted_result[0][0])
         
         if len(sorted_results) == 0:
             return None
