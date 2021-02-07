@@ -771,7 +771,7 @@ class Giveaways(commands.Cog):
                         giveaway_list.append(header)
                         continue
                     for r in requirement:
-                        r = ctx.guild.get_role(requirement)
+                        r = ctx.guild.get_role(r)
                         if not r:
                             continue 
                         if r not in ctx.author.roles:
