@@ -31,7 +31,7 @@ class FuzzyRole(RoleConverter):
 
     async def convert(self, ctx: commands.Context, argument: str) -> list:
         if argument.lower() == "none":
-            return "None"
+            return None
         argument = argument.split(";;")
         sorted_results = []
         to_remove = []
@@ -42,11 +42,11 @@ class FuzzyRole(RoleConverter):
                 arg = int(arg)
                 for r in process.extract(
                 arg,
-                {r: unidecode(r.id) for r in guild.roles},
+                {r: r.id for r in guild.roles},
                 limit=None,
                 score_cutoff=75,
             ):
-                    result.append((r[2], r[1]))
+                result.append((r[2], r[1]))
 
             else:
                 for r in process.extract(
