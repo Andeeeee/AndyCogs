@@ -36,6 +36,8 @@ class FuzzyRole(RoleConverter):
         sorted_results = []
         arguments = argument
         for arg in arguments:
+            if str(arg).isdigit():
+                arg = int(arg)
             try:
                 basic_role = await super().convert(ctx, arg)
             except BadArgument:
