@@ -38,16 +38,11 @@ class FuzzyRole(RoleConverter):
         guild = ctx.guild
         for arg in argument:
             if str(arg).isdigit():
-                arg = int(arg)
-                for r in process.extract(
-                arg,
-                {r: r.id for r in guild.roles},
-                limit=None,
-                score_cutoff=75,
-            ):
-                    result.append((r[2], r[1]))
-                    return result
-
+                arg = guild.get_role(int(arg))
+                if not arg:
+                    continue 
+                sorted_results.append(arg)
+                
             else:
                 for r in process.extract(
                     arg,
