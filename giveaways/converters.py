@@ -34,7 +34,6 @@ class FuzzyRole(RoleConverter):
             return None
         argument = argument.split(";;")
         sorted_results = []
-        to_remove = []
         result = []
         guild = ctx.guild
         for arg in argument:
@@ -46,7 +45,8 @@ class FuzzyRole(RoleConverter):
                 limit=None,
                 score_cutoff=75,
             ):
-                result.append((r[2], r[1]))
+                    result.append((r[2], r[1]))
+                    return result
 
             else:
                 for r in process.extract(
