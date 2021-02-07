@@ -62,5 +62,5 @@ class FuzzyRole(RoleConverter):
         
         if len(sorted_results) == 0:
             return "none"
-
-        return sorted_results 
+            
+        return f"{sorted_results}: hi"
