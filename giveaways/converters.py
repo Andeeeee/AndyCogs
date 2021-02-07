@@ -56,6 +56,6 @@ class FuzzyRole(RoleConverter):
             sorted_results.append(sorted_result[0][0])
         
         if len(sorted_results) == 0:
-            return "none"
+            return None
             
-        return f"{sorted_results}: hi"
+        return sorted_results
