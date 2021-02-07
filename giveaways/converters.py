@@ -36,31 +36,26 @@ class FuzzyRole(RoleConverter):
         sorted_results = []
         to_remove = []
         result = []
-        for arg in argument:
-            for r in process.extract(
-                arg,
-                {r: unidecode(r.name) for r in ctx.guild.roles},
-                limit=None,
-                score_cutoff=75,
-            ):
-                result.append((r[2], r[1]))
-        
-            sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
-            sorted_results.append(sorted_result[0][0])
-            to_remove.append(arg)
-        
-        for arg in to_remove:
-            argument.remove(arg)
-
         guild = ctx.guild
         for arg in argument:
-            for r in process.extract(
+            if str(arg).isdigit():
+                arg = int(arg)
+                for r in process.extract(
                 arg,
                 {r: unidecode(r.name) for r in guild.roles},
                 limit=None,
                 score_cutoff=75,
             ):
-                result.append((r[2], r[1]))
+                    result.append((r[2], r[1]))
+
+            else:
+                for r in process.extract(
+                    arg,
+                    {r: unidecode(r.name) for r in guild.roles},
+                    limit=None,
+                    score_cutoff=75,
+                ):
+                    result.append((r[2], r[1]))
 
             sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
             sorted_results.append(sorted_result[0][0])
