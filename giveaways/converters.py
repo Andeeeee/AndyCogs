@@ -42,6 +42,7 @@ class FuzzyRole(RoleConverter):
                 if not arg:
                     continue 
                 sorted_results.append(arg)
+                continue
                 
             else:
                 for r in process.extract(
