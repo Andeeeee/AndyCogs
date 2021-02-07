@@ -40,11 +40,11 @@ class FuzzyRole(RoleConverter):
                 arg = int(arg)
             try:
                 basic_role = await super().convert(ctx, arg)
-            except BadArgument:
-                return "badarg"
-            else:
                 sorted_results.append(basic_role)
                 to_remove.append(arg)
+            except BadArgument:
+                return "badarg"
+                
         return sorted_results
         for arg in to_remove:
             argument.remove(arg)
