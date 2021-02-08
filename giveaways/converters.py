@@ -38,7 +38,7 @@ class FuzzyRole(RoleConverter):
 
     async def convert(self, ctx: commands.Context, argument: str) -> discord.Role:
         if argument.lower() == "none":
-            return None
+            return []
         final_results = []
         argument = argument.split(";;")
         guild = ctx.guild
