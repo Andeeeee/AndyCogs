@@ -870,7 +870,7 @@ class Giveaways(commands.Cog):
                     if not chan:
                         continue
                     try:
-                        m = self.cache.get(giveaway, await chan.fetch_message(int(giveaway)))
+                        m = self.cache.get(giveaway, await chan.fetch_message(int(messageid)))
                     except discord.NotFound:
                         continue 
 
