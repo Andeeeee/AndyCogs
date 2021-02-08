@@ -43,7 +43,9 @@ class CookieClicker(commands.Cog):
             "godclicker": 500000,
             "spamclicker": 1000000,
             "holyclicker": 1500000,
-            "memeclicker": 69696969
+            "memeclicker": 69696969,
+            "cookietrophy": 3000000000,
+            "blob": 10000000000, #dankmemer
         }
 
         default_channel = {
@@ -63,6 +65,8 @@ class CookieClicker(commands.Cog):
             "spamclicker",
             "holyclicker",
             "memeclicker",
+            "cookietrophy"
+            "blob"
         ]
 
         self.config.register_user(**default_user)

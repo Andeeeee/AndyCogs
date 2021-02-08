@@ -26,7 +26,10 @@ class FuzzyItem(Converter):
             "ultraclicker",
             "godclicker",
             "spamclicker",
-            "holyclicker"
+            "holyclicker",
+            "memeclicker",
+            "cookietrophy",
+            "blob"
         ]
 
         result = []
