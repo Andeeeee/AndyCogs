@@ -873,6 +873,15 @@ class Giveaways(commands.Cog):
                     except discord.NotFound:
                         continue 
 
+                    e = discord.Embed(
+                        title=info["title"],
+                        description=f"Giveaway Cancelled\n",
+                        color=discord.Color.red(),
+                        timestamp=datetime.utcnow()
+                    )
+                    e.description += "Hosted By: <@{0}>\nCancelled By: {1}".format(data["host"], ctx.author.mention)
+                    e.set_footer(text="Cancelled at")
+
                     try:
                         await m.edit(content="Giveaway Cancelled", embed=e)
                     except discord.NotFound:
