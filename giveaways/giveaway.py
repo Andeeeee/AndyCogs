@@ -886,6 +886,9 @@ class Giveaways(commands.Cog):
                         await m.edit(content="Giveaway Cancelled", embed=e)
                     except discord.NotFound:
                         continue
+                    info["Ongoing"] = False 
+                    gaws[messageid] = info
+                    await self.config.guild(ctx.guild).giveaways.set(gaws)
                     return await ctx.send("Cancelled the giveaway for **{0}**".format(info["title"]))
 
             return await ctx.send("There are no active giveaways in this channel to be cancelled, specify a message id/link after this in another channel to cancel one")
@@ -920,6 +923,8 @@ class Giveaways(commands.Cog):
             await m.edit(content="Giveaway Cancelled", embed=e)
         except discord.NotFound:
             return await ctx.send("I couldn't find this giveaway")
+        gaws[giveaway]["Ongoing"] = False 
+        await self.config.guild(ctx.guild).gaws.set(gaws)
         await ctx.send("Cancelled the giveaway for **{0}**").format(data["title"])
         
         
