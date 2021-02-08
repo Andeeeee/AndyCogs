@@ -814,7 +814,7 @@ class Giveaways(commands.Cog):
                     header = f"[{title}]({m.jump_url})"
                     header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
                     header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
-                    if len(requirement) == 0:
+                    if not requirement or len(requirement) == 0:
                         header += " :white_check_mark: You can join this giveaway\n"
                         giveaway_list.append(header)
                         continue
@@ -854,6 +854,8 @@ class Giveaways(commands.Cog):
                     header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
                     header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
                     holding = True
+                    if not requirement:
+                        continue 
                     for r in requirement:
                         r = ctx.guild.get_role(r)
                         if not r:
