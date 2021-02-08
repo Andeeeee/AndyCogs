@@ -476,6 +476,7 @@ class Giveaways(commands.Cog):
     
     @giveawayset.command(name="bypassrole", aliases=["aarole", "bprole", "alwaysallowedrole"])
     async def bypassrole(self, ctx, role: Optional[discord.Role] = None):
+        """Set the role that can bypass all giveaway requirements"""
         if not role:
             await self.config.guild(ctx.guild).bypassrole.clear()
             await ctx.send("Cleared the bypass role")
