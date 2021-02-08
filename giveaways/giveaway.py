@@ -891,6 +891,7 @@ class Giveaways(commands.Cog):
             await ctx.send(embed=e)
     
     @giveaway.command(name="cancel")
+    @commands.check(is_manager)
     async def cancel(self, ctx, giveaway: Optional[IntOrLink] = None):
         """Cancel a giveaway"""
         gaws = await self.config.guild(ctx.guild).giveaways()
