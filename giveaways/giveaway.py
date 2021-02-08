@@ -780,6 +780,7 @@ class Giveaways(commands.Cog):
         """List the giveways in the server. Specify True for can_join paramater to only list the ones you can join"""
         async with ctx.typing():
             giveaway_list = []
+            bypassrole = await self.config.guild(ctx.guild).bypassrole()
             counter = 0
             gaws = await self.config.guild(ctx.guild).giveaways()
             startmessage = await ctx.send("0 giveaways gathered")
@@ -824,6 +825,8 @@ class Giveaways(commands.Cog):
                         if not r:
                             continue 
                         if r not in ctx.author.roles:
+                            if bypassrole in [r.id for r in ctx.author.roles]:
+                                continue 
                             header += " :octagonal_sign: You cannot join this giveaway\n"
                             giveaway_list.append(header)
                             break
@@ -865,7 +868,10 @@ class Giveaways(commands.Cog):
                             continue 
                     
                     if not holding:
-                        continue
+                        if bypassrole in [r.id for r in ctx.author.roles]:
+                            pass
+                        else:
+                            continue
                     header += " :white_check_mark: You can join this giveaway\n"
 
                     giveaway_list.append(header)
