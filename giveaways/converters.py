@@ -35,6 +35,14 @@ class FuzzyRole(RoleConverter):
         guild = ctx.guild
         result = []
         for arg in argument:
+            arg = arg.lstrip("<@&").rstrip(">")
+            if arg.isdigit():
+                role = guild.get_role(int(arg))
+                if not role:
+                    pass 
+                else:
+                    final_results.append(role)
+                    continue
             for r in process.extract(
                 arg,
                 {r: unidecode(r.name) for r in guild.roles},
