@@ -689,7 +689,7 @@ class Giveaways(commands.Cog):
         gaws = await self.config.guild(ctx.guild).giveaways()
         """End a giveaway"""
         if messageid is None:
-            for messageid, info in gaws.items()[::-1]:
+            for messageid, info in list(gaws.items())[::-1]:
                 if info["channel"] == ctx.channel.id and info["Ongoing"]:
                     await self.end_giveaway(messageid, info)
                     return 
@@ -708,7 +708,7 @@ class Giveaways(commands.Cog):
         """Reroll a giveaway"""
         gaws = await self.config.guild(ctx.guild).giveaways()
         if not messageid:
-            for messageid, info in gaws.items()[::-1]:
+            for messageid, info in list(gaws.items())[::-1]:
                 if info["channel"] == ctx.channel.id and info["Ongoing"] == False:
                     await self.end_giveaway(messageid, info)
                     return 
@@ -895,7 +895,7 @@ class Giveaways(commands.Cog):
         """Cancel a giveaway"""
         gaws = await self.config.guild(ctx.guild).giveaways()
         if not giveaway:
-            for messageid, info in gaws.items()[::-1]:
+            for messageid, info in list(gaws.items())[::-1]:
                 if info["Ongoing"] and info["channel"] == ctx.channel.id:
                     chan = self.bot.get_channel(info["channel"])
                     if not chan:
