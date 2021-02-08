@@ -29,7 +29,15 @@ class FuzzyItem(Converter):
             "holyclicker",
             "memeclicker",
             "cookietrophy",
-            "blob"
+            "blob",
+            "phencookie",
+            "flamecookie",
+            "flarecookie",
+            "aikacookie",
+            "trustycookie",
+            "kablekookie",
+            "neurocookie",
+            "yamicookie"
         ]
 
         result = []

@@ -46,6 +46,14 @@ class CookieClicker(commands.Cog):
             "memeclicker": 69696969,
             "cookietrophy": 3000000000,
             "blob": 10000000000, #dankmemer
+            "phencookie": 20000000000,
+            "flamecookie": 50000000000,
+            "flarecookie": 100000000000,
+            "aikacookie": 150000000000,
+            "trustycookie": 300000000000,
+            "kablekookie": 500000000000,
+            "neurocookie": 1000000000000,
+            "yamicookie": 5000000000000
         }
 
         default_channel = {
@@ -66,7 +74,15 @@ class CookieClicker(commands.Cog):
             "holyclicker",
             "memeclicker",
             "cookietrophy"
-            "blob"
+            "blob",
+            "phencookie",
+            "flamecookie",
+            "flarecookie",
+            "aikacookie",
+            "trustycookie",
+            "kablekookie",
+            "neurocookie",
+            "yamicookie"
         ]
 
         self.config.register_user(**default_user)
