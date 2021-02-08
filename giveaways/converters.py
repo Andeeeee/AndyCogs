@@ -35,18 +35,15 @@ class FuzzyRole(RoleConverter):
         guild = ctx.guild
         result = []
         for arg in argument:
-            if arg.isdigit():
-                role = guild.get_role(int(arg))
-                if role is not None:
-                    final_results.append(role)
             for r in process.extract(
-                argument,
+                arg,
                 {r: unidecode(r.name) for r in guild.roles},
                 limit=None,
                 score_cutoff=75,
             ):
                 result.append((r[2], r[1]))
-                return result, r
+
+            
             sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
             final_results.append(sorted_result[0][0])
         
