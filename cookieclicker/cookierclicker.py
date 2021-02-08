@@ -191,7 +191,7 @@ class CookieClicker(commands.Cog):
         item_list = []
 
         for item, cost in items.items(): #lmao
-            item_list.append(f"{item}: {cost}")
+            item_list.append(f"{item}: {self.comma_format(cost)}")
         
         e = discord.Embed(
             title="Item Costs",
