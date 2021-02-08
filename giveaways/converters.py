@@ -41,6 +41,8 @@ class FuzzyRole(RoleConverter):
                 if not role:
                     pass 
                 else:
+                    if role in final_results:
+                        continue
                     final_results.append(role)
                     continue
             for r in process.extract(
@@ -53,6 +55,8 @@ class FuzzyRole(RoleConverter):
 
             
             sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
+            if sorted_result[0][0] in final_results:
+                continue
             final_results.append(sorted_result[0][0])
             result = []
         
