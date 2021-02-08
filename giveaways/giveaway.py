@@ -862,7 +862,6 @@ class Giveaways(commands.Cog):
     async def cancel(self, ctx, giveaway: Optional[IntOrLink] = None):
         """Cancel a giveaway"""
         gaws = await self.config.guild(ctx.guild).giveaways()
-        giveaway = str(giveaway)
         if not giveaway:
             for messageid, info in gaws.items():
                 if info["Ongoing"] and info["channel"] == ctx.channel.id:
@@ -881,8 +880,8 @@ class Giveaways(commands.Cog):
 
                     return await ctx.send("Cancelled the giveaway for **{0}**").format(info["title"])
             return await ctx.send("There are no active giveaways in this channel to be cancelled, specify a message id/link after this in another channel to cancel one")
-        
-        if str(giveaway) not in gaws.keys():
+        giveaway = str(giveaway)
+        if giveaway not in gaws.keys():
             return await ctx.send("This giveaway does not exist")
         if not gaws[giveaway]["Ongoing"]:
             return await ctx.send("This giveaway has ended")
