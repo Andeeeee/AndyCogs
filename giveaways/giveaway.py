@@ -3,6 +3,7 @@ import argparse
 from datetime import datetime, timedelta
 import discord
 from discord.ext import tasks
+from discord.message import Message
 from discord.utils import sleep_until
 from redbot.core import commands, Config
 from typing import Optional, Union
@@ -55,7 +56,8 @@ class Giveaways(commands.Cog):
             "default_req": None,
             "giveaways": {},
             "dmwin": True,
-            "dmhost": True
+            "dmhost": True,
+            "bypassrole": None
         }
 
         default_member = {
@@ -192,6 +194,16 @@ class Giveaways(commands.Cog):
                     formatted_requirements += f"{role.mention} "
                 e.add_field(name="Requirement",
                             value=formatted_requirements, inline=False)
+            
+            bypassrole = await self.config.guild(message.guild).bypassrole()
+            if not bypassrole:
+                pass 
+            else:
+                role = message.guild.get_role(int(bypassrole))
+                if not role:
+                    await self.config.guild(Message.guild).bypassrole.clear()
+                else:
+                    e.add_field(name="Bypassrole", value=role.mention, inline=False)
 
             e.timestamp = datetime.fromtimestamp(endtime)
             winners = info["winners"]
@@ -233,12 +245,16 @@ class Giveaways(commands.Cog):
 
         donor = info["donor"]
 
+        bypassrole = await self.config.guild(message.guild).bypassrole()
+
         for user in users:
             if user.mention in winners_list:
                 continue
             if user.bot:
                 continue
             if not requirement:
+                winners_list.append(user.mention)
+            if bypassrole in [r.id for r in user.roles]:
                 winners_list.append(user.mention)
             else:
                 holding = False
@@ -313,6 +329,13 @@ class Giveaways(commands.Cog):
             if donor:
                 donor = message.guild.get_member(donor)
                 e.add_field(name="Donor", value=donor.mention, inline=False)
+            
+            if bypassrole:
+                role = message.guild.get_role(int(bypassrole))
+                if not role:
+                    await self.config.guild(message.guild).bypassrole.clear()
+                else:
+                    e.add_field(name="Bypassrole", value=role.mention)
 
             await message.edit(content="Giveaway Ended", embed=e)
             await message.channel.send(f"The winners for the **{title}** giveaway are \n{winners}\n{message.jump_url}")
@@ -450,6 +473,15 @@ class Giveaways(commands.Cog):
         else:
             await self.config.guild(ctx.guild).dmwin.set(True)
             await ctx.send("I will now dm winners")
+    
+    @giveawayset.command(name="bypassrole", aliases=["aarole", "bprole", "alwaysallowedrole"])
+    async def bypassrole(self, ctx, role: Optional[discord.Role] = None):
+        if not role:
+            await self.config.guild(ctx.guild).bypassrole.clear()
+            await ctx.send("Cleared the bypass role")
+        else:
+            await self.config.guild(ctx.guild).bypassrole.set(role.id)
+            await ctx.send(f"Your bypass role is now **{role}**")
 
 #-------------------------------------giveaways---------------------------------
     @commands.group(name="giveaway", aliases=["g"])
@@ -1116,6 +1148,10 @@ class Giveaways(commands.Cog):
 
         if str(payload.emoji) != "🎉": 
             return
+        
+        bypassrole = await self.config.guild(message.guild).bypassrole()
+        if bypassrole in [r.id for r in user.roles]:
+            return 
 
         req = gaws[str(message.id)]["requirement"]
         if not req:
