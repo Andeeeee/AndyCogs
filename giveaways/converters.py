@@ -73,8 +73,6 @@ class IntOrLink(Converter):
     async def convert(self, ctx, argument: str):
         if argument.isdigit():
             return argument 
-        argument = argument.split("//")
-
         match = re.search(link_regex, argument)
         if not match:
             raise BadArgument("Not a valid message")
