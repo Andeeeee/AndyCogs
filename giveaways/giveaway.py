@@ -241,12 +241,16 @@ class Giveaways(commands.Cog):
             if not requirement:
                 winners_list.append(user.mention)
             else:
+                holding = False
                 for r in requirement:
                     role = message.guild.get_role(r)
                     if not role:
                         continue
                     if role not in user.roles:
-                        continue
+                        holding = True
+                        break 
+                if holding:
+                    continue
                 else:
                     winners_list.append(user.mention)
 
@@ -487,10 +491,12 @@ class Giveaways(commands.Cog):
         --ping: Specify True or False after this flag, if a pingrole for your server is set, it will ping that role.
 
         Specify `none` to the requirement to remove fuzzyrole converters and not have a role requirement
+        Multiple requirements need to be split with `;;`
         
         Example:
         `.g start 10m 1 @Owners lots of yummy coins --ping True --msg I will eat these coins --donor @Andee#8552 --amt 50000 --note COINS ARE YUMMY`
         `.g start 10m 1w none coffee`
+        `.g start 10m 1w GiveawayPing;;Admin;;Mod food`
 
         """
         await ctx.send(embed=e)
