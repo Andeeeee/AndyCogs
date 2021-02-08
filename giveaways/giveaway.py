@@ -879,7 +879,7 @@ class Giveaways(commands.Cog):
                         color=discord.Color.red(),
                         timestamp=datetime.utcnow()
                     )
-                    e.description += "Hosted By: <@{0}>\nCancelled By: {1}".format(data["host"], ctx.author.mention)
+                    e.description += "Hosted By: <@{0}>\nCancelled By: {1}".format(info["host"], ctx.author.mention)
                     e.set_footer(text="Cancelled at")
 
                     try:
