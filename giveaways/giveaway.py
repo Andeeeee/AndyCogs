@@ -885,9 +885,9 @@ class Giveaways(commands.Cog):
                     try:
                         await m.edit(content="Giveaway Cancelled", embed=e)
                     except discord.NotFound:
-                        return await ctx.send("I couldn't find this giveaway")
+                        continue
+                    return await ctx.send("Cancelled the giveaway for **{0}**".format(info["title"]))
 
-                    return await ctx.send("Cancelled the giveaway for **{0}**").format(info["title"])
             return await ctx.send("There are no active giveaways in this channel to be cancelled, specify a message id/link after this in another channel to cancel one")
         giveaway = str(giveaway)
         if giveaway not in gaws.keys():
