@@ -27,34 +27,30 @@ class FuzzyRole(RoleConverter):
 
     def __init__(self, response: bool = True):
         self.response = response
-        super().__init__() 
+        super().__init__()
 
-    async def convert(self, ctx: commands.Context, argument: str) -> list:
-        if argument.lower() == "none":
-            return None
+    async def convert(self, ctx: commands.Context, argument: str) -> discord.Role:
+        final_results = []
         argument = argument.split(";;")
-        sorted_results = []
-        result = []
         guild = ctx.guild
+        result = []
         for arg in argument:
-            args = args.lstrip("<@&").rstrip(">")
-            if str(arg).isdigit():
-                arg = guild.get_role(int(arg))
-                if not arg:
-                    continue 
-                sorted_results.append(arg)
-                continue
-                
-            else:
-                for r in process.extract(
-                    arg,
-                    {r: unidecode(r.name) for r in guild.roles},
-                    limit=None,
-                    score_cutoff=75,
-                ):
-                    result.append((r[2], r[1]))
+            try:
+                role = ctx.guild.get_role(int(arg))
+                if role is not None:
+                    final_results.append(role)
+                    continue
+            except ValueError:
+                pass 
+            for r in process.extract(
+                argument,
+                {r: unidecode(r.name) for r in guild.roles},
+                limit=None,
+                score_cutoff=75,
+            ):
+                result.append((r[2], r[1]))
 
-                sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
-                sorted_results.append(sorted_result[0][0])
+            sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
+            final_results.append(sorted_result[0][0])
         
-        return sorted_results
+        return final_results
