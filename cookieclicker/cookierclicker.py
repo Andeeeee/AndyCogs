@@ -43,6 +43,7 @@ class CookieClicker(commands.Cog):
             "godclicker": 500000,
             "spamclicker": 1000000,
             "holyclicker": 1500000,
+            "memeclicker": 69696969
         }
 
         default_channel = {
@@ -58,9 +59,10 @@ class CookieClicker(commands.Cog):
             "farm"
             "factory",
             "ultraclicker",
-            "godclickers",
+            "godclicker",
             "spamclicker",
-            "holyclicker"
+            "holyclicker",
+            "memeclicker",
         ]
 
         self.config.register_user(**default_user)
@@ -236,6 +238,8 @@ class CookieClicker(commands.Cog):
                 await self.addcookies(userid, (20000 * data["spamclicker"]))
             if data.get("holyclicker", 0) > 0:
                 await self.addcookies(userid, (30000 * data["holyclicker"]))
+            if data.get("memeclicker", 0) > 0:
+                await self.addcookies(userid, (100000 * data["memeclicker"]))
       
     async def cancel_session(self, messageid: int, channelid: int):
         sessions = await self.config.channel_from_id(channelid).sessions()
