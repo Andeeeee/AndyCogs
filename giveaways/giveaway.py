@@ -859,10 +859,29 @@ class Giveaways(commands.Cog):
             await ctx.send(embed=e)
     
     @giveaway.command(name="cancel")
-    async def cancel(self, ctx, giveaway: int ):
+    async def cancel(self, ctx, giveaway: Optional[IntOrLink] = None):
         """Cancel a giveaway"""
         gaws = await self.config.guild(ctx.guild).giveaways()
         giveaway = str(giveaway)
+        if not giveaway:
+            for messageid, info in gaws.items():
+                if info["Ongoing"] and info["channel"] == ctx.channel.id:
+                    chan = self.bot.get_channel(info["channel"])
+                    if not chan:
+                        continue
+                    try:
+                        m = self.cache.get(giveaway, await chan.fetch_message(int(giveaway)))
+                    except discord.NotFound:
+                        continue 
+
+                    try:
+                        await m.edit(content="Giveaway Cancelled", embed=e)
+                    except discord.NotFound:
+                        return await ctx.send("I couldn't find this giveaway")
+
+                    return await ctx.send("Cancelled the giveaway for **{0}**").format(info["title"])
+            return await ctx.send("There are no active giveaways in this channel to be cancelled, specify a message id/link after this in another channel to cancel one")
+        
         if str(giveaway) not in gaws.keys():
             return await ctx.send("This giveaway does not exist")
         if not gaws[giveaway]["Ongoing"]:
@@ -893,7 +912,7 @@ class Giveaways(commands.Cog):
             await m.edit(content="Giveaway Cancelled", embed=e)
         except discord.NotFound:
             return await ctx.send("I couldn't find this giveaway")
-        await ctx.send("Cancelled this giveaway")
+        await ctx.send("Cancelled the giveaway for **{0}**").format(data["title"])
         
         
 #-------------------------------------gprofile---------------------------------
