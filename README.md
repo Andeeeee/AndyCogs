@@ -33,6 +33,7 @@
 | MurderMystery | A fun murder mystery game with some among-us themes mixed |
 | Giveaways | Create giveaways for your server with flags, storage, and other options. |
 | Heist | DankMemer (discord bot) heists made easier with pingroles, auto unlock/lock, four_minutes, and flags like firstrole and time. |
+| Freeloadermode | ban people who leave your server while freeloadermode is toggled, you can toggle for a certain time too |
 
 
 # Support and Issues
