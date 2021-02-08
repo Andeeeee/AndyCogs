@@ -7,7 +7,7 @@ from discord.utils import sleep_until
 from redbot.core import commands, Config
 from typing import Optional, Union
 from random import choice, randint
-from .converters import FuzzyRole
+from .converters import FuzzyRole, IntOrLink
 from redbot.core.commands import BadArgument
 from redbot.core.utils.chat_formatting import pagify
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
@@ -653,10 +653,15 @@ class Giveaways(commands.Cog):
     
     @giveaway.command(name="end")
     @commands.check(is_manager)
-    async def g_end(self, ctx, messageid: Optional[int] = None):
+    async def end(self, ctx, messageid: Optional[IntOrLink] = None):
+        gaws = await self.config.guild(ctx.guild).giveaways()
         """End a giveaway"""
-        if not messageid:
-            return await ctx.send("You need to supply a valid message ID for this to work")
+        if messageid is None:
+            for messageid, info in gaws.items():
+                if info["channel"] == ctx.channel.id and info["Ongoing"]:
+                    await self.end_giveaway(messageid, info)
+                    return 
+            return await ctx.send("There aren't any giveaways in this channel, specify a message id/link to end another channels giveaways")
         gaws = await self.config.guild(ctx.guild).giveaways()
         if str(messageid) not in gaws:
             return await ctx.send("This isn't a giveaway.")
@@ -667,13 +672,17 @@ class Giveaways(commands.Cog):
     
     @giveaway.command(name="reroll")
     @commands.check(is_manager)
-    async def g_reroll(self, ctx, messageid: int, winners: Optional[int] = 1):
+    async def reroll(self, ctx, messageid: Optional[IntOrLink], winners: Optional[int] = 1):
         """Reroll a giveaway"""
+        gaws = await self.config.guild(ctx.guild).giveaways()
         if not messageid:
-            return await ctx.send("You need to supply a valid message id.")
+            for messageid, info in gaws.items():
+                if info["channel"] == ctx.channel.id and info["Ongoing"] == False:
+                    await self.end_giveaway(messageid, info)
+                    return 
+            return await ctx.send("There aren't any giveaways in this channel, specify a message id/link to end another channels giveaways")
         elif winners <= 0:
             return await ctx.send("You can't have no winners.")
-        gaws = await self.config.guild(ctx.guild).giveaways()
         if str(messageid) not in gaws:
             return await ctx.send("This giveaway does not exist")
         elif gaws[str(messageid)]["Ongoing"] == True:
@@ -756,7 +765,7 @@ class Giveaways(commands.Cog):
                     channel = self.bot.get_channel(channel)
                     if not channel:
                         continue
-                    m = self.cache.get(messageid)
+                    m = self.cache.get(messageid, ctx.bot._connection._get_message(int(messageid)))
                     if not m:
                         try:
                             m = await channel.fetch_message(int(messageid))
@@ -795,7 +804,7 @@ class Giveaways(commands.Cog):
                     channel = self.bot.get_channel(channel)
                     if not channel:
                         continue
-                    m = self.cache.get(messageid)
+                    m = self.cache.get(messageid, ctx.bot._connection._get_message(int(messageid)))
                     if not m:
                         try:
                             m = await channel.fetch_message(int(messageid))
