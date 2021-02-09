@@ -59,7 +59,7 @@ class CookieClicker(commands.Cog):
             "pandacookie": 100000000000000,
             "bobloycookie": 500000000000000,
             "twentysixcookie": 1000000000000000,
-            "jackcookie": 5000000000000000,
+            "jackcookie": 6969696969694242424242,
         }
 
         default_channel = {
@@ -156,7 +156,6 @@ class CookieClicker(commands.Cog):
         if item not in user_items:
             user_items[item] = 0
         
-        price = round(price * ((user_items[item]+1)/5) * amount)
         cookies = await self.config.user(ctx.author).cookies()
         if (price * amount) > cookies:
             return await ctx.send(f"{item} requires {self.comma_format(price * amount)} :cookie: to buy, but you only have {self.comma_format(cookies)} :cookie:")
