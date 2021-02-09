@@ -490,6 +490,7 @@ class Giveaways(commands.Cog):
     @commands.group(name="giveaway", aliases=["g"])
     @commands.guild_only()
     async def giveaway(self, ctx):
+        """Start, end, reroll giveaways and more!"""
         pass
     
     @giveaway.command(name="clearended")
