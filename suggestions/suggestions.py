@@ -24,6 +24,7 @@ class Suggestions(commands.Cog):
     @commands.group(name="suggestions", aliases=["suggestset"])
     @commands.guild_only()
     async def suggestions(self, ctx):
+        """A group for suggestion settings"""
         if not ctx.invoked_subcommand:
             await ctx.send_help("suggestions")
     
@@ -78,6 +79,7 @@ class Suggestions(commands.Cog):
     @suggestions.command(name="blacklist", aliases=["bl"])
     @commands.admin_or_permissions(manage_guild=True)
     async def suggestions_blacklist(self, ctx, member: Optional[discord.Member] = None):
+        """Blacklist a user from making suggestions"""
         if not member:
             await ctx.send("Please specify a valid member to blacklist!")
         else:
@@ -90,6 +92,7 @@ class Suggestions(commands.Cog):
     @suggestions.command(name="anonymous", aliases=["anon"])
     @commands.admin_or_permissions(manage_guild=True)
     async def anonymous(self, ctx, anon: Optional[bool] = None):
+        """Make suggestion authors anonymous"""
         if anon is None:
             await ctx.send("You need to specify either True or False after this.")
         else:
@@ -122,6 +125,7 @@ class Suggestions(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(20, 1, BucketType.member)
     async def suggest(self, ctx, * , content = None):
+        """Suggest something to your server"""
         blacklist = await self.config.guild(ctx.guild).blacklist()
 
         if ctx.author.id in blacklist:
@@ -184,6 +188,7 @@ class Suggestions(commands.Cog):
     @commands.guild_only()
     @commands.mod_or_permissions(manage_guild=True)
     async def approve(self, ctx, number: Optional[int] = None, * , reason="No Reason Provided"):
+        """Approve a users suggestion"""
         if not number:
             await ctx.send("This is not a valid suggestion.")
             return 
@@ -240,6 +245,7 @@ class Suggestions(commands.Cog):
     @commands.guild_only()
     @commands.mod_or_permissions(manage_guild=True)
     async def reject(self, ctx, number: Optional[int] = None, * , reason="No Reason Provided"):
+        """Reject a users suggestion"""
         if not number:
             await ctx.send("This is not a valid suggestion.")
             return 
