@@ -160,7 +160,7 @@ class CookieClicker(commands.Cog):
         if (price * amount) > cookies:
             return await ctx.send(f"{item} requires {self.comma_format(price * amount)} :cookie: to buy, but you only have {self.comma_format(cookies)} :cookie:")
         
-        cookies -= price
+        cookies -= price * amount
         user_items[item] += amount
 
         await self.config.user(ctx.author).items.set(user_items)
