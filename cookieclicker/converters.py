@@ -37,7 +37,13 @@ class FuzzyItem(Converter):
             "trustycookie",
             "kablekookie",
             "neurocookie",
-            "yamicookie"
+            "yamicookie",
+            "rickcookie",
+            "geocookie",
+            "pandacookie",
+            "bobloycookie",
+            "twentysixcookie",
+            "jackcookie"
         ]
 
         result = []

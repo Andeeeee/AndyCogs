@@ -53,7 +53,13 @@ class CookieClicker(commands.Cog):
             "trustycookie": 300000000000,
             "kablekookie": 500000000000,
             "neurocookie": 1000000000000,
-            "yamicookie": 5000000000000
+            "yamicookie": 5000000000000,
+            "rickcookie": 10000000000000,
+            "geocookie": 50000000000000,
+            "pandacookie": 100000000000000,
+            "bobloycookie": 500000000000000,
+            "twentysixcookie": 1000000000000000,
+            "jackcookie": 5000000000000000,
         }
 
         default_channel = {
@@ -82,7 +88,13 @@ class CookieClicker(commands.Cog):
             "trustycookie",
             "kablekookie",
             "neurocookie",
-            "yamicookie"
+            "yamicookie",
+            "rickcookie",
+            "geocookie",
+            "pandacookie",
+            "bobloycookie",
+            "twentysixcookie",
+            "jackcookie"
         ]
 
         self.config.register_user(**default_user)
@@ -139,15 +151,17 @@ class CookieClicker(commands.Cog):
         
         prices = await self.config.all()
         price = prices[item]
-
-        cookies = await self.config.user(ctx.author).cookies()
-        if (price * amount) > cookies:
-            return await ctx.send(f"{item} requires {self.comma_format(price)} :cookie: to buy, but you only have {self.comma_format(cookies)} :cookie:")
         
-        cookies -= price * amount 
         user_items = await self.config.user(ctx.author).items()
         if item not in user_items:
             user_items[item] = 0
+        
+        price = price * user_items[item] + 1 * amount
+        cookies = await self.config.user(ctx.author).cookies()
+        if (price * amount) > cookies:
+            return await ctx.send(f"{item} requires {self.comma_format(price * amount)} :cookie: to buy, but you only have {self.comma_format(cookies)} :cookie:")
+        
+        cookies -= price
         user_items[item] += amount
 
         await self.config.user(ctx.author).items.set(user_items)
@@ -236,30 +250,11 @@ class CookieClicker(commands.Cog):
         for userid, info in (await self.config.all_users()).items():
             userid = int(userid)
             data = info["items"]
-            if data.get("cursor", 0) > 0:
-                await self.addcookies(userid, (30 * data["cursor"]))
-            if data.get("grandma", 0) > 0:
-                await self.addcookies(userid, (70 * data["grandma"]))
-            if data.get("megaclicker", 0) > 0:
-                await self.addcookies(userid, (150 * data["megaclicker"]))
-            if data.get("superclicker", 0) > 0:
-                await self.addcookies(userid, (350 * data["superclicker"]))
-            if data.get("epicclicker", 0) > 0:
-                await self.addcookies(userid, (750 * data["epicclicker"]))
-            if data.get("farm", 0) > 0:
-                await self.addcookies(userid, (1500 * data["farm"]))
-            if data.get("factory", 0) > 0:
-                await self.addcookies(userid, (3000 * data["factory"]))
-            if data.get("ultraclicker", 0) > 0:
-                await self.addcookies(userid, (5000 * data["ultraclicker"]))
-            if data.get("godclicker", 0) > 0:
-                await self.addcookies(userid, (10000 * data["godclicker"]))
-            if data.get("spamclicker", 0) > 0:
-                await self.addcookies(userid, (20000 * data["spamclicker"]))
-            if data.get("holyclicker", 0) > 0:
-                await self.addcookies(userid, (30000 * data["holyclicker"]))
-            if data.get("memeclicker", 0) > 0:
-                await self.addcookies(userid, (100000 * data["memeclicker"]))
+            prices = await self.config.all()
+            for item, count in data.items():
+                multi = prices[item]
+                multi = multi / 5 
+                await self.addcookies(userid, multi * int(count))
       
     async def cancel_session(self, messageid: int, channelid: int):
         sessions = await self.config.channel_from_id(channelid).sessions()
