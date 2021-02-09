@@ -258,6 +258,8 @@ class Giveaways(commands.Cog):
                 winners_list.append(user.mention)
             else:
                 holding = False
+                if not requirement:
+                    continue 
                 for r in requirement:
                     role = message.guild.get_role(r)
                     if not role:
