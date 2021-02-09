@@ -156,7 +156,7 @@ class CookieClicker(commands.Cog):
         if item not in user_items:
             user_items[item] = 0
         
-        price = round(price * (user_items[item] + 1) * amount)
+        price = round(price * (user_items[item] + 0.2) * amount)
         cookies = await self.config.user(ctx.author).cookies()
         if (price * amount) > cookies:
             return await ctx.send(f"{item} requires {self.comma_format(price * amount)} :cookie: to buy, but you only have {self.comma_format(cookies)} :cookie:")
