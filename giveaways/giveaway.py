@@ -835,7 +835,7 @@ class Giveaways(commands.Cog):
                 roleid=None
             else:
                 role=ctx.guild.get_role(role)
-                roleid= [role]
+                roleid= [role.id]
         else:
             roleid=[r.id for r in role]
 
