@@ -1036,7 +1036,7 @@ class Giveaways(commands.Cog):
                             continue
 
                     
-                    header=f"{info['title']}({m.jump_url})"
+                    header=f"[{info['title']}]({m.jump_url})"
                     header += " | Winners: {0} | Host: <@{1}>".format(
                         info["winners"], info["host"])
                     header += " | Channel: <#{0}> | ID: {1}".format(
