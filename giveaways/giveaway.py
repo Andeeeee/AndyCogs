@@ -822,7 +822,7 @@ class Giveaways(commands.Cog):
                 flags["donor"]=donor.id
 
         except Exception as exc:
-            raise await ctx.send(str(exc))
+            return await ctx.send(str(exc))
 
         guild=ctx.guild
         data=await self.config.guild(guild).all()
@@ -999,107 +999,9 @@ class Giveaways(commands.Cog):
     @giveaway.command(name="list")
     @commands.cooldown(1, 30, commands.BucketType.member)
     @commands.max_concurrency(2, commands.BucketType.user)
-    async def g_list(self, ctx, can_join: bool=False):
+    async def g_list(self, ctx, can_join: bool=False, *flags):
         """List the giveways in the server. Specify True for can_join paramater to only list the ones you can join"""
-        async with ctx.typing():
-            giveaway_list=[]
-            bypassrole=await self.config.guild(ctx.guild).bypassrole()
-            counter=0
-            gaws=await self.config.guild(ctx.guild).giveaways()
-            startmessage=await ctx.send("0 giveaways gathered")
-            for messageid, info in gaws.items():
-                messageid=str(messageid)
-                try:
-                    if counter % 20 == 0:
-                        await startmessage.edit(content=f"{counter} messages out of {len(gaws.values())} messages gathered")
-                except ZeroDivisionError:
-                    pass
-                counter += 1
-                if not info["Ongoing"]:
-                    continue
-                if not can_join:
-                    channel=info["channel"]
-                    channel=self.bot.get_channel(channel)
-                    if not channel:
-                        continue
-                    m=self.message_cache.get(
-                        messageid, self.bot._connection._get_message(int(messageid)))
-                    if not m:
-                        try:
-                            m=await channel.fetch_message(int(messageid))
-                            self.message_cache[messageid]=m
-                        except discord.NotFound:
-                            deleted_gaws=await self.config.guild(ctx.guild).giveaways()
-                            deleted_gaws.pop(messageid)
-                            await self.config.guild(ctx.guild).giveaways.set(deleted_gaws)
-                            del self.message_cache[messageid]
-                            continue
-
-                    
-                    header=f"{info['title']}({m.jump_url})"
-                    header += " | Winners: {0} | Host: <@{1}>".format(
-                        info["winners"], info["host"])
-                    header += " | Channel: <#{0}> | ID: {1}".format(
-                        info["channel"], messageid)
-                    if (await self.can_join(ctx.author, info)):
-                        header += " :white_check_mark: You can join this giveaway\n"
-                        giveaway_list.append(header)
-                        continue
-                    header += " :octagonal_sign: You cannot join this giveaway\n"
-
-                    giveaway_list.append(header)
-                else:
-                    channel=info["channel"]
-                    channel=self.bot.get_channel(channel)
-                    if not channel:
-                        continue
-                    m=self.message_cache.get(
-                        messageid, ctx.bot._connection._get_message(int(messageid)))
-                    if not m:
-                        try:
-                            m=await channel.fetch_message(int(messageid))
-                            self.message_cache[messageid]=m
-                        except discord.NotFound:
-                            deleted_gaws=await self.config.guild(ctx.guild).giveaways()
-                            deleted_gaws.pop(messageid)
-                            await self.config.guild(ctx.guild).giveaways.set(deleted_gaws)
-                            continue
-
-                    title=info["title"]
-                    requirement=info["requirement"]
-                    header=f"[{title}]({m.jump_url})"
-                    header += " | Winners: {0} | Host: <@{1}>".format(
-                        info["winners"], info["host"])
-                    header += " | Channel: <#{0}> | ID: {1}".format(
-                        info["channel"], messageid)
-                    if (await self.can_join(ctx.author, info)):
-                        header += " :white_check_mark: You can join this giveaway\n"
-                        giveaway_list.append(header)
-                        continue
-            
-
-        await startmessage.delete()
-
-        formatted_giveaways="\n".join(giveaway_list)
-        if len(formatted_giveaways) > 2048:
-            pages=list(pagify(formatted_giveaways))
-            embeds=[]
-
-            for i, page in enumerate(pages, start=1):
-                e=discord.Embed(
-                    title=f"Giveaways Page {i}/{len(pages)}",
-                    description=page,
-                    color=discord.Color.green()
-                )
-                embeds.append(e)
-            await menu(ctx, embeds, DEFAULT_CONTROLS)
-        else:
-            e=discord.Embed(
-                title="Giveaway Page 1",
-                description=formatted_giveaways,
-                color=discord.Color.green()
-            )
-            await ctx.send(embed=e)
+        parser = NoEx
 
     @giveaway.command(name="cancel")
     @commands.check(is_manager)
