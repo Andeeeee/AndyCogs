@@ -830,12 +830,12 @@ class Giveaways(commands.Cog):
         gaws=await self.config.guild(guild).giveaways()
 
         if not role:
-            role=[data["default_req"]]
+            role=data["default_req"]
             if not role or role == [None]:
                 roleid=None
             else:
                 role=ctx.guild.get_role(role)
-                roleid=role.id
+                roleid= [role]
         else:
             roleid=[r.id for r in role]
 
