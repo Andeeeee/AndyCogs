@@ -40,7 +40,8 @@ class FuzzyRole(RoleConverter):
         if argument.lower() == "none":
             return []
         final_results = []
-        argument = argument.split(";;")
+        pattern = re.compile(f"\||;;")
+        argument = pattern.split(argument)
         guild = ctx.guild
         result = []
         for arg in argument:
