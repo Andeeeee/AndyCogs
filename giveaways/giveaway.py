@@ -379,7 +379,7 @@ class Giveaways(commands.Cog):
                     hostmessage = await self.config.guild(message.guild).hostmessage()
                     e = discord.Embed(
                         title=f"Your giveaway has ended",
-                        description=hostmessage.replace("{prize}", info["title"]).replace(
+                        description=hostmessage.replace("{prize}", str(info["title"])).replace(
                             "{winners}", winners).replace("{guild}", message.guild.name)
                     )
                     await host.send(embed=e)
@@ -393,7 +393,7 @@ class Giveaways(commands.Cog):
 
                     e = discord.Embed(
                         title=f"You won a giveaway!",
-                        description=winmessage.replace("{prize}", info["title"]).replace(
+                        description=winmessage.replace("{prize}", str(info["title"])).replace(
                             "{host}", info["host"]).replace("{guild}", message.guild.name)
                     )
                     await mention.send(embed=e)
@@ -643,7 +643,10 @@ class Giveaways(commands.Cog):
     @commands.admin_or_permissions(administrator=True)
     async def hostmessage(self, ctx, message: str=None):
         """Set the message sent to the host when the giveaway ends. If there are no winners, it won't be sent.
-       Your dmhost settings need to be toggled for this to work."""
+       Your dmhost settings need to be toggled for this to work.
+       Variables: {guild}: The name of your server
+       {winners}: A list of user mentions that won the giveaway 
+       {"""
         if not message:
             await self.config.guild(ctx.guild).hostmessage.clear()
             await ctx.send("I've reset your servers host message")
