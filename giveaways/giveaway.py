@@ -394,7 +394,7 @@ class Giveaways(commands.Cog):
                     e = discord.Embed(
                         title=f"You won a giveaway!",
                         description=winmessage.replace("{prize}", str(info["title"])).replace(
-                            "{host}", info["host"]).replace("{guild}", message.guild.name)
+                            "{host}", f"<@{info['host']}>").replace("{guild}", message.guild.name)
                     )
                     await mention.send(embed=e)
 
