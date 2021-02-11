@@ -673,7 +673,7 @@ class Giveaways(commands.Cog):
 
     @giveawayset.command(name="startheader")
     @commands.admin_or_permissions(administrator=True)
-    async def startheader(self, ctx, message: str=None):
+    async def startheader(self, ctx, * , message: str=None):
         """Set the content for the giveaway message, not the embed. See gset description for that
         Variables
         {giveawayEmoji}: Your servers giveaway emoji, defaults to :tada: if you haven't set one"""
@@ -686,7 +686,7 @@ class Giveaways(commands.Cog):
 
     @giveawayset.command(name="endheader")
     @commands.admin_or_permissions(administrator=True)
-    async def endheader(self, ctx, message: str=None):
+    async def endheader(self, ctx, * , message: str=None):
         """Set the content for the giveaway message after it ends.
         Variables
         {giveawayEmoji}: Your servers giveaway emoji, defaults to :tada: if you haven't set one"""
@@ -699,7 +699,7 @@ class Giveaways(commands.Cog):
     
     @giveawayset.command(name="description")
     @commands.admin_or_permissions(administrator=True)
-    async def description(self, ctx, message: str=None):
+    async def description(self, ctx, * , message: str=None):
         """Set the content for the giveaway message after it ends.
         Variables:
         {emoji}: The emoji you use for giveaways"""
