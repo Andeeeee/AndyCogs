@@ -646,7 +646,8 @@ class Giveaways(commands.Cog):
        Your dmhost settings need to be toggled for this to work.
        Variables: {guild}: The name of your server
        {winners}: A list of user mentions that won the giveaway 
-       {"""
+       {prize}: The prize/title of the giveaway
+       """
         if not message:
             await self.config.guild(ctx.guild).hostmessage.clear()
             await ctx.send("I've reset your servers host message")
@@ -658,7 +659,11 @@ class Giveaways(commands.Cog):
     @commands.admin_or_permissions(administrator=True)
     async def winmessage(self, ctx, message: str=None):
         """Set the message sent to the winner(s) when the giveaway ends. If there are no winners, it won't be sent.
-       Your dmwin settings need to be toggled for this to work."""
+       Your dmwin settings need to be toggled for this to work.
+       Variables
+       {guild}: Your server name 
+       {host}: The host of the giveaway
+       {prize}: The title/prize of the giveaway"""
         if not message:
             await self.config.guild(ctx.guild).winmessage.clear()
             await ctx.send("I've reset your servers win message")
@@ -669,7 +674,9 @@ class Giveaways(commands.Cog):
     @giveawayset.command(name="startheader")
     @commands.admin_or_permissions(administrator=True)
     async def startheader(self, ctx, message: str=None):
-        """Set the content for the giveaway message, not the embed. See gset description for that"""
+        """Set the content for the giveaway message, not the embed. See gset description for that
+        Variables
+        {giveawayEmoji}: Your servers giveaway emoji, defaults to :tada: if you haven't set one"""
         if not message:
             await self.config.guild(ctx.guild).startHeader.clear()
             await ctx.send("I've reset your servers startheader")
@@ -680,7 +687,9 @@ class Giveaways(commands.Cog):
     @giveawayset.command(name="endheader")
     @commands.admin_or_permissions(administrator=True)
     async def endheader(self, ctx, message: str=None):
-        """Set the content for the giveaway message after it ends."""
+        """Set the content for the giveaway message after it ends.
+        Variables
+        {giveawayEmoji}: Your servers giveaway emoji, defaults to :tada: if you haven't set one"""
         if not message:
             await self.config.guild(ctx.guild).endHeader.clear()
             await ctx.send("I've reset your servers endheader")
@@ -691,7 +700,9 @@ class Giveaways(commands.Cog):
     @giveawayset.command(name="description")
     @commands.admin_or_permissions(administrator=True)
     async def description(self, ctx, message: str=None):
-        """Set the content for the giveaway message after it ends."""
+        """Set the content for the giveaway message after it ends.
+        Variables:
+        {emoji}: The emoji you use for giveaways"""
         if not message:
             await self.config.guild(ctx.guild).description.clear()
             await ctx.send("I've reset your servers embed description")
