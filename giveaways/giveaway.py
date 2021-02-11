@@ -1051,6 +1051,29 @@ class Giveaways(commands.Cog):
                 else:
                     channel=info["channel"]
                     channel=self.bot.get_channel(channel)
+            
+        await startmessage.delete()
+
+        formatted_giveaways="\n".join(giveaway_list)
+        if len(formatted_giveaways) > 2048:
+            pages=list(pagify(formatted_giveaways))
+            embeds=[]
+
+            for i, page in enumerate(pages, start=1):
+                e=discord.Embed(
+                    title=f"Giveaways Page {i}/{len(pages)}",
+                    description=page,
+                    color=discord.Color.green()
+                )
+                embeds.append(e)
+            await menu(ctx, embeds, DEFAULT_CONTROLS)
+        else:
+            e=discord.Embed(
+                title="Giveaway Page 1",
+                description=formatted_giveaways,
+                color=discord.Color.green()
+            )
+            await ctx.send(embed=e)
               
 
     @giveaway.command(name="cancel")
