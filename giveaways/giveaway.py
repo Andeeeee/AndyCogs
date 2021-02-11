@@ -999,9 +999,59 @@ class Giveaways(commands.Cog):
     @giveaway.command(name="list")
     @commands.cooldown(1, 30, commands.BucketType.member)
     @commands.max_concurrency(2, commands.BucketType.user)
-    async def g_list(self, ctx, can_join: bool=False, *flags):
+    async def g_list(self, ctx, can_join: bool=False):
         """List the giveways in the server. Specify True for can_join paramater to only list the ones you can join"""
-        parser = NoEx
+        async with ctx.typing():
+            giveaway_list=[]
+            bypassrole=await self.config.guild(ctx.guild).bypassrole()
+            counter=0
+            gaws=await self.config.guild(ctx.guild).giveaways()
+            startmessage=await ctx.send("0 giveaways gathered")
+            for messageid, info in gaws.items():
+                messageid=str(messageid)
+                try:
+                    if counter % 20 == 0:
+                        await startmessage.edit(content=f"{counter} messages out of {len(gaws.values())} messages gathered")
+                except ZeroDivisionError:
+                    pass
+                counter += 1
+                if not info["Ongoing"]:
+                    continue
+                if not can_join:
+                    channel=info["channel"]
+                    channel=self.bot.get_channel(channel)
+                    if not channel:
+                        continue
+                    m=self.message_cache.get(
+                        messageid, self.bot._connection._get_message(int(messageid)))
+                    if not m:
+                        try:
+                            m=await channel.fetch_message(int(messageid))
+                            self.message_cache[messageid]=m
+                        except discord.NotFound:
+                            deleted_gaws=await self.config.guild(ctx.guild).giveaways()
+                            deleted_gaws.pop(messageid)
+                            await self.config.guild(ctx.guild).giveaways.set(deleted_gaws)
+                            del self.message_cache[messageid]
+                            continue
+
+                    
+                    header=f"{info['title']}({m.jump_url})"
+                    header += " | Winners: {0} | Host: <@{1}>".format(
+                        info["winners"], info["host"])
+                    header += " | Channel: <#{0}> | ID: {1}".format(
+                        info["channel"], messageid)
+                    if (await self.can_join(ctx.author, info)):
+                        header += " :white_check_mark: You can join this giveaway\n"
+                        giveaway_list.append(header)
+                        continue
+                    header += " :octagonal_sign: You cannot join this giveaway\n"
+
+                    giveaway_list.append(header)
+                else:
+                    channel=info["channel"]
+                    channel=self.bot.get_channel(channel)
+              
 
     @giveaway.command(name="cancel")
     @commands.check(is_manager)
