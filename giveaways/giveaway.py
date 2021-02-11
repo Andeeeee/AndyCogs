@@ -641,7 +641,7 @@ class Giveaways(commands.Cog):
 
     @giveawayset.command(name="hostmessage")
     @commands.admin_or_permissions(administrator=True)
-    async def hostmessage(self, ctx, message: str=None):
+    async def hostmessage(self, ctx, * , message: str=None):
         """Set the message sent to the host when the giveaway ends. If there are no winners, it won't be sent.
        Your dmhost settings need to be toggled for this to work.
        Variables: {guild}: The name of your server
@@ -657,7 +657,7 @@ class Giveaways(commands.Cog):
 
     @giveawayset.command(name="winmessage")
     @commands.admin_or_permissions(administrator=True)
-    async def winmessage(self, ctx, message: str=None):
+    async def winmessage(self, ctx, * , message: str=None):
         """Set the message sent to the winner(s) when the giveaway ends. If there are no winners, it won't be sent.
        Your dmwin settings need to be toggled for this to work.
        Variables
@@ -830,8 +830,8 @@ class Giveaways(commands.Cog):
         gaws=await self.config.guild(guild).giveaways()
 
         if not role:
-            role=data["default_req"]
-            if not role:
+            role=[data["default_req"]]
+            if not role or role == [None]:
                 roleid=None
             else:
                 role=ctx.guild.get_role(role)
