@@ -244,7 +244,7 @@ class Giveaways(commands.Cog):
         if not channel:
             return
 
-        self.bot._connection._get_message(int(messageid))
+        message = self.bot._connection._get_message(int(messageid))
 
         if not message:
             try:
