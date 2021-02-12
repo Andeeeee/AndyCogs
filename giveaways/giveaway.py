@@ -297,7 +297,7 @@ class Giveaways(commands.Cog):
                 win = choice(winners_list)
                 count += 1
                 if count >= 6:
-                    break  # for when it runs out of reactions etc.
+                    continue  # for when it runs out of reactions etc.
             final_list.append(win)
 
         if len(final_list) == 0:
