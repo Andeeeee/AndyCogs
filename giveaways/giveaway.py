@@ -781,8 +781,8 @@ class Giveaways(commands.Cog):
         """
         await ctx.send(embed=e)
 
-    @ giveaway.command(name="start")
-    @ commands.check(is_manager)
+    @giveaway.command(name="start")
+    @commands.check(is_manager)
     async def g_start(
         self,
         ctx,
