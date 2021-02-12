@@ -11,9 +11,6 @@ from .converters import FuzzyRole, IntOrLink
 from redbot.core.commands import BadArgument
 from redbot.core.utils.chat_formatting import pagify
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
-from aiohttp import ClientSession
-from bs4 import BeautifulSoup
-import re
 
 
 class NoExitParser(argparse.ArgumentParser):
@@ -77,8 +74,6 @@ class Giveaways(commands.Cog):
 
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
-
-        self.session = aiohttp.ClientSession()
 
 
 # -------------------------------------Functions---------------------------------
