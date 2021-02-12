@@ -30,19 +30,7 @@ class FuzzyItem(Converter):
             "memeclicker",
             "cookietrophy",
             "blob",
-            "flamecookie",
-            "flarecookie",
-            "aikacookie",
-            "trustycookie",
-            "kablekookie",
-            "neurocookie",
-            "yamicookie",
-            "rickcookie",
-            "geocookie",
-            "pandacookie",
-            "bobloycookie",
-            "twentysixcookie",
-            "jackcookie"
+            "andycookie",
         ]
 
         result = []

@@ -46,19 +46,7 @@ class CookieClicker(commands.Cog):
             "memeclicker": 69696969,
             "cookietrophy": 3000000000,
             "blob": 10000000000, #dankmemer
-            "flamecookie": 50000000000,
-            "flarecookie": 100000000000,
-            "aikacookie": 150000000000,
-            "trustycookie": 300000000000,
-            "kablekookie": 500000000000,
-            "neurocookie": 1000000000000,
-            "yamicookie": 5000000000000,
-            "rickcookie": 10000000000000,
-            "geocookie": 50000000000000,
-            "pandacookie": 100000000000000,
-            "bobloycookie": 500000000000000,
-            "twentysixcookie": 1000000000000000,
-            "jackcookie": 6969696969694242424242,
+            "andycookie": 1000000000010000000000
         }
 
         default_channel = {
@@ -80,19 +68,7 @@ class CookieClicker(commands.Cog):
             "memeclicker",
             "cookietrophy"
             "blob",
-            "flamecookie",
-            "flarecookie",
-            "aikacookie",
-            "trustycookie",
-            "kablekookie",
-            "neurocookie",
-            "yamicookie",
-            "rickcookie",
-            "geocookie",
-            "pandacookie",
-            "bobloycookie",
-            "twentysixcookie",
-            "jackcookie"
+            "andycookie"
         ]
 
         self.config.register_user(**default_user)
@@ -154,7 +130,10 @@ class CookieClicker(commands.Cog):
         if item not in user_items:
             user_items[item] = 0
         
-        price *= round(user_items[item] * 0.2)
+        items = user_items[item]
+        if items == 0:
+            items = 1
+        price *= round(items * 0.2)
         
         cookies = await self.config.user(ctx.author).cookies()
         if (price * amount) > cookies:
