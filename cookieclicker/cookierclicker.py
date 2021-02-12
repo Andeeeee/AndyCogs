@@ -46,7 +46,6 @@ class CookieClicker(commands.Cog):
             "memeclicker": 69696969,
             "cookietrophy": 3000000000,
             "blob": 10000000000, #dankmemer
-            "phencookie": 20000000000,
             "flamecookie": 50000000000,
             "flarecookie": 100000000000,
             "aikacookie": 150000000000,
@@ -81,7 +80,6 @@ class CookieClicker(commands.Cog):
             "memeclicker",
             "cookietrophy"
             "blob",
-            "phencookie",
             "flamecookie",
             "flarecookie",
             "aikacookie",

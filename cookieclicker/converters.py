@@ -30,7 +30,6 @@ class FuzzyItem(Converter):
             "memeclicker",
             "cookietrophy",
             "blob",
-            "phencookie",
             "flamecookie",
             "flarecookie",
             "aikacookie",
