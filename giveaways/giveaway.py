@@ -1325,7 +1325,7 @@ class Giveaways(commands.Cog):
         if user.bot:
             return
         data = await self.config.guild(channel.guild).all()
-        gaws = data["giveaway"]
+        gaws = data["giveaways"]
         if str(payload.message_id) not in gaws:
             return
         elif gaws[str(payload.message_id)]["Ongoing"] == False:
