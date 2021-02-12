@@ -1337,7 +1337,9 @@ class Giveaways(commands.Cog):
         if str(payload.emoji) != data["emoji"]:
             return
 
-        bypassrole = await self.config.guild(channel.guild).bypassrole()
+        bypassrole = data["bypassrole"]
+        if bypassrole in [r.id for r in user.roles]:
+            return 
         if not (await self.can_join(user, gaws[str(payload.message_id)])):
             e = discord.Embed(title="Missing Giveaway Requirement", description=f"You do not meet the requirement which is required for [this]({message.jump_url}) giveaway or you have a blacklisted role. You can check gset settings to see if you have the blacklisted role")
             await user.send(embed=e)
@@ -1347,7 +1349,7 @@ class Giveaways(commands.Cog):
                     message = await channel.fetch_message(payload.message_id)
                 except discord.NotFound:
                     return 
-                self.message_cache[str(payload.message_id)] = message
+            self.message_cache[str(payload.message_id)] = message
             for r in message.reactions:
                 if str(r) == data["emoji"]:
                     await r.remove(user)
