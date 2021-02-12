@@ -1026,7 +1026,7 @@ class Giveaways(commands.Cog):
                 if not info["Ongoing"]:
                     continue
                 if not can_join:
-                    jump_url = f"discord.com/channels/{ctx.guild.id}/{info['channel']}/{messageid}"
+                    jump_url = f"https://discord.com/channels/{ctx.guild.id}/{info['channel']}/{messageid}"
 
                     
                     header=f"[{info['title']}]({jump_url})"
@@ -1040,7 +1040,7 @@ class Giveaways(commands.Cog):
 
                     giveaway_list.append(header)
                 else:
-                    jump_url = f"discord.com/channels/{ctx.guild.id}/{info['channel']}/{messageid}"
+                    jump_url = f"https://discord.com/channels/{ctx.guild.id}/{info['channel']}/{messageid}`"
                     header=f"[{info['title']}]({jump_url})"
                     header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
                     header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
@@ -1338,9 +1338,16 @@ class Giveaways(commands.Cog):
             return
 
         bypassrole = await self.config.guild(channel.guild).bypassrole()
-        if not (await self.can_join(user, gaws[str(message.id)])):
+        if not (await self.can_join(user, gaws[str(payload.message_id)])):
             e = discord.Embed(title="Missing Giveaway Requirement", description=f"You do not meet the requirement which is required for [this]({message.jump_url}) giveaway or you have a blacklisted role. You can check gset settings to see if you have the blacklisted role")
             await user.send(embed=e)
+            message = self.bot._connection._get_message(payload.message_id)
+            if not message:
+                try:
+                    message = await channel.fetch_message(payload.message_id)
+                except discord.NotFound:
+                    return 
+                self.message_cache[str(payload.message_id)] = message
             for r in message.reactions:
                 if str(r) == data["emoji"]:
                     await r.remove(user)
