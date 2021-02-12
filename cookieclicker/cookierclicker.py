@@ -244,7 +244,7 @@ class CookieClicker(commands.Cog):
         cookies = self.comma_format(await self.config.user(user).cookies())
         await ctx.send(f"You have {cookies} :cookie:")
 
-    @tasks.loop(minutes=1)
+    @tasks.loop(minutes=5)
     async def autotask(self):
         for userid, info in (await self.config.all_users()).items():
             userid = int(userid)
@@ -252,7 +252,7 @@ class CookieClicker(commands.Cog):
             prices = await self.config.all()
             for item, count in data.items():
                 multi = prices[item]
-                multi = multi / 5 
+                multi = multi / 10
                 await self.addcookies(userid, multi * int(count))
       
     async def cancel_session(self, messageid: int, channelid: int):
