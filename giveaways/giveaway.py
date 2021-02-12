@@ -1040,10 +1040,10 @@ class Giveaways(commands.Cog):
 
                     giveaway_list.append(header)
                 else:
+                    jump_url = f"discord.com/channels/{ctx.guild.id}/{info['channel']}/{messageid}"
                     header=f"[{info['title']}]({jump_url})"
                     header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
                     header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
-                    jump_url = f"discord.com/channels/{ctx.guild.id}/{info['channel']}/{messageid}"
                     if (await self.can_join(ctx.author, info)):
                         header += " :white_check_mark: You can join this giveaway\n"
                         giveaway_list.append(header)
