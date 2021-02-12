@@ -58,8 +58,8 @@ class Giveaways(commands.Cog):
             "endHeader": "**{giveawayEmoji}   GIVEAWAY ENDED   {giveawayEmoji}**",
             "description": "React with {emoji} to enter",
             "bypassrole": [],
-            "winmessage": "You won the giveaway for {prize} in {guild}!",
-            "hostmessage": "Your giveaway for {prize} in {guild} has ended. The winners were {winners}",
+            "winmessage": "You won the giveaway for [{prize}]({url}) in {guild}!",
+            "hostmessage": "Your giveaway for [{prize}]({url}) in {guild} has ended. The winners were {winners}",
             "emoji": "🎉",
         }
 
