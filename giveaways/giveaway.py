@@ -1341,8 +1341,6 @@ class Giveaways(commands.Cog):
         if bypassrole in [r.id for r in user.roles]:
             return 
         if not (await self.can_join(user, gaws[str(payload.message_id)])):
-            e = discord.Embed(title="Missing Giveaway Requirement", description=f"You do not meet the requirement which is required for [this]({message.jump_url}) giveaway or you have a blacklisted role. You can check gset settings to see if you have the blacklisted role")
-            await user.send(embed=e)
             message = self.bot._connection._get_message(payload.message_id)
             if not message:
                 try:
@@ -1350,6 +1348,8 @@ class Giveaways(commands.Cog):
                 except discord.NotFound:
                     return 
             self.message_cache[str(payload.message_id)] = message
+            e = discord.Embed(title="Missing Giveaway Requirement", description=f"You do not meet the requirement which is required for [this]({message.jump_url}) giveaway or you have a blacklisted role. You can check gset settings to see if you have the blacklisted role")
+            await user.send(embed=e)
             for r in message.reactions:
                 if str(r) == data["emoji"]:
                     await r.remove(user)
