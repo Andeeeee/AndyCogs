@@ -380,9 +380,12 @@ class Giveaways(commands.Cog):
                     e = discord.Embed(
                         title=f"Your giveaway has ended",
                         description=hostmessage.replace("{prize}", str(info["title"])).replace(
-                            "{winners}", winners).replace("{guild}", message.guild.name)
+                            "{winners}", winners).replace("{guild}", message.guild.name).replace("{url}", message.jump_url)
                     )
-                    await host.send(embed=e)
+                    try:
+                        await host.send(embed=e)
+                    except discord.errors.Forbidden:
+                        pass 
             if dmwin:
                 winmessage = await self.config.guild(message.guild).winmessage()
                 for mention in final_list:
@@ -394,9 +397,12 @@ class Giveaways(commands.Cog):
                     e = discord.Embed(
                         title=f"You won a giveaway!",
                         description=winmessage.replace("{prize}", str(info["title"])).replace(
-                            "{host}", f"<@{info['host']}>").replace("{guild}", message.guild.name)
+                            "{host}", f"<@{info['host']}>").replace("{guild}", message.guild.name).replace("{url}", message.jump_url)
                     )
-                    await mention.send(embed=e)
+                    try:
+                        await mention.send(embed=e)
+                    except discord.errors.Forbidden:
+                        pass 
 
     def cog_unload(self):
         self.giveaway_task.cancel()
@@ -644,9 +650,10 @@ class Giveaways(commands.Cog):
     async def hostmessage(self, ctx, * , message: str=None):
         """Set the message sent to the host when the giveaway ends. If there are no winners, it won't be sent.
        Your dmhost settings need to be toggled for this to work.
-       Variables: {guild}: The name of your server
-       {winners}: A list of user mentions that won the giveaway 
+       Variables: {guild}: Server Name
+       {winners}: Winners of the giveaway
        {prize}: The prize/title of the giveaway
+       {url}: The jump url
        """
         if not message:
             await self.config.guild(ctx.guild).hostmessage.clear()
@@ -663,7 +670,8 @@ class Giveaways(commands.Cog):
        Variables
        {guild}: Your server name 
        {host}: The host of the giveaway
-       {prize}: The title/prize of the giveaway"""
+       {prize}: The title/prize of the giveaway
+       {url}: The jump url"""
         if not message:
             await self.config.guild(ctx.guild).winmessage.clear()
             await ctx.send("I've reset your servers win message")
