@@ -171,12 +171,12 @@ class Giveaways(commands.Cog):
 
         self.message_cache[str(messageid)] = message
 
-        gaws = await self.config.guild(message.guild).giveaways()
         bypassrole = await self.config.guild(message.guild).bypassrole()
         data = await self.config.guild(message.guild).all()
 
         while True:
             remaining = info["endtime"] - datetime.utcnow().timestamp()
+            gaws = await self.config.guild(message.guild).giveaways()
             if not gaws[str(messageid)]["Ongoing"]:
                 return
 
