@@ -1040,6 +1040,9 @@ class Giveaways(commands.Cog):
 
                     giveaway_list.append(header)
                 else:
+                    header=f"[{info['title']}]({jump_url})"
+                    header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
+                    header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
                     jump_url = f"discord.com/channels/{ctx.guild.id}/{info['channel']}/{messageid}"
                     if (await self.can_join(ctx.author, info)):
                         header += " :white_check_mark: You can join this giveaway\n"
@@ -1321,21 +1324,20 @@ class Giveaways(commands.Cog):
         user=channel.guild.get_member(payload.user_id)
         if user.bot:
             return
-        message=await channel.fetch_message(payload.message_id)
-        gaws = await self.config.guild(message.guild).giveaways()
-        data = await self.config.guild(message.guild).all()
-        if str(message.id) not in gaws:
+        data = await self.config.guild(channel.guild).all()
+        gaws = data["giveaway"]
+        if str(payload.message_id) not in gaws:
             return
-        elif gaws[str(message.id)]["Ongoing"] == False:
+        elif gaws[str(payload.message_id)]["Ongoing"] == False:
             return
-        self.message_cache[str(message.id)] = message
-        if not message.channel.permissions_for(message.guild.me).manage_messages:
+
+        if not channel.permissions_for(channel.guild.me).manage_messages:
             return
 
         if str(payload.emoji) != data["emoji"]:
             return
 
-        bypassrole = await self.config.guild(message.guild).bypassrole()
+        bypassrole = await self.config.guild(channel.guild).bypassrole()
         if not (await self.can_join(user, gaws[str(message.id)])):
             e = discord.Embed(title="Missing Giveaway Requirement", description=f"You do not meet the requirement which is required for [this]({message.jump_url}) giveaway or you have a blacklisted role. You can check gset settings to see if you have the blacklisted role")
             await user.send(embed=e)
