@@ -1026,29 +1026,12 @@ class Giveaways(commands.Cog):
                 if not info["Ongoing"]:
                     continue
                 if not can_join:
-                    channel=info["channel"]
-                    channel=self.bot.get_channel(channel)
-                    if not channel:
-                        continue
-                    m=self.message_cache.get(
-                        messageid, self.bot._connection._get_message(int(messageid)))
-                    if not m:
-                        try:
-                            m=await channel.fetch_message(int(messageid))
-                            self.message_cache[messageid]=m
-                        except discord.NotFound:
-                            deleted_gaws=await self.config.guild(ctx.guild).giveaways()
-                            deleted_gaws.pop(messageid)
-                            await self.config.guild(ctx.guild).giveaways.set(deleted_gaws)
-                            del self.message_cache[messageid]
-                            continue
+                    jump_url = f"discord.com/channels/{ctx.guild.id}/{info['channel']}/{messageid}"
 
                     
-                    header=f"[{info['title']}]({m.jump_url})"
-                    header += " | Winners: {0} | Host: <@{1}>".format(
-                        info["winners"], info["host"])
-                    header += " | Channel: <#{0}> | ID: {1}".format(
-                        info["channel"], messageid)
+                    header=f"[{info['title']}]({jump_url})"
+                    header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
+                    header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
                     if (await self.can_join(ctx.author, info)):
                         header += " :white_check_mark: You can join this giveaway\n"
                         giveaway_list.append(header)
@@ -1057,8 +1040,11 @@ class Giveaways(commands.Cog):
 
                     giveaway_list.append(header)
                 else:
-                    channel=info["channel"]
-                    channel=self.bot.get_channel(channel)
+                    jump_url = f"discord.com/channels/{ctx.guild.id}/{info['channel']}/{messageid}"
+                    if (await self.can_join(ctx.author, info)):
+                        header += " :white_check_mark: You can join this giveaway\n"
+                        giveaway_list.append(header)
+                    
             
         await startmessage.delete()
 
