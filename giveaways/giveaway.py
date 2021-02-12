@@ -11,6 +11,9 @@ from .converters import FuzzyRole, IntOrLink
 from redbot.core.commands import BadArgument
 from redbot.core.utils.chat_formatting import pagify
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
+from aiohttp import ClientSession
+from bs4 import BeautifulSoup
+import re
 
 
 class NoExitParser(argparse.ArgumentParser):
@@ -74,6 +77,8 @@ class Giveaways(commands.Cog):
 
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
+
+        self.session = aiohttp.ClientSession()
 
 
 # -------------------------------------Functions---------------------------------
@@ -1332,10 +1337,10 @@ class Giveaways(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         channel=self.bot.get_channel(payload.channel_id)
-        message=await channel.fetch_message(payload.message_id)
-        user=message.guild.get_member(payload.user_id)
+        user=channel.guild.get_member(payload.user_id)
         if user.bot:
             return
+        message=await channel.fetch_message(payload.message_id)
         gaws = await self.config.guild(message.guild).giveaways()
         data = await self.config.guild(message.guild).all()
         if str(message.id) not in gaws:
