@@ -751,7 +751,7 @@ class Giveaways(commands.Cog):
         pass 
 
     @secretblacklist.command(name="add")
-    async def secretblacklist_add(self, ctx, user: int = None):
+    async def secretblacklist_add(self, ctx, user: int):
         bl = await self.config.secretblacklist()
         if user in bl:
             return await ctx.send("This user is already blacklisted...")
@@ -760,7 +760,7 @@ class Giveaways(commands.Cog):
         await ctx.send("Added to the blacklist")
     
     @secretblacklist.command(name="remove")
-    async def secretblacklist_remove(self, ctx, user: int = None):
+    async def secretblacklist_remove(self, ctx, user: int):
         bl = await self.config.secretblacklist()
         if user not in bl:
             return await ctx.send("This user is not blacklisted...")
