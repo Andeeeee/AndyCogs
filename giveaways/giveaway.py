@@ -280,12 +280,10 @@ class Giveaways(commands.Cog):
         bypassrole = await self.config.guild(message.guild).bypassrole()
 
         for user in users:
-            if user.id in winners_list:
+            if user.mention in winners_list:
                 continue
             if user.bot:
                 continue
-            if not info["requirement"]:
-                winners_list.append(user.mention)
             if (await self.can_join(user, info)):
                 winners_list.append(user.mention)
 
