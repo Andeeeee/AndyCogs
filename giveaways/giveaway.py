@@ -979,29 +979,62 @@ class Giveaways(commands.Cog):
 
     @giveaway.command(name="cache")
     @commands.is_owner()
-    async def cache(self, ctx, active: bool=True):
+    async def cache(self, ctx, active: Optional[bool] = True, global: str = None):
         """Owner Utility to force a cache on a server in case something broke or you reloaded the cog and need it needs to be cached"""
+        e = discord.Embed(title="Cached Giveaways", description="Cached Servers\n")
         async with ctx.typing():
-            msg=await ctx.send("0 giveaways cached")
-            counter=0
-            for messageid, info in (await self.config.guild(ctx.guild).giveaways()).items():
-                counter += 1
-                if active:
-                    if info["Ongoing"] == False:
-                        continue
+            counter = 0
+            if global:
+                all_guilds = await self.config.all_guilds()
+                for guild_id, data in all_guilds.items():
+                    counter = 0
+                    giveaways = data["giveaways"]
+                    for messageid, info in giveaways.items():
+                        if active:
+                            if not info["Ongoing"]:
+                                continue 
+                        
+                        if str(messageid) in self.message_cache:
+                            continue 
+                        message = self.bot._connection._get_message(int(messageid))
+                        channel = self.bot.get_channel(info["channel"])
+                        if not channel:
+                            continue 
+                        if not message:
+                            try:
+                                message = await channel.fetch_message(int(messageid))
+                            except discord.NotFound:
+                                continue 
+                        self.message_cache[messageid] = message 
+                        counter += 1
+                        
 
-                if counter % 25 == 0:
-                    await msg.edit(content=f"{counter} messages cached")
-                if messageid not in self.message_cache:
-                    messageid=str(messageid)
-                    channel=self.bot.get_channel(info["channel"])
-                    try:
-                        m=await channel.fetch_message(int(messageid))
-                    except discord.NotFound:
-                        continue
-                    self.message_cache[messageid]=m
+                    guild = self.bot.get_guild(int(guild_id))
+                    e.description += f"Cached {counter} messages in {guild.name}\n"
+            else:
+                for messageid, info in (await self.config.guild(ctx.guild).giveaways()):
+                    if active:
+                        if not info["Ongoing"]:
+                            continue 
+                    
+                    if str(messageid) in self.message_cache:
+                        continue 
+                    message = self.bot._connection._get_message(int(messageid))
+                    channel = self.bot.get_channel(info["channel"])
+                    if not channel:
+                        continue 
+                    if not message:
+                        try:
+                            message = await channel.fetch_message(int(messageid))
+                        except discord.NotFound:
+                            continue 
+                        self.message_cache[messageid] = message
+                        counter += 1
+                
+                e.description += f"Cached {counter} messages in {ctx.guild.name}"
 
-        await ctx.send(f"Done. I cached {counter} messages")
+        await ctx.send(embed=e)            
+
 
     @giveaway.command(name="list")
     @commands.cooldown(1, 30, commands.BucketType.member)
