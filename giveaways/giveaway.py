@@ -130,7 +130,7 @@ class Giveaways(commands.Cog):
     async def can_join(self, user: discord.Member, info):
         data = await self.config.guild(user.guild).all()
         secretblacklist = await self.config.secretblacklist()
-        if userid in secretblacklist:
+        if user.id in secretblacklist:
             return False
         if len(data["bypassrole"]) == 0:
             pass
