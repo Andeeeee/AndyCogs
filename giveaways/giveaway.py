@@ -811,7 +811,7 @@ class Giveaways(commands.Cog):
 
         Example:
         `.g start 10m 1w Contributor --donor @Andee#8552 --amt 50000 --note COINS ARE YUMMY`
-        `.g start 10m 1 @Owners lots of yummy coins --ping --msg I will eat these coins --donor @Andee
+        `.g start 10m 1 @Owners lots of yummy coins --ping --msg I will eat these coins --donor @Andee`
         `.g start 10m 1w none coffee`
         `.g start 10m 1w GiveawayPing;;Admin;;Mod food`
 
