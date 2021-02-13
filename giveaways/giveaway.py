@@ -984,7 +984,7 @@ class Giveaways(commands.Cog):
         e = discord.Embed(title="Cached Giveaways", description="Cached Servers\n")
         async with ctx.typing():
             counter = 0
-            if cacheglobal:
+            if cacheglobal != "--global":
                 all_guilds = await self.config.all_guilds()
                 for guild_id, data in all_guilds.items():
                     counter = 0
