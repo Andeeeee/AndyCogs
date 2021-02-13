@@ -177,7 +177,9 @@ class Giveaways(commands.Cog):
         while True:
             remaining = info["endtime"] - datetime.utcnow().timestamp()
             gaws = await self.config.guild(message.guild).giveaways()
-            if not gaws[str(messageid)]["Ongoing"]:
+            if str(messageid) not in gaws:
+                return 
+            elif not gaws[str(messageid)]["Ongoing"]:
                 return
 
             elif remaining <= 0:
@@ -185,8 +187,6 @@ class Giveaways(commands.Cog):
                 await self.end_giveaway(int(messageid), info)
                 return
 
-            elif str(messageid) not in gaws:
-                return
 
             remaining = datetime.fromtimestamp(
                 info["endtime"]) - datetime.utcnow()
@@ -254,6 +254,7 @@ class Giveaways(commands.Cog):
 
         giveaways = await self.config.guild(message.guild).giveaways()
         giveaways[str(messageid)]["Ongoing"] = False
+        self.giveaway_cache[str(messageid)] = False
         await self.config.guild(message.guild).giveaways.set(giveaways)
 
         winners_list = []
