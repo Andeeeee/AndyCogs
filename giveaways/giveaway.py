@@ -979,12 +979,12 @@ class Giveaways(commands.Cog):
 
     @giveaway.command(name="cache")
     @commands.is_owner()
-    async def cache(self, ctx, active: Optional[bool] = True, global: str = None):
+    async def cache(self, ctx, active: Optional[bool] = True, cacheglobal: str = None):
         """Owner Utility to force a cache on a server in case something broke or you reloaded the cog and need it needs to be cached"""
         e = discord.Embed(title="Cached Giveaways", description="Cached Servers\n")
         async with ctx.typing():
             counter = 0
-            if global:
+            if cacheglobal:
                 all_guilds = await self.config.all_guilds()
                 for guild_id, data in all_guilds.items():
                     counter = 0
