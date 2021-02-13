@@ -803,13 +803,14 @@ class Giveaways(commands.Cog):
         --amt: The amount to store for gprofile/gstore. Must be an integer, 50k, 50M, etc are not accepted.
         --note: The note to add to the host/donors notes.
         --msg: The message to send right after the giveaway starts.
-        --ping: Specify True or False after this flag, if a pingrole for your server is set, it will ping that role.
+        --ping: Use this flag to ping the set pingrole for your server
 
         Specify `none` to the requirement to remove fuzzyrole converters and not have a role requirement
-        Multiple requirements need to be split with `;;`
+        Multiple requirements need to be split with `;;` or `|`, spaces should not be included
+
 
         Example:
-        # 8552 --amt 50000 --note COINS ARE YUMMY`
+        `.g start 10m 1w Contributor --donor @Andee#8552 --amt 50000 --note COINS ARE YUMMY`
         `.g start 10m 1 @Owners lots of yummy coins --ping --msg I will eat these coins --donor @Andee
         `.g start 10m 1w none coffee`
         `.g start 10m 1w GiveawayPing;;Admin;;Mod food`
@@ -824,7 +825,7 @@ class Giveaways(commands.Cog):
         ctx,
         time: str,
         winners: str="1",
-        role: Optional[FuzzyRole]=None,
+        requirements: Optional[FuzzyRole]=None,
         *,
         title="Giveaway!",
 
@@ -874,7 +875,7 @@ class Giveaways(commands.Cog):
         gaws=await self.config.guild(guild).giveaways()
 
 
-        if not role:
+        if not requirements:
             role=data["default_req"]
             if not role or role == [None]:
                 roleid=None
@@ -882,7 +883,7 @@ class Giveaways(commands.Cog):
                 role=ctx.guild.get_role(role)
                 roleid= [role.id]
         else:
-            roleid=[r.id for r in role]
+            roleid=[r.id for r in requirements]
 
         e=discord.Embed(
             title=title,
