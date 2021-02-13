@@ -258,7 +258,9 @@ class Giveaways(commands.Cog):
             try:
                 message = await channel.fetch_message(messageid)
             except discord.NotFound:
-                return
+                giveaways = await self.config.guild(channel.guild).giveaways()
+                giveaways.pop(str(messageid))
+                await self.config.guild(channel.guild).giveaways.set(giveaways)
 
         giveaways = await self.config.guild(message.guild).giveaways()
         giveaways[str(messageid)]["Ongoing"] = False
