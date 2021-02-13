@@ -1264,8 +1264,7 @@ class Giveaways(commands.Cog):
         formatted_string = ""
 
         for i, data in enumerate(ordered_data, start=1):
-            data[1] = self.comma_format(data[1])
-            formatted_string += f"{i}. <@{data[0]}>: {data[1]}\n"
+            formatted_string += f"{i}. <@{data[0]}>: {self.comma_format(data[1])}\n"
         
         if len(formatted_string) >= 2048:
             embeds = []
