@@ -305,11 +305,15 @@ class Giveaways(commands.Cog):
                 continue
             count = 0
             win = choice(winners_list)
+            x = False
             while win in final_list:
                 win = choice(winners_list)
                 count += 1
                 if count >= 6:
+                    x = True
                     break  # for when it runs out of reactions etc.
+            if x:
+                continue 
             final_list.append(win)
 
         if len(final_list) == 0:
@@ -1257,7 +1261,7 @@ class Giveaways(commands.Cog):
             return await ctx.send("no")
         member_data = await self.config.all_members(ctx.guild)
         sorted_data = [(member, data["donated"]) for member, data in member_data.items() if data["donated"] > 0 and ctx.guild.get_member(int(member)) is not None]
-        ordered_data = sorted(sorted_data, key = lambda m: m[1], reverse=True)
+        ordered_data = sorted(sorted_data[:amt], key = lambda m: m[1], reverse=True)
         
         if len(ordered_data) == 0:
             return await ctx.send("I have no data for your server")
