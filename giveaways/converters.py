@@ -77,7 +77,7 @@ class IntOrLink(Converter):
         if argument.isdigit():
             return argument 
         if len(argument.split("-")) == 2:
-            return argument.split("-")[0]
+            return argument.split("-")[1]
         match = re.search(link_regex, argument)
         if not match:
             raise BadArgument("Not a valid message")
