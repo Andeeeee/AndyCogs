@@ -870,6 +870,7 @@ class Giveaways(commands.Cog):
 
         gaws=await self.config.guild(guild).giveaways()
 
+
         if not role:
             role=data["default_req"]
             if not role or role == [None]:
@@ -1210,6 +1211,7 @@ class Giveaways(commands.Cog):
         gaws[giveaway]["Ongoing"]=False
         await self.config.guild(ctx.guild).gaws.set(gaws)
         await ctx.send("Cancelled the giveaway for **{0}**").format(data["title"])
+    
 
 
 # -------------------------------------gprofile---------------------------------
@@ -1243,7 +1245,35 @@ class Giveaways(commands.Cog):
                 e.set_footer(text=f"{len(notes)} notes")
 
             await ctx.send(embed=e)
+    
+    @giveawayprofile.command(name="top")
+    async def top(self, ctx, amt: int = 10):
+        """View the top donators"""
+        if amt < 1:
+            return await ctx.send("no")
+        member_data = await self.config.all_members(ctx.guild)
+        sorted_data = [(member, data["donated"]) for member, data in member_data.items() if data["donated"] > 0 and ctx.guild.get_member(int(member)) is not None]
+        ordered_data = sorted(sorted_data, key = lambda m: m[1], reverse=True)
+        
+        if len(ordered_data) == 0:
+            return await ctx.send("I have no data for your server")
+        
+        formatted_string = ""
 
+        for i, data in enumerate(ordered_data, start=1):
+            formatted_string.append(f"{i}. <@{data[0]}>: {data[1]}")
+        
+        if len(formatted_string) >= 2048:
+            embeds = []
+            pages = list(pagify(formatted_string))
+            for page in pages:
+                e = discord.Embed(title="Donation Leaderboard", description=page, color=ctx.author.color)
+                embeds.append(e)
+            
+            await menu(ctx, embeds, DEFAULT_CONTROLS)
+        else:
+            await ctx.send(embed=discord.Embed(title="Donation Leaderboard", description=formatted_string, color=ctx.author.color))
+            
     @giveawayprofile.command(name="notes")
     async def gprofile_notes(self, ctx, member: Optional[discord.Member]=None):
         """View your giveaway notes"""
