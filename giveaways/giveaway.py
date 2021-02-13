@@ -1012,7 +1012,7 @@ class Giveaways(commands.Cog):
                     guild = self.bot.get_guild(int(guild_id))
                     e.description += f"Cached {counter} messages in {guild.name}\n"
             else:
-                for messageid, info in (await self.config.guild(ctx.guild).giveaways()):
+                for messageid, info in (await self.config.guild(ctx.guild).giveaways()).items():
                     if active:
                         if not info["Ongoing"]:
                             continue 
