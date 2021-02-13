@@ -98,7 +98,7 @@ class Heist(commands.Cog):
         parser.add_argument("--time", type=int, default=20, nargs="?")
 
         try:
-            args, uk = vars(parser.parse_known_args(ctx.message.content.split())[0])
+            args = vars(parser.parse_known_args(ctx.message.content.split())[0])
         except BadArgument as e:
             ctx.command.reset_cooldown(ctx)
             return await ctx.send(str(e))
