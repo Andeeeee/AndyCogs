@@ -5,6 +5,10 @@ from redbot.core import commands, Config
 from redbot.core.commands import Converter, BadArgument
 from typing import Optional
 
+class NoExitParzer(argparse.ArgumentParser):
+    def error(self, message):
+        raise commands.BadArgument(message)
+
 class TimeConverter(Converter):
     async def convert(self, ctx: commands.Context, time: str) -> int:
         conversions = {"s": 1, "m": 60}
@@ -59,13 +63,13 @@ class Heist(commands.Cog):
         """Set the delay time before the bot gives up on a heist. Cannot be less than 10 seconds or greater than 240 seconds"""
         if not time:
             return await ctx.send("The time was not specified or was invalid. Please try again")
-        elif time < 10 or time > 240:
+        elif time < 10 or time > 300:
             return await ctx.send("The time cannot be less than 10 seconds and greater than 240 seconds.")
         else:
             await self.config.guild(ctx.guild).waittime.set(time)
             await ctx.send(f"The time before I give up for heists is now {time} seconds")
     
-    @heist.command(name="start")
+    @heist.command(name="start", cooldown_after_parsing=True)
     @commands.max_concurrency(1, commands.BucketType.channel)
     @commands.cooldown(1, 30, commands.BucketType.channel) 
     @commands.mod_or_permissions(manage_channels=True, mention_everyone=True)
@@ -82,43 +86,22 @@ class Heist(commands.Cog):
         Flags:
         Flags should be seperated from the main content with | 
 
-        --firstrole: Specify the role to unlock before unlocking the role specified
+        --extraroles: Specify the role(s) to unlock before unlocking the role specified
         --time: Specify the time the firstrole should have before the normal role unlocks
 
         If time is not specified and firstrole is. The time will be 20 seconds.
         If time is specified and firstrole is not, this will throw an error.
         """
 
-        parser = argparse.ArgumentParser(description="argparse")
+        parser = NoExitParzer()
+        parser.add_argument("--firstrole", type=str, default=None, nargs="?")
+        parser.add_argument("--time", type=int, default=20, nargs="?")
 
-        flags = ctx.message.content.split("|")
- 
-        parser.add_argument(
-            "--firstrole",
-            nargs="?",
-            type=str,
-            default=None,
-            help="The first role to unlock",
-        )
-
-        parser.add_argument(
-            "--time",
-            nargs="?",
-            type=int,
-            default=20,
-            help="The time before the role unlocks.",
-        )
-        
-        if len(flags) == 1:
-            args = {
-                "firstrole": None,
-                "time": 20,
-            }
-        else:
-            try:
-                args = vars(parser.parse_args(flags[1].split()))
-            except:
-                return await ctx.send("I had trouble parsing flags. Please try again.")
+        try:
+            args, uk = vars(parser.parse_known_args(ctx.message.split())[0])
+        except BadArgument as e:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.send(str(e))
         
 
         if args["firstrole"]:
@@ -130,7 +113,9 @@ class Heist(commands.Cog):
                 firstrole = discord.utils.get(ctx.guild.roles, name=firstrole)
             
             if not firstrole:
-                return await ctx.send("`{0}` was not recognized as a role").format(args["firstrole"])
+                await ctx.send("`{0}` was not recognized as a role").format(args["firstrole"])
+                ctx.command.reset_cooldown(ctx)
+                return 
         else:
             firstrole = None 
 
@@ -145,8 +130,10 @@ class Heist(commands.Cog):
             formatted_time = "4 minutes"
         
         if args["time"] >= time:
-            return await ctx.send("The delay time for firstrole cannot be greater than or equal to the heist time.")
-        
+            await ctx.send("The delay time for firstrole cannot be greater than or equal to the heist time.")
+            ctx.command.reset_cooldown(ctx)
+            return 
+            
         if args["time"] and firstrole:
             time = time - args["time"]
         
