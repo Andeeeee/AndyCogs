@@ -261,6 +261,7 @@ class Giveaways(commands.Cog):
                 giveaways = await self.config.guild(channel.guild).giveaways()
                 giveaways.pop(str(messageid))
                 await self.config.guild(channel.guild).giveaways.set(giveaways)
+                return 
 
         giveaways = await self.config.guild(message.guild).giveaways()
         giveaways[str(messageid)]["Ongoing"] = False
