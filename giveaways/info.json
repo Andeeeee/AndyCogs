@@ -8,7 +8,7 @@
         "Andy"
     ],
     "required_cogs": {},
-    "requirements": [],
+    "requirements": [rapidfuzz, unidecode],
     "tags": [
         "utility", "fun"
     ],
