@@ -69,11 +69,16 @@ class Giveaways(commands.Cog):
             "notes": [],
         }
 
+        default_global = {
+            "secretblacklist": []
+        }
+
         self.message_cache = {}
         self.giveaway_cache = {}
 
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
+        self.config.register_global(**default_global)
 
 
 # -------------------------------------Functions---------------------------------
@@ -124,6 +129,9 @@ class Giveaways(commands.Cog):
 
     async def can_join(self, user: discord.Member, info):
         data = await self.config.guild(user.guild).all()
+        secretblacklist = await self.config.secretblacklist()
+        if userid in secretblacklist:
+            return False
         if len(data["bypassrole"]) == 0:
             pass
         else:
@@ -735,6 +743,30 @@ class Giveaways(commands.Cog):
     async def giveaway(self, ctx):
         """Start, end, reroll giveaways and more!"""
         pass
+
+    @giveaway.group(name="secretblacklist")
+    @commands.is_owner()
+    async def secretblacklist(self, ctx):
+        """Secretly blacklist people from winning ANY giveaways"""
+        pass 
+
+    @secretblacklist.command(name="add")
+    async def secretblacklist_add(self, ctx, user: int = None):
+        bl = await self.config.secretblacklist()
+        if user in bl:
+            return await ctx.send("This user is already blacklisted...")
+        bl.append(user)
+        await self.config.secretblacklist.set(bl)
+        await ctx.send("Added to the blacklist")
+    
+    @secretblacklist.command(name="remove")
+    async def secretblacklist_remove(self, ctx, user: int = None):
+        bl = await self.config.secretblacklist()
+        if user not in bl:
+            return await ctx.send("This user is not blacklisted...")
+        bl.remove(user)
+        await self.config.secretblacklist.set(bl)
+        await ctx.send("Removed from the blacklist")
 
     @giveaway.command(name="clearended")
     @commands.admin_or_permissions(manage_guild=True)
