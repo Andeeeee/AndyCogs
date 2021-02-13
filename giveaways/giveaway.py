@@ -95,6 +95,9 @@ class Giveaways(commands.Cog):
                 return 5
 
         return int(time[:-1]) * conversions[time[-1]]
+    
+    def comma_format(self, number: int):
+        return "{:,}".format(number)
 
     def display_time(self, seconds: int) -> str:
         message = ""
@@ -1246,7 +1249,7 @@ class Giveaways(commands.Cog):
 
             await ctx.send(embed=e)
     
-    @giveawayprofile.command(name="top", aliases=["leaderboard"])
+    @giveawayprofile.command(name="top", aliases=["leaderboard", "lb"])
     async def top(self, ctx, amt: int = 10):
         """View the top donators"""
         if amt < 1:
@@ -1261,6 +1264,7 @@ class Giveaways(commands.Cog):
         formatted_string = ""
 
         for i, data in enumerate(ordered_data, start=1):
+            data[1] = self.comma_format(data[1])
             formatted_string += f"{i}. <@{data[0]}>: {data[1]}\n"
         
         if len(formatted_string) >= 2048:
