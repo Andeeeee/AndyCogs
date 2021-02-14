@@ -917,6 +917,8 @@ class Giveaways(commands.Cog):
         e.set_footer(text="Ending at")
 
         time=self.convert_time(time)
+        if time > 4233600 or time < 3:
+            return await ctx.send("The time cannot be more than 7 weeks and less than 3 seconds")
         ending_time=datetime.utcnow().timestamp() + float(time)
         ending_time=datetime.fromtimestamp(ending_time)
         pretty_time=self.display_time(time)
