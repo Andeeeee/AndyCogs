@@ -761,7 +761,14 @@ class Giveaways(commands.Cog):
         pass 
 
     @secretblacklist.command(name="add")
-    async def secretblacklist_add(self, ctx, user: int):
+    async def secretblacklist_add(self, ctx, user: Union[discord.Member, discord.User, int]):
+        if isinstance(user, discord.Member) or isinstance(user, discord.User):
+            user = user.id 
+        else:
+            try:
+                user = await self.bot.fetch_user(user)
+            except discord.NotFound:
+                return await ctx.send("This doesn't seem to be a user...")
         bl = await self.config.secretblacklist()
         if user in bl:
             return await ctx.send("This user is already blacklisted...")
@@ -770,7 +777,14 @@ class Giveaways(commands.Cog):
         await ctx.send("Added to the blacklist")
     
     @secretblacklist.command(name="remove")
-    async def secretblacklist_remove(self, ctx, user: int):
+    async def secretblacklist_remove(self, ctx, user: Union[discord.Member, discord.User, int]):
+        if isinstance(user, discord.Member) or isinstance(user, discord.User):
+            user = user.id 
+        else:
+            try:
+                user = await self.bot.fetch_user(user)
+            except discord.NotFound:
+                return await ctx.send("This doesn't seem to be a user...")
         bl = await self.config.secretblacklist()
         if user not in bl:
             return await ctx.send("This user is not blacklisted...")
