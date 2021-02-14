@@ -1447,10 +1447,15 @@ class Giveaways(commands.Cog):
         if not (await self.can_join(user, gaws[str(payload.message_id)])):
             message = self.bot._connection._get_message(payload.message_id)
             if not message:
-                try:
-                    message = await channel.fetch_message(payload.message_id)
-                except discord.NotFound:
-                    return 
+                if hasattr(channel, "get_partial_message"): #reds pinned version of dpydoesn't have this feature
+                    message = channel.get_partial_message(payload.message_id)
+                    await message.remove_reaction(str(payload.emoji), user)
+                else:
+                    try:
+                        message = await channel.fetch_message(payload.message_id)
+                    except discord.NotFound:
+                        return 
+                    await message.remove_reaction(str(payload.emoji), user)
             self.message_cache[str(payload.message_id)] = message
             e = discord.Embed(title="Missing Giveaway Requirement", description=f"You do not meet the requirement which is required for [this]({message.jump_url}) giveaway or you have a blacklisted role. You can check gset settings to see if you have the blacklisted role")
             await user.send(embed=e)
