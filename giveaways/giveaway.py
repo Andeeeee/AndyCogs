@@ -198,7 +198,7 @@ class Giveaways(commands.Cog):
 
             elif remaining <= 0:
                 self.message_cache[str(messageid)] = await channel.fetch_message(messageid)
-                self.giveaway_cache(str(messageid)) = False
+                self.giveaway_cache[str(messageid)] = False
                 await self.end_giveaway(int(messageid), info)
                 return
 
