@@ -484,7 +484,7 @@ class Giveaways(commands.Cog):
         await ctx.send("Added to the manager roles")
 
     @manager.command(name="remove")
-    async def cmd_remove(self, ctx, role: discord.Role):
+    async def manager_remove(self, ctx, role: discord.Role):
         """Remove a role from your manager roles"""
         roles = await self.config.guild(ctx.guild).manager()
         if role.id not in roles:
@@ -556,7 +556,7 @@ class Giveaways(commands.Cog):
         pass
 
     @bypassrole.command(name="add")
-    async def add(self, ctx, role: discord.Role):
+    async def bypassrole_add(self, ctx, role: discord.Role):
         """Add a bypass role"""
         roles = await self.config.guild(ctx.guild).bypassrole()
         if role.id in roles:
@@ -566,7 +566,7 @@ class Giveaways(commands.Cog):
         await ctx.send("Added to the bypass roles")
 
     @bypassrole.command(name="remove")
-    async def remove(self, ctx, role: discord.Role):
+    async def bypassrole_remove(self, ctx, role: discord.Role):
         """Remove a bypass role"""
         roles = await self.config.guild(ctx.guild).bypassrole()
         if role.id not in roles:
