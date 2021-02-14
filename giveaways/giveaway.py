@@ -183,7 +183,7 @@ class Giveaways(commands.Cog):
                 return
 
         self.message_cache[str(messageid)] = message
-        self.giveaway_cache(str(messageid)) = True
+        self.giveaway_cache[str(messageid)] = True
 
         bypassrole = await self.config.guild(message.guild).bypassrole()
         data = await self.config.guild(message.guild).all()
