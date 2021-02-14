@@ -183,20 +183,22 @@ class Giveaways(commands.Cog):
                 return
 
         self.message_cache[str(messageid)] = message
+        self.giveaway_cache(str(messageid)) = True
 
         bypassrole = await self.config.guild(message.guild).bypassrole()
         data = await self.config.guild(message.guild).all()
+        gaws = await self.config.guild(message.guild).giveaways()
 
         while True:
             remaining = info["endtime"] - datetime.utcnow().timestamp()
-            gaws = await self.config.guild(message.guild).giveaways()
             if str(messageid) not in gaws:
                 return 
-            elif not gaws[str(messageid)]["Ongoing"]:
-                return
+            elif self.giveaway_cache.get(str(messageid), False) == False:
+                return 
 
             elif remaining <= 0:
                 self.message_cache[str(messageid)] = await channel.fetch_message(messageid)
+                self.giveaway_cache(str(messageid)) = False
                 await self.end_giveaway(int(messageid), info)
                 return
 
@@ -970,6 +972,7 @@ class Giveaways(commands.Cog):
             await self.config.member(ctx.author).hosted.set(prev)
 
         self.message_cache[str(msg)]=gaw_msg
+        self.giveaway_cache[str(msg)] = True
 
         await self.start_giveaway(int(msg), gaws[msg])
 
@@ -1069,6 +1072,8 @@ class Giveaways(commands.Cog):
                         
 
                     guild = self.bot.get_guild(int(guild_id))
+                    if counter == 0:
+                        continue 
                     e.description += f"Cached {counter} messages in {guild.name}\n"
             else:
                 for messageid, info in (await self.config.guild(ctx.guild).giveaways()).items():
@@ -1461,21 +1466,15 @@ class Giveaways(commands.Cog):
         if bypassrole in [r.id for r in user.roles]:
             return 
         if not (await self.can_join(user, gaws[str(payload.message_id)])):
-            message = self.bot._connection._get_message(payload.message_id)
+            message = self.message_cache.get(str(payload.message_id), self.bot._connection._get_message(payload.message_id) )
             if not message:
                 if hasattr(channel, "get_partial_message"): #reds pinned version of dpydoesn't have this feature
                     message = channel.get_partial_message(payload.message_id)
-                    await message.remove_reaction(str(payload.emoji), user)
                 else:
                     try:
                         message = await channel.fetch_message(payload.message_id)
                     except discord.NotFound:
                         return 
-                    await message.remove_reaction(str(payload.emoji), user)
-            self.message_cache[str(payload.message_id)] = message
+            await message.remove_reaction(str(payload.emoji), user)
             e = discord.Embed(title="Missing Giveaway Requirement", description=f"You do not meet the requirement which is required for [this]({message.jump_url}) giveaway or you have a blacklisted role. You can check gset settings to see if you have the blacklisted role")
             await user.send(embed=e)
-            for r in message.reactions:
-                if str(r) == data["emoji"]:
-                    await r.remove(user)
-                    return 
