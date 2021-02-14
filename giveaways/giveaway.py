@@ -21,7 +21,7 @@ class NoExitParser(argparse.ArgumentParser):
 async def is_manager(ctx):
     if ctx.channel.permissions_for(ctx.author).administrator or ctx.channel.permissions_for(ctx.author).manage_guild:
         return True
-    if (await bot.is_owner(ctx.author)):
+    if (await ctx.bot.is_owner(ctx.author)):
         return True
 
     cog = ctx.bot.get_cog("Giveaways")
