@@ -9,7 +9,7 @@ from typing import Optional, Union
 from random import choice, randint
 from .converters import FuzzyRole, IntOrLink
 from redbot.core.commands import BadArgument
-from redbot.core.utils.chat_formatting import pagify
+from redbot.core.utils.chat_formatting import pagify, humanize_list
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 
 
@@ -229,8 +229,7 @@ class Giveaways(commands.Cog):
                 requirements = []
                 for r in info["requirement"]:
                     requirements.append(f"<@&{r}>")
-                e.add_field(name="Requirement", value=", ".join(
-                    requirements), inline=False)
+                e.add_field(name="Requirement", value=humanize_list(requirements), inline=False)
 
             if bypassrole:
                 roles = []
@@ -331,8 +330,7 @@ class Giveaways(commands.Cog):
                     if not role:
                         continue
                     requirements.append(role.mention)
-                e.add_field(name="Requirement", value=", ".join(
-                    requirements), inline=False)
+                e.add_field(name="Requirement", value=humanize_list(requirements), inline=False)
 
             if info["donor"]:
                 donor = message.guild.get_member(info["donor"])
@@ -345,7 +343,7 @@ class Giveaways(commands.Cog):
                 roles = []
                 for r in bypassrole:
                     roles.append("<@&{0}>".format(r))
-                e.add_field(name="Bypassrole", value=", ".join(roles))
+                e.add_field(name="Bypassrole", value=humanize_list(roles), inline=False)
 
             await channel.send(f"There were no valid entries for the **{info['title']}** giveaway \n{message.jump_url}")
             await message.edit(content=data["endHeader"].replace("{giveawayEmoji}", data["emoji"]), embed=e)
