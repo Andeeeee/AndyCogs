@@ -175,6 +175,7 @@ class Giveaways(commands.Cog):
                 self.mee6_cache[str(user.guild.id)] = {}
             if self.mee6_cache[str(user.guild.id)].get(str(user.id), None) is None:
                 user_level = await mee6_api.get_user_rank(user.guild.id, user.id)
+                self.mee6_cache[str(user.guild.id)][str(user.id)] = user_level
             else:
                 user_level = await self.mee6_cache[str(user.guild.id)].get(str(user.id))
             choice = randint(1, 6)
@@ -191,6 +192,7 @@ class Giveaways(commands.Cog):
                 user_level = await amari_api.get_amari_rank(user.guild.id, user)
             else:
                 user_level = self.amari_cache[str(user.guild.id)].get(str(user.id))
+                self.amari_cache[str(user.guild.id)][str(user.id)] = user_level
             choice = randint(1, 6)
             if choice == 3:
                 user_level = await amari_api.get_amari_rank(user.guild.id, user)
@@ -203,6 +205,7 @@ class Giveaways(commands.Cog):
                 self.weekly_amari_cache[str(user.guild.id)] = {}
             if self.weekly_amari_cache[str(user.guild.id)].get(str(user.id), None) is None:
                 user_level = await amari_api.get_weekly_rank(user.guild.id, user)
+                self.weekly_amari_cache[str(user.guild.id)][str(user.id)] = user_level
             else:
                 user_level = self.weekly_amari_cache[str(user.guild.id)].get(str(user.id))
             
