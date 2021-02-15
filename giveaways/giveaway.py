@@ -913,7 +913,7 @@ class Giveaways(commands.Cog):
                 roleid= [role.id]
         else:
             if not requirements[0]:
-                pass 
+                roleid = None
             else:
                 roleid=[r.id for r in requirements[0]]
         
