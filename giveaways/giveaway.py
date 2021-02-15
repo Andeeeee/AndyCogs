@@ -1356,6 +1356,7 @@ class Giveaways(commands.Cog):
                     info["Ongoing"]=False
                     gaws[messageid]=info
                     await self.config.guild(ctx.guild).giveaways.set(gaws)
+                    self.giveaway_cache[messageid] = False 
                     return await ctx.send("Cancelled the giveaway for **{0}**".format(info["title"]))
 
             return await ctx.send("There are no active giveaways in this channel to be cancelled, specify a message id/link after this in another channel to cancel one")
@@ -1375,6 +1376,7 @@ class Giveaways(commands.Cog):
             return await ctx.send("Couldn't find this giveaway")
 
         gaws[giveaway]["Ongoing"]=False
+        self.giveaway_cache[messageid] = False 
         await self.config.guild(ctx.guild).giveaways.set(gaws)
 
         e=discord.Embed(
