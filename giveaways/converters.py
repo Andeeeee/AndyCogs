@@ -44,7 +44,17 @@ class FuzzyRole(RoleConverter):
         argument = pattern.split(argument)
         guild = ctx.guild
         result = []
+        mee6 = None
         for arg in argument:
+            mee6_split = arg.split("=="),
+            if mee6_split[0] == "mee6" and len(mee6_split) >= 2:
+                if guild.get_member(159985870458322944) is None:
+                    raise BadArgument("Can't add MEE6 requirements without MEE6 in your server")
+                try:
+                    mee6 = int(mee6_split[1])
+                    continue
+                except ValueError:
+                    continue 
             arg = arg.lstrip("<@&").rstrip(">")
             if arg.isdigit():
                 role = guild.get_role(int(arg))
@@ -70,7 +80,7 @@ class FuzzyRole(RoleConverter):
             final_results.append(sorted_result[0][0])
             result = []
         
-        return final_results
+        return final_results, mee6
 
 class IntOrLink(Converter):
     async def convert(self, ctx, argument: str):
