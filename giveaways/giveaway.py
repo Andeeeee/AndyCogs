@@ -11,9 +11,10 @@ from .converters import FuzzyRole, IntOrLink
 from redbot.core.commands import BadArgument
 from redbot.core.utils.chat_formatting import pagify, humanize_list
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
-from .mee6 import mee6_api
+from .api import mee6_api, Amari
 
 mee6_api = mee6_api()
+amari_api = Amari()
 
 
 class NoExitParser(argparse.ArgumentParser):
@@ -80,6 +81,8 @@ class Giveaways(commands.Cog):
 
         self.message_cache = {}
         self.giveaway_cache = {}
+        self.mee6_cache = {}
+        self.amari_cache = {}
 
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
@@ -167,9 +170,29 @@ class Giveaways(commands.Cog):
                 return False, f"You do not have the `{r.name}` role which is required for [JUMP_URL_HERE] giveaway"
         
         if info["mee6"]:
-            user_level = await mee6_api.get_user_rank(user.guild.id, user.id)
+            if self.mee6_cache.get(str(user.id), None) is None:
+                user_level = await mee6_api.get_user_rank(user.guild.id, user.id)
+            else:
+                user_level = await self.mee6_cache.get(str(user.id))
+            choice = randint(1, 6)
+            if choice == 3:
+                user_level = await mee6_api.get_user_rank(user.guild.id, user)
+                self.mee6_cache[str(user.id)] = user_level
             if user_level < info["mee6"]:
                 return False, f"You need {info['mee6'] - user_level} more MEE6 levels to enter [JUMP_URL_HERE] giveaway"
+
+        if info["amari"]:
+            if self.amari_cache.get(str(user.id), None) is None:
+                user_level = await amari_api.get_amari_rank(user.guild.id, user)
+            else:
+                user_level = self.amari_cache.get(str(user.id))
+            choice = randint(1, 6)
+            if choice == 3:
+                user_level = await amari_api.get_amari_rank(user.guild.id, user)
+                self.amari_cache[str(user.id)] = user_level
+            if user_level < info["amari"]:
+                return False, f"You need {info['amari'] - user_level} more Amari levels to enter [JUMP_URL_HERE] giveaway"
+            
 
         return True
 
@@ -940,6 +963,22 @@ class Giveaways(commands.Cog):
                 mee6 = None
             else:
                 mee6 = int(requirements[1])
+        
+        if not requirements:
+            amari = None 
+        else:
+            if not requirements[2]:
+                amari = None 
+            else:
+                amari = int(requirements[2])
+        
+        if not requirements:
+            wa = None 
+        else:
+            if not requirements[3]:
+                wa = None 
+            else:
+                wa = int(requirements[3])
 
         e=discord.Embed(
             title=title,
@@ -974,6 +1013,8 @@ class Giveaways(commands.Cog):
         gaws[msg]["channel"]=ctx.channel.id
         gaws[msg]["donor"]=flags["donor"]
         gaws[msg]["mee6"] = mee6
+        gaws[msg]["amari"] == amari
+        gaws[msg]["weeklyamari"] == wa
 
         await self.config.guild(guild).giveaways.set(gaws)
 

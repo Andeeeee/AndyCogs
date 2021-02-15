@@ -45,6 +45,8 @@ class FuzzyRole(RoleConverter):
         guild = ctx.guild
         result = []
         mee6 = None
+        amari = None 
+        wa = None
         for arg in argument:
             mee6_split = arg.split(":")
             if mee6_split[0] == "mee6" and len(mee6_split) >= 2:
@@ -55,6 +57,28 @@ class FuzzyRole(RoleConverter):
                     if mee6 < 0:
                         raise BadArgument("MEE6 arguments need to be greater than 0")
                     continue
+                except ValueError:
+                    continue 
+            
+            elif mee6_split[0] == "amari" and len(mee6_split) >= 2:
+                if guild.get_member(339254240012664832) is None:
+                    raise BadArgument()
+                try:
+                    amari = int(mee6_split[1])
+                    if amari < 0:
+                        raise BadArgument()
+                    continue 
+                except ValueError:
+                    continue 
+            
+            elif mee6_split[0] == "wa" or mee6_split == "weeklyamari" and len(mee6_split) >= 2:
+                if guild.get_member(339254240012664832) is None:
+                    raise BadArgument()
+                try:
+                    wa = int(mee6_split[1])
+                    if wa < 0:
+                        raise BadArgument()
+                    continue 
                 except ValueError:
                     continue 
                 
@@ -83,7 +107,7 @@ class FuzzyRole(RoleConverter):
             final_results.append(sorted_result[0][0])
             result = []
         
-        return final_results, mee6
+        return final_results, mee6, amari, wa
 
 class IntOrLink(Converter):
     async def convert(self, ctx, argument: str):
