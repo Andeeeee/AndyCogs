@@ -1,6 +1,6 @@
 from mee6_py_api import API 
 
-class mee6_api:
+class mee6_api():
     def __init__(self):
         self.api_guild_cache = {}
 
