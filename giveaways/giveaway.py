@@ -161,7 +161,7 @@ class Giveaways(commands.Cog):
                 return False, "You do not meet the role requirement for this giveaway"
         
         if info["mee6"]:
-            user_level = mee6_api.get_user_rank(user.guild.id, user.id)
+            user_level = await mee6_api.get_user_rank(user.guild.id, user.id)
             if user_level < info["mee6"]:
                 return False, f"You need {info['mee6'] - user_level} more levels to enter this giveaway"
 
