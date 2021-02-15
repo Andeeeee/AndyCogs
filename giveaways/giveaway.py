@@ -1280,8 +1280,8 @@ class Giveaways(commands.Cog):
                     header=f"[{info['title']}]({jump_url})"
                     header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
                     header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
-                    can_join = await self.can_join(ctx.author, info)
-                    if can_join == True:
+                    can_join_var = await self.can_join(ctx.author, info)
+                    if can_join_var == True:
                         header += " :white_check_mark: You can join this giveaway\n"
                         giveaway_list.append(header)
                         continue
@@ -1293,8 +1293,8 @@ class Giveaways(commands.Cog):
                     header=f"[{info['title']}]({jump_url})"
                     header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
                     header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
-                    can_join = await self.can_join(ctx.author, info)
-                    if can_join == True:
+                    can_join_var = await self.can_join(ctx.author, info)
+                    if can_join_var == True:
                         header += " :white_check_mark: You can join this giveaway\n"
                         giveaway_list.append(header)
                     
