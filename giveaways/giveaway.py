@@ -151,19 +151,25 @@ class Giveaways(commands.Cog):
         else:
             for r in data["blacklist"]:
                 if r in [r.id for r in user.roles]:
-                    return False, "You have a blacklisted role that prevented you from joining this giveaway"
+                    r = user.guild.get_role(int(r))
+                    if not r:
+                        continue 
+                    return False, f"You have the {r.name} role which has prevented you from entering giveaways"
         if not info["requirement"] or len(info["requirement"]) == 0:
            pass 
         else:
             for r in info["requirement"]:
                 if r in [role.id for role in user.roles]:
                     continue
-                return False, "You do not meet the role requirement for this giveaway"
+                r = user.guild.get_role(int(r))
+                if not r:
+                    continue 
+                return False, f"You do not have the `{r.name}` role which is required for this giveaway"
         
         if info["mee6"]:
             user_level = await mee6_api.get_user_rank(user.guild.id, user.id)
             if user_level < info["mee6"]:
-                return False, f"You need {info['mee6'] - user_level} more levels to enter this giveaway"
+                return False, f"You need {info['mee6'] - user_level} more MEE6 levels to enter this giveaway"
 
         return True
 
