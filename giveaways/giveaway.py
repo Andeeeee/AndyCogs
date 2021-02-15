@@ -1013,8 +1013,8 @@ class Giveaways(commands.Cog):
         gaws[msg]["channel"]=ctx.channel.id
         gaws[msg]["donor"]=flags["donor"]
         gaws[msg]["mee6"] = mee6
-        gaws[msg]["amari"] == amari
-        gaws[msg]["weeklyamari"] == wa
+        gaws[msg]["amari"] = amari
+        gaws[msg]["weeklyamari"] = wa
 
         await self.config.guild(guild).giveaways.set(gaws)
 
