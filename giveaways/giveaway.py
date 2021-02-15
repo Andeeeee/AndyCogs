@@ -854,13 +854,14 @@ class Giveaways(commands.Cog):
         ctx,
         time: str,
         winners: str="1",
-        requirements: Optional[FuzzyRole]=None,
+        requirements: Optional[FuzzyRole] = None,
         *,
         title="Giveaway!",
 
     ):
         """Start a giveaway in your server. Flags and Arguments are explained with .giveaway help
         """
+        return await ctx.send(requirements)
         title=title.split("--")
         title=title[0]
         flags=ctx.message.content
