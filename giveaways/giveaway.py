@@ -149,18 +149,18 @@ class Giveaways(commands.Cog):
         else:
             for r in data["blacklist"]:
                 if r in [r.id for r in user.roles]:
-                    return False
+                    return False, "You have a blacklisted role that prevented you from joining this giveaway"
         if not info["requirement"] or len(info["requirement"]) == 0:
            return True
         for r in info["requirement"]:
             if r in [role.id for role in user.roles]:
                 continue
-            return False
+            return False, "You do not meet the role requirement for this giveaway"
         
         if info["mee6"]:
             user_level = mee6_api.get_user_rank(user.guild.id, user.id)
             if user_level < info["mee6"]:
-                return False 
+                return False, f"You need {info['mee6'] - user_level} more levels to enter this giveaway"
 
         return True
 
@@ -302,7 +302,8 @@ class Giveaways(commands.Cog):
                 continue
             if user.bot:
                 continue
-            if (await self.can_join(user, info)):
+            can_join = await self.can_join(user, info)
+            if can_join == True:
                 winners_list.append(user.mention)
 
         final_list = []
@@ -1149,7 +1150,8 @@ class Giveaways(commands.Cog):
                     header=f"[{info['title']}]({jump_url})"
                     header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
                     header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
-                    if (await self.can_join(ctx.author, info)):
+                    can_join = await self.can_join(ctx.author, info)
+                    if can_join == True:
                         header += " :white_check_mark: You can join this giveaway\n"
                         giveaway_list.append(header)
                         continue
@@ -1161,7 +1163,8 @@ class Giveaways(commands.Cog):
                     header=f"[{info['title']}]({jump_url})"
                     header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
                     header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
-                    if (await self.can_join(ctx.author, info)):
+                    can_join = await self.can_join(ctx.author, info)
+                    if can_join == True:
                         header += " :white_check_mark: You can join this giveaway\n"
                         giveaway_list.append(header)
                     
@@ -1486,7 +1489,11 @@ class Giveaways(commands.Cog):
         bypassrole = data["bypassrole"]
         if bypassrole in [r.id for r in user.roles]:
             return 
-        if not (await self.can_join(user, gaws[str(payload.message_id)])):
+        
+        can_join = await self.can_join(user, gaws[str(payload.message_id)])
+        if can_join == True:
+            return 
+        else:
             message = self.message_cache.get(str(payload.message_id), self.bot._connection._get_message(payload.message_id) )
             if not message:
                 if hasattr(channel, "get_partial_message"): #reds pinned version of dpydoesn't have this feature
@@ -1497,5 +1504,5 @@ class Giveaways(commands.Cog):
                     except discord.NotFound:
                         return 
             await message.remove_reaction(str(payload.emoji), user)
-            e = discord.Embed(title="Missing Giveaway Requirement", description=f"You do not meet the requirement which is required for [this]({message.jump_url}) giveaway or you have a blacklisted role. You can check gset settings to see if you have the blacklisted role")
+            e = discord.Embed(title="Missing Giveaway Requirement", description=can_join[1])
             await user.send(embed=e)
