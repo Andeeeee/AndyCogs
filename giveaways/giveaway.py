@@ -917,10 +917,13 @@ class Giveaways(commands.Cog):
             else:
                 roleid=[r.id for r in requirements[0]]
         
-        if not requirements[1]:
+        if not requirements:
             mee6 = None
         else:
-            mee6 = int(requirements[1])
+            if not requirements[1]:
+                mee6 = None
+            else:
+                mee6 = int(requirements[1])
 
         e=discord.Embed(
             title=title,

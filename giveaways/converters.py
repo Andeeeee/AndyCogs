@@ -52,6 +52,8 @@ class FuzzyRole(RoleConverter):
                     raise BadArgument("Can't add MEE6 requirements without MEE6 in your server")
                 try:
                     mee6 = int(mee6_split[1])
+                    if mee6 < 0:
+                        raise BadArgument("MEE6 arguments need to be greater than 0")
                     continue
                 except ValueError:
                     continue 
