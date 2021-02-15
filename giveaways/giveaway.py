@@ -1,9 +1,9 @@
-import asyncio
-import argparse
+import asyncio, argparse, discord
+
 from datetime import datetime, timedelta
-import discord
 from discord.ext import tasks
 from discord.utils import sleep_until
+from mee6_py_api import API
 from redbot.core import commands, Config
 from typing import Optional, Union
 from random import choice, randint
@@ -11,6 +11,7 @@ from .converters import FuzzyRole, IntOrLink
 from redbot.core.commands import BadArgument
 from redbot.core.utils.chat_formatting import pagify, humanize_list
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
+from .mee6 import mee6_api
 
 
 class NoExitParser(argparse.ArgumentParser):
@@ -155,6 +156,11 @@ class Giveaways(commands.Cog):
             if r in [role.id for role in user.roles]:
                 continue
             return False
+        
+        if info["mee6"]:
+            user_level = mee6_api.get_user_rank(user.guild.id, user.id)
+            if user_level < info["mee6"]:
+                return False 
 
         return True
 
@@ -235,7 +241,10 @@ class Giveaways(commands.Cog):
                 roles = []
                 for r in bypassrole:
                     roles.append("<@&{0}>".format(r))
-                e.add_field(name="Bypassrole", value=", ".join(roles))
+                e.add_field(name="Bypassrole", value=humanize_list(roles), inline=False)
+            
+            if info["mee6"]:
+                e.add_field(name="Minimum MEE6 Level", value=info["mee6"], inline=False)
 
             e.timestamp = datetime.fromtimestamp(info["endtime"])
             e.set_footer(
@@ -895,7 +904,7 @@ class Giveaways(commands.Cog):
         gaws=await self.config.guild(guild).giveaways()
 
 
-        if not requirements:
+        if not requirements[0]:
             role=data["default_req"]
             if not role or role == [None]:
                 roleid=None
@@ -903,7 +912,12 @@ class Giveaways(commands.Cog):
                 role=ctx.guild.get_role(role)
                 roleid= [role.id]
         else:
-            roleid=[r.id for r in requirements]
+            roleid=[r.id for r in requirements[0]]
+        
+        if not requirements[1]:
+            mee6 = None
+        else:
+            mee6 = int(requirements[1])
 
         e=discord.Embed(
             title=title,
@@ -937,6 +951,7 @@ class Giveaways(commands.Cog):
         gaws[msg]["endtime"]=datetime.utcnow().timestamp() + float(time)
         gaws[msg]["channel"]=ctx.channel.id
         gaws[msg]["donor"]=flags["donor"]
+        gaws[msg]["mee6"] = mee6
 
         await self.config.guild(guild).giveaways.set(gaws)
 
