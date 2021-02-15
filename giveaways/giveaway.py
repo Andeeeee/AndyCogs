@@ -13,6 +13,8 @@ from redbot.core.utils.chat_formatting import pagify, humanize_list
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 from .mee6 import mee6_api
 
+mee6_api = mee6_api()
+
 
 class NoExitParser(argparse.ArgumentParser):
     def error(self, message):
@@ -342,6 +344,9 @@ class Giveaways(commands.Cog):
                         continue
                     requirements.append(role.mention)
                 e.add_field(name="Requirement", value=humanize_list(requirements), inline=False)
+            
+            if info["mee6"]:
+                e.add_field(name="Minimum MEE6 Level", value=info["mee6"])
 
             if info["donor"]:
                 donor = message.guild.get_member(info["donor"])
@@ -360,7 +365,7 @@ class Giveaways(commands.Cog):
             await message.edit(content=data["endHeader"].replace("{giveawayEmoji}", data["emoji"]), embed=e)
 
         else:
-            winners = ", ".join(final_list)
+            winners = humanize_list(final_list)
             host = info["host"] if message.guild.get_member(
                 info["host"]) is not None else "Unknown Host"
 
@@ -376,8 +381,11 @@ class Giveaways(commands.Cog):
                     if not role:
                         continue
                     requirements.append(role.mention)
-                e.add_field(name="Requirement", value=", ".join(
-                    requirements), inline=False)
+                e.add_field(name="Requirement", value=humanize_list(requirements), inline=False)
+            
+            if info["mee6"]:
+                e.add_field(name="Minimum MEE6 Level", value=info["mee6"])
+
             if info["donor"]:
                 donor = message.guild.get_member(info["donor"])
                 if not donor:
@@ -393,7 +401,7 @@ class Giveaways(commands.Cog):
                     if not r:
                         continue
                     roles.append(r.mention)
-                e.add_field(name="Bypass Role(s)", value=", ".join(roles), inline=False)
+                e.add_field(name="Bypass Role(s)", value=humanize_list(roles), inline=False)
 
             await message.edit(content=data["endHeader"].replace("{giveawayEmoji}", data["emoji"]), embed=e)
             await message.channel.send(f"The winners for the **{info['title']}** giveaway are \n{winners}\n{message.jump_url}")
@@ -626,7 +634,7 @@ class Giveaways(commands.Cog):
             bypass_roles = []
             for r in bprole:
                 bypass_roles.append(f"<@&{r}>")
-            bypass_roles = ", ".join(bypass_roles)
+            bypass_roles = humanize_list(bypass_roles)
 
         blacklisted_roles = data["blacklist"]
         if len(blacklisted_roles) == 0:
@@ -635,7 +643,7 @@ class Giveaways(commands.Cog):
             blacklisted = []
             for r in blacklisted_roles:
                 blacklisted.append(f"<@&{r}>")
-                blacklisted_roles = ", ".join(blacklisted)
+                blacklisted_roles = humanize_list(blacklisted)
         
         if len(data["manager"]) == 0:
             data["manager"] = "Not Set"
@@ -643,7 +651,7 @@ class Giveaways(commands.Cog):
             managers = []
             for m in data["manager"]:
                 managers.append(f"<@&{m}>")
-            data["manager"] = ", ".join(managers)
+            data["manager"] = humanize_list(managers)
 
         e=discord.Embed(
             title=f"Giveaway Settings for {ctx.guild.name}",
