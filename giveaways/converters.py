@@ -46,7 +46,7 @@ class FuzzyRole(RoleConverter):
         result = []
         mee6 = None
         for arg in argument:
-            mee6_split = arg.split(":"),
+            mee6_split = arg.split(":")
             if mee6_split[0] == "mee6" and len(mee6_split) >= 2:
                 if guild.get_member(159985870458322944) is None:
                     raise BadArgument("Can't add MEE6 requirements without MEE6 in your server")
