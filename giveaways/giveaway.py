@@ -190,9 +190,9 @@ class Giveaways(commands.Cog):
                 self.amari_cache[str(user.guild.id)] = {}
             if self.amari_cache[str(user.guild.id)].get(str(user.id), None) is None:
                 user_level = await amari_api.get_amari_rank(user.guild.id, user)
+                self.amari_cache[str(user.guild.id)][str(user.id)] = user_level
             else:
                 user_level = self.amari_cache[str(user.guild.id)].get(str(user.id))
-                self.amari_cache[str(user.guild.id)][str(user.id)] = user_level
             choice = randint(1, 6)
             if choice == 3:
                 user_level = await amari_api.get_amari_rank(user.guild.id, user)
