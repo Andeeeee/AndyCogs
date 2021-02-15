@@ -154,7 +154,7 @@ class Giveaways(commands.Cog):
                     r = user.guild.get_role(int(r))
                     if not r:
                         continue 
-                    return False, f"You have the {r.name} role which has prevented you from entering giveaways"
+                    return False, f"You have the {r.name} role which has prevented you from entering [JUMP_URL_HERE] giveaway"
         if not info["requirement"] or len(info["requirement"]) == 0:
            pass 
         else:
@@ -164,12 +164,12 @@ class Giveaways(commands.Cog):
                 r = user.guild.get_role(int(r))
                 if not r:
                     continue 
-                return False, f"You do not have the `{r.name}` role which is required for this giveaway"
+                return False, f"You do not have the `{r.name}` role which is required for [JUMP_URL_HERE] giveaway"
         
         if info["mee6"]:
             user_level = await mee6_api.get_user_rank(user.guild.id, user.id)
             if user_level < info["mee6"]:
-                return False, f"You need {info['mee6'] - user_level} more MEE6 levels to enter this giveaway"
+                return False, f"You need {info['mee6'] - user_level} more MEE6 levels to enter [JUMP_URL_HERE] giveaway"
 
         return True
 
@@ -1519,5 +1519,5 @@ class Giveaways(commands.Cog):
                     except discord.NotFound:
                         return 
             await message.remove_reaction(str(payload.emoji), user)
-            e = discord.Embed(title="Missing Giveaway Requirement", description=can_join[1])
+            e = discord.Embed(title="Missing Giveaway Requirement", description=can_join[1].replace("[JUMP_URL_HERE]", f"[this]({message.jump_url})"))
             await user.send(embed=e)
