@@ -949,7 +949,7 @@ class Giveaways(commands.Cog):
 
         embeds = []
         for i, page in enumerate(pages, start=1):
-            e = discord.Embed(title=f"Giveaway Help Menu Page {i} out of {len(pages)} pages", description=page, color=ctx.embed_color())
+            e = discord.Embed(title=f"Giveaway Help Menu Page {i} out of {len(pages)} pages", description=page, color=await ctx.embed_color())
             embeds.append(e)
         
         await menu(ctx, embeds, DEFAULT_CONTROLS)
