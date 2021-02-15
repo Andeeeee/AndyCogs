@@ -71,7 +71,7 @@ class FuzzyRole(RoleConverter):
                 except ValueError:
                     continue 
             
-            elif mee6_split[0] == "wa" or mee6_split == "weeklyamari" and len(mee6_split) >= 2:
+            elif mee6_split[0] == "wa" or mee6_split[0] == "weeklyamari" and len(mee6_split) >= 2:
                 if guild.get_member(339254240012664832) is None:
                     raise BadArgument()
                 try:

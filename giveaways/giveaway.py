@@ -884,31 +884,78 @@ class Giveaways(commands.Cog):
     @giveaway.command(name="help")
     async def g_help(self, ctx):
         """Explanation on how to start a giveaway"""
-        e=discord.Embed(
-            title="Giveaway Help",
-            color=discord.Color.blurple(),
-            description="Start a giveaway in your server. Flags and Arguments will be explained below."
+        pages = []
+
+        pages.append("""Starting Giveaways:
+
+        Base Command: `[p] g start <time> [winners=1] [requirements=None] [flags]`
+        <time> - The time the giveaway should last. Can be no less than 3 seconds and no more than 7 weeks
+        [winners] - The amount of winners for the giveaway. Defaults to one.
+        [requirements] - The requirements to have for the giveaway (will be explained in other pages). Defaults to no requirements
+        [flags] - Flags to add customizable features to the giveaway. Explained in other pages.
+
+        The time can be `2d` or `30m`, where 2d would be 2 days. If no unit is specified it will default to seconds
+        The winners can end with `w` or not. so `2w` and `2` would both work
+        """)
+
+        pages.append(
+            """Requirements and how to use them
+
+            You can specify a type for a requirement like so. `type:argument`
+            Ex. `amari:10` or `weeklyamari:50`
+
+            You can also have no type to default to a role, if no role is found, it will skip.
+            
+            Requirements should be split with either `|` or `''` to have multiple requirements
+
+            TYPES:
+            `amari` - The amari level the user should have 
+            `weeklyamari` and wa - The weekly amari the user should have 
+            `mee6` - The mee6 level the user should have 
+
+            `Ex. Developer;;mee6:5;;wa:1000;;amari:15`
+
+            Specify `none` for the requirement to prevent the bot from converting roles
+            """
         )
-        e.description += """
-        Flags:
-        --donor: Add a field with the donors mention. Additionally if you store an amount or note for this giveaway it will add to the donors storage.
-        --amt: The amount to store for gprofile/gstore. Must be an integer, 50k, 50M, etc are not accepted.
-        --note: The note to add to the host/donors notes.
-        --msg: The message to send right after the giveaway starts.
-        --ping: Use this flag to ping the set pingrole for your server
 
-        Specify `none` to the requirement to remove fuzzyrole converters and not have a role requirement
-        Multiple requirements need to be split with `;;` or `|`, spaces should not be included
+        pages.append(
+            """
 
+            Flags:
 
-        Example:
-        `.g start 10m 1w Contributor --donor @Andee#8552 --amt 50000 --note COINS ARE YUMMY`
-        `.g start 10m 1 @Owners lots of yummy coins --ping --msg I will eat these coins --donor @Andee`
-        `.g start 10m 1w none coffee`
-        `.g start 10m 1w GiveawayPing;;Admin;;Mod food`
+            Flags are optional arguments added to the giveaways end to make it better.
+            Flags will always start with `--`
 
+            They should be added to the end of the giveaway like so:
+            `g start <time> [winners] [requirements] [flags]`
+
+            FLAGS:
+            `--ping` - Putting this flag will ping the giveaway pingrole (if set), for your server
+            `--msg` - Adds a message after the giveaway.
+            `--note` - Adds a note to store to the users giveaway profile 
+            `--amt` - Stores an amount (must be integer) to the users giveaway profile
+            """
+        )
+
+        pages.append(
+            """Examples:
+            `.g start 10m 1w Contributor --donor @Andee#8552 --amt 50000 --note COINS ARE YUMMY`
+            `.g start 10m 1 @Owners lots of yummy coins --ping --msg I will eat these coins --donor @Andee`
+            `.g start 10m 1w none coffee`
+            `.g start 10m 1w GiveawayPing;;Admin;;Mod;;amari:10;;weeklyamari:50;;mee6:10 food`
         """
-        await ctx.send(embed=e)
+        )
+
+        embeds = []
+        for i, page in enumerate(pages, start=1):
+            e = discord.Embed(title=f"Giveaway Help Menu Page {i} out of {len(pages)} pages", description=page, color=ctx.embed_color())
+            embeds.append(e)
+        
+        await menu(ctx, embeds, DEFAULT_CONTROLS)
+        
+
+        
 
     @giveaway.command(name="start")
     @commands.check(is_manager)
