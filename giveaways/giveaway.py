@@ -83,6 +83,7 @@ class Giveaways(commands.Cog):
         self.giveaway_cache = {}
         self.mee6_cache = {}
         self.amari_cache = {}
+        self.weekly_amari_cache = {}
 
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
@@ -192,6 +193,20 @@ class Giveaways(commands.Cog):
                 self.amari_cache[str(user.id)] = user_level
             if user_level < info["amari"]:
                 return False, f"You need {info['amari'] - user_level} more Amari levels to enter [JUMP_URL_HERE] giveaway"
+        
+        if info["weeklyamari"]:
+            if self.weekly_amari_cache.get(str(user.id), None) is None:
+                user_level = await amari_api.get_weekly_rank(user.guild.id, user)
+            else:
+                user_level = self.weekly_amari_cache.get(str(user.id))
+            
+            choice = randint(1, 6)
+            if choice == 3:
+                user_level = await amari_api.get_weekly_rank(user.guild.id, user)
+                self.weekly_amari_cache[str(user.id)] = user_level 
+            
+            if user_level < info["weeklyamari"]:
+                return False, f"You need {info['weeklyamari'] - user_level} more weekly amari points to enter [JUMP_URL_HERE] giveaway"
             
 
         return True
@@ -277,6 +292,10 @@ class Giveaways(commands.Cog):
             
             if info["mee6"]:
                 e.add_field(name="Minimum MEE6 Level", value=info["mee6"], inline=False)
+            if info["amari"]:
+                e.add_field(name="Minimum Amari Level", value=info["amari"])
+            if info["weeklyamari"]:
+                e.add_field(name="Minimum Weekly Amari", value=info["weeklyamari"])
 
             e.timestamp = datetime.fromtimestamp(info["endtime"])
             e.set_footer(
