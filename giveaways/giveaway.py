@@ -395,6 +395,11 @@ class Giveaways(commands.Cog):
             
             if info["mee6"]:
                 e.add_field(name="Minimum MEE6 Level", value=info["mee6"])
+            
+            if info["amari"]:
+                e.add_field(name="Minimum Amari Level", value=info["amari"])
+            if info["weeklyamari"]:
+                e.add_field(name="Minimum Weekly Amari", value=info["weeklyamari"])
 
             if info["donor"]:
                 donor = message.guild.get_member(info["donor"])
