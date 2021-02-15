@@ -889,10 +889,10 @@ class Giveaways(commands.Cog):
         pages.append("""Starting Giveaways:
 
         Base Command: `[p] g start <time> [winners=1] [requirements=None] [flags]`
-        <time> - The time the giveaway should last. Can be no less than 3 seconds and no more than 7 weeks
-        [winners] - The amount of winners for the giveaway. Defaults to one.
-        [requirements] - The requirements to have for the giveaway (will be explained in other pages). Defaults to no requirements
-        [flags] - Flags to add customizable features to the giveaway. Explained in other pages.
+        `<time>` - The time the giveaway should last. Can be no less than 3 seconds and no more than 7 weeks
+        `[winners]` - The amount of winners for the giveaway. Defaults to one.
+        `[requirements]` - The requirements to have for the giveaway (will be explained in other pages). Defaults to no requirements
+        `[flags]` - Flags to add customizable features to the giveaway. Explained in other pages.
 
         The time can be `2d` or `30m`, where 2d would be 2 days. If no unit is specified it will default to seconds
         The winners can end with `w` or not. so `2w` and `2` would both work
@@ -906,11 +906,11 @@ class Giveaways(commands.Cog):
 
             You can also have no type to default to a role, if no role is found, it will skip.
             
-            Requirements should be split with either `|` or `''` to have multiple requirements
+            Requirements should be split with either `|` or `;;` to have multiple requirements
 
             TYPES:
             `amari` - The amari level the user should have 
-            `weeklyamari` and wa - The weekly amari the user should have 
+            `weeklyamari or wa` - The weekly amari the user should have 
             `mee6` - The mee6 level the user should have 
 
             `Ex. Developer;;mee6:5;;wa:1000;;amari:15`
@@ -941,8 +941,11 @@ class Giveaways(commands.Cog):
         pages.append(
             """Examples:
             `.g start 10m 1w Contributor --donor @Andee#8552 --amt 50000 --note COINS ARE YUMMY`
+
             `.g start 10m 1 @Owners lots of yummy coins --ping --msg I will eat these coins --donor @Andee`
+
             `.g start 10m 1w none coffee`
+            
             `.g start 10m 1w GiveawayPing;;Admin;;Mod;;amari:10;;weeklyamari:50;;mee6:10 food`
         """
         )
