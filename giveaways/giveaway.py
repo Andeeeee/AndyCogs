@@ -861,7 +861,6 @@ class Giveaways(commands.Cog):
     ):
         """Start a giveaway in your server. Flags and Arguments are explained with .giveaway help
         """
-        return await ctx.send(requirements)
         title=title.split("--")
         title=title[0]
         flags=ctx.message.content
@@ -905,7 +904,7 @@ class Giveaways(commands.Cog):
         gaws=await self.config.guild(guild).giveaways()
 
 
-        if not requirements[0]:
+        if not requirements:
             role=data["default_req"]
             if not role or role == [None]:
                 roleid=None
@@ -913,7 +912,10 @@ class Giveaways(commands.Cog):
                 role=ctx.guild.get_role(role)
                 roleid= [role.id]
         else:
-            roleid=[r.id for r in requirements[0]]
+            if not requirements[0]:
+                pass 
+            else:
+                roleid=[r.id for r in requirements[0]]
         
         if not requirements[1]:
             mee6 = None
