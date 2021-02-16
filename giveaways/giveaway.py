@@ -1637,13 +1637,7 @@ class Giveaways(commands.Cog):
         else:
             message = self.message_cache.get(str(payload.message_id), self.bot._connection._get_message(payload.message_id) )
             if not message:
-                if hasattr(channel, "get_partial_message"): #reds pinned version of dpydoesn't have this feature
-                    message = channel.get_partial_message(payload.message_id)
-                else:
-                    try:
-                        message = await channel.fetch_message(payload.message_id)
-                    except discord.NotFound:
-                        return 
+                message = channel.get_partial_message(payload.message_id)
             await message.remove_reaction(str(payload.emoji), user)
             e = discord.Embed(title="Missing Giveaway Requirement", description=can_join[1].replace("[JUMP_URL_HERE]", f"[this]({message.jump_url})"))
             await user.send(embed=e)
