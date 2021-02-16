@@ -69,7 +69,7 @@ class Afk(commands.Cog):
 
         if ctx.channel.permissions_for(ctx.me).manage_nicknames:
             try:
-                await ctx.author.edit(nick=f"[afk] {ctx.author.display_name}")
+                await ctx.author.edit(nick=f"[AFK] {ctx.author.display_name}")
             except discord.errors.Forbidden:
                 pass #hericahy
     
@@ -81,7 +81,7 @@ class Afk(commands.Cog):
 
         if ctx.channel.permissions_for(ctx.me).manage_nicknames:
             name = ctx.author.display_name
-            name = name.replace("[afk]", "")
+            name = name.replace("[AFK]", "")
             if len(name) < 2:
                 return
             elif len(name) > 32:
@@ -125,7 +125,7 @@ class Afk(commands.Cog):
             await message.channel.send(f"Welcome back {message.author.mention}, I've removed your afk.")
             await self.config.member(message.author).afk.clear()
             try:
-                await message.author.edit(nick=message.author.nick.replace("[afk]", ""))
+                await message.author.edit(nick=message.author.nick.replace("[AFK]", ""))
             except discord.errors.Forbidden:
                 pass
         
