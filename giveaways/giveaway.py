@@ -180,7 +180,7 @@ class Giveaways(commands.Cog):
                 user_level = self.mee6_cache[str(user.guild.id)].get(str(user.id))
             choice = randint(1, 6)
             if choice == 3:
-                user_level = await mee6_api.get_user_rank(user.guild.id, user)
+                user_level = await mee6_api.get_user_rank(user.guild.id, user.id)
                 self.mee6_cache[str(user.guild.id)][str(user.id)] = user_level
             if user_level < info["mee6"]:
                 return False, f"You need {info['mee6'] - user_level} more MEE6 levels to enter [JUMP_URL_HERE] giveaway"
