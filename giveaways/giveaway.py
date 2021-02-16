@@ -1135,7 +1135,7 @@ class Giveaways(commands.Cog):
         self.message_cache[str(msg)]=gaw_msg
         self.giveaway_cache[str(msg)] = True
 
-        await self.start_giveaway(int(msg), gaws[msg])
+        self.tasks.append(asyncio.create_task(self.start_giveaway(int(msg), gaws[msg])))
 
     @giveaway.command(name="end")
     @commands.check(is_manager)
