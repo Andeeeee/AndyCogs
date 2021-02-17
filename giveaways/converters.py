@@ -114,7 +114,7 @@ class IntOrLink(Converter):
         if hasattr(ctx.message, "reference") and ctx.message.reference != None:
             msg = ctx.message.reference.resolved
             if isinstance(msg, discord.Message):
-                  return msg.id 
+                return msg.id 
         if argument.isdigit():
             return argument 
         if len(argument.split("-")) == 2:
