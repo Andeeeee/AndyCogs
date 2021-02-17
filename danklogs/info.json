@@ -1,0 +1,19 @@
+{
+    "name": "danklogs",
+    "short": "dankmemer share/gift tracking",
+    "description": "track your members dankmemer gift and share stuff",
+    "end_user_data_statement": "Stores a users shared/gifted/received stuff",
+    "install_msg": "Thanks for installing my cog!",   
+    "author": [
+        "Andy"
+    ],
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "fun", "utility", "dankmemer"
+    ],
+    "min_bot_version": "3.4.6",
+    "hidden": false,
+    "disabled": false,
+    "type": "COG"
+}
