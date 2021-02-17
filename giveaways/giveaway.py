@@ -1426,7 +1426,7 @@ class Giveaways(commands.Cog):
         except discord.NotFound:
             return await ctx.send("I couldn't find this giveaway")
         gaws[giveaway]["Ongoing"]=False
-        await self.config.guild(ctx.guild).gaws.set(gaws)
+        await self.config.guild(ctx.guild).giveaways.set(gaws)
         await ctx.send("Cancelled the giveaway for **{0}**").format(data["title"])
     
 
