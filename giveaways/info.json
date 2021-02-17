@@ -8,7 +8,7 @@
         "Andy"
     ],
     "required_cogs": {},
-    "requirements": ["rapidfuzz", "unidecode"],
+    "requirements": ["rapidfuzz", "unidecode", "mee6_py_api"],
     "tags": [
         "utility", "fun"
     ],
