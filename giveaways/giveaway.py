@@ -1149,6 +1149,11 @@ class Giveaways(commands.Cog):
     @commands.check(is_manager)
     async def end(self, ctx, messageid: Optional[IntOrLink]=None):
         """End a giveaway"""
+        if not messageid:
+            if hasattr(ctx.message, "reference") and ctx.message.reference != None:
+                msg = ctx.message.reference.resolved
+                if isinstance(msg, discord.Message):
+                    messageid = msg.id
         gaws=await self.config.guild(ctx.guild).giveaways()
         if messageid is None:
             for messageid, info in list(gaws.items())[::-1]:
@@ -1168,6 +1173,11 @@ class Giveaways(commands.Cog):
     @commands.check(is_manager)
     async def reroll(self, ctx, messageid: Optional[IntOrLink], winners: Optional[int]=1):
         """Reroll a giveaway"""
+        if not messageid:
+            if hasattr(ctx.message, "reference") and ctx.message.reference != None:
+                msg = ctx.message.reference.resolved
+                if isinstance(msg, discord.Message):
+                    messageid = msg.id
         gaws=await self.config.guild(ctx.guild).giveaways()
         if not messageid:
             for messageid, info in list(gaws.items())[::-1]:
@@ -1344,6 +1354,11 @@ class Giveaways(commands.Cog):
     @commands.check(is_manager)
     async def cancel(self, ctx, giveaway: Optional[IntOrLink]=None):
         """Cancel a giveaway"""
+        if not giveaway:
+            if hasattr(ctx.message, "reference") and ctx.message.reference != None:
+                msg = ctx.message.reference.resolved
+                if isinstance(msg, discord.Message):
+                    giveaway = msg.id
         gaws=await self.config.guild(ctx.guild).giveaways()
         if not giveaway:
             for messageid, info in list(gaws.items())[::-1]:
