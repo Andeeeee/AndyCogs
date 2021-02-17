@@ -102,7 +102,7 @@ class DankLogs(commands.Cog):
 
         formatted_gifted = ""
 
-        for item, amount in gifted.items():
+        for item, amount in gifted:
             formatted_gifted += "{}: {}\n".format(item, amount)
         
         if len(formatted_gifted) == 0 or formatted_gifted == "":
@@ -140,7 +140,7 @@ class DankLogs(commands.Cog):
 
         formatted_received = ""
 
-        for item, amount in received.items():
+        for item, amount in received:
             formatted_received += f"{item}: {amount}\n"
         
         if len(formatted_received) == 0 or formatted_received == "":
@@ -177,7 +177,7 @@ class DankLogs(commands.Cog):
 
         formatted_shared = ""
 
-        for user, shared in sharedusers.items():
+        for user, shared in sharedusers:
             formatted_shared += f"<@{user}>: {shared}"
         
         if len(formatted_shared) == 0 or formatted_shared == "":
@@ -213,7 +213,7 @@ class DankLogs(commands.Cog):
 
         formatted_shared = ""
 
-        for user, shared in giftedusers.items():
+        for user, shared in giftedusers:
             formatted_shared += f"<@{user}>: {shared}"
         
         if len(formatted_shared) == 0 or formatted_shared == "":
