@@ -1408,7 +1408,7 @@ class Giveaways(commands.Cog):
             return await ctx.send("Couldn't find this giveaway")
 
         gaws[giveaway]["Ongoing"]=False
-        self.giveaway_cache[messageid] = False 
+        self.giveaway_cache[giveaway] = False 
         await self.config.guild(ctx.guild).giveaways.set(gaws)
 
         e=discord.Embed(
