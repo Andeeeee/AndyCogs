@@ -349,7 +349,7 @@ class DankLogs(commands.Cog):
             member = last_message.content.lower().lstrip("pls gift").lstrip("pls share item").split()[2]
         else:
             member = last_message.content.lower().lstrip("pls share").lstrip("pls give").split()[0]
-            if not member.isdigit():
+            if member.isdigit():
                 member = last_message.content.lower().lstrip("pls share").lstrip("pls give").split()[1]
         shared_user = self.get_fuzzy_member(message, member)
         if not shared_user:
