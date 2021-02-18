@@ -344,7 +344,7 @@ class DankLogs(commands.Cog):
         filtered_content = message.content.strip().lstrip(f"<@{last_message.author.id}>").lstrip(f"<@!{last_message.author.id}>").strip().lstrip("You gave").strip()
         filtered_content = " ".join(filtered_content.split()).strip()
 
-        amount = int(filtered_content.split("**")[1].strip("⏣ ")) 
+        amount = int(filtered_content.split("**")[1].strip("⏣ ").replace(",", "")) 
         if last_message.content.lower().startswith("pls gift"):
             member = last_message.content.lower().lstrip("pls gift").lstip("pls share item").split()[2]
         else:
