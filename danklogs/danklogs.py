@@ -1,6 +1,7 @@
-import discord
+import discord, unidecode
 
 from datetime import datetime
+from rapidfuzz import process
 from redbot.core import commands, Config 
 from redbot.core.utils.chat_formatting import pagify
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
@@ -61,6 +62,20 @@ class DankLogs(commands.Cog):
     
     def comma_format(self, number: int):
         return "{:,}".format(number)
+    
+    def get_fuzzy_member(self, name: int, members):
+        result = []
+        for r in process.extract(
+            name,
+            {m: unidecode(m.name) for m in members},
+            limit=None,
+            score_cutoff=75,
+        ):
+            result.append((r[2], r[1]))
+
+            
+        sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
+        return sorted_result[0][0]
     
     @commands.group(aliases=["dls"])
     @commands.mod_or_permissions(manage_guild=True)
@@ -306,7 +321,8 @@ class DankLogs(commands.Cog):
         filtered_content = "".join(filtered_content.split()[0]).strip()
 
         amount = int(filtered_content.split("**")[1])
-        shared_user = message.guild.get_member(int(message.channel.last_message.raw_mentions[0]))
+        member = message.channel.last_message.content.lower().lstrip("pls gift").lstrip("pls share").split()[0]
+        shared_user = self.get_fuzzy_member(member, message.guild.members)
         if not shared_user:
             return 
 
