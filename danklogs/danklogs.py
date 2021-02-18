@@ -371,17 +371,18 @@ class DankLogs(commands.Cog):
                 user_data["giftedusers"][str(shared_user.id)] = 0 
             
             user_data["giftedusers"][str(shared_user.id)] += 1 
-            if filtered_content.split("**")[2] not in user_data["gifted"]:
-                user_data["gifted"][filtered_content.split("**")[2]] = 0
-            user_data["gifted"][filtered_content.split("**")[2]] += 1
+            item = filtered_content.split("**")[2].split(',')[0].strip()
+            if item not in user_data["gifted"]:
+                user_data["gifted"][item] = 0
+            user_data["gifted"][item] += 1
 
-            if filtered_content.split("**")[2] not in shared_user_data["receiveditems"]:
-                user_data["receiveditems"][filtered_content.split("**")[2]] = 0
-            user_data["receiveditems"][filtered_content.split("**")[2]] += 1
+            if item not in shared_user_data["receiveditems"]:
+                user_data["receiveditems"][item] = 0
+            user_data["receiveditems"][item] += 1
 
             formatted_now = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S")
-            shared_user_data["logs"].append(f"On {formatted_now}, {last_message.author} gave {amount} {filtered_content.split('**')[1]}")
-            user_data["logs"].append(f"On {formatted_now}, {amount} {filtered_content.split('**')[1]} was sent to {shared_user}")
+            shared_user_data["logs"].append(f"On {formatted_now}, {last_message.author} gave {amount} {item}")
+            user_data["logs"].append(f"On {formatted_now}, {amount} {item} was sent to {shared_user}")
 
             channel = await self.config.guild(message.guild).channel()
             channel = self.bot.get_channel(channel)
@@ -389,7 +390,7 @@ class DankLogs(commands.Cog):
             await self.config.member(last_message.author).set(user_data)
             if not channel:
                 return 
-            e = discord.Embed(title="Dankmemer Logs", description=f"{message.author.mention} gave {amount} {filtered_content.split('**')[2]} to {shared_user.mention} in {message.channel.mention}")
+            e = discord.Embed(title="Dankmemer Logs", description=f"{message.author.mention} gave {amount} {item} to {shared_user.mention} in {message.channel.mention}")
             await channel.send(embed=e)
         
 
