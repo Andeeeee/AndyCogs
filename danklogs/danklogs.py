@@ -346,13 +346,13 @@ class DankLogs(commands.Cog):
             user_data["logs"].append(f"At {formatted_now}, {amount} was shared to {shared_user} (ID of {shared_user.id})")
             shared_user_data["logs"].append(f"At {formatted_now}, {amount} was received from {message.author} (ID of {message.author.id})")
             await self.config.member(shared_user).set(shared_user_data)
-            await self.config.member(message.author).set(user_data)
+            await self.config.member(last_message.author).set(user_data)
 
             channel = await self.config.guild(message.guild).channel()
             channel = self.bot.get_channel(channel)
             if not channel:
                 return 
-            e = discord.Embed(title="Dankmemer Logs", description=f"{message.author.mention} shared {amount} to {shared_user.mention} in {message.channel.mention}")
+            e = discord.Embed(title="Dankmemer Logs", description=f"{last_message.author.mention} shared {amount} to {shared_user.mention} in {message.channel.mention}")
             await channel.send(embed=e)
         
         else:
@@ -369,13 +369,13 @@ class DankLogs(commands.Cog):
             user_data["receiveditems"][filtered_content.split("**")[2]] += 1
 
             formatted_now = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S")
-            shared_user_data["logs"].append(f"On {formatted_now}, {message.author} gave {amount} {filtered_content.split('**')[2]}")
+            shared_user_data["logs"].append(f"On {formatted_now}, {last_message.author} gave {amount} {filtered_content.split('**')[2]}")
             user_data["logs"].append(f"On {formatted_now}, {amount} {filtered_content.split('**')[2]} was sent to {shared_user}")
 
             channel = await self.config.guild(message.guild).channel()
             channel = self.bot.get_channel(channel)
             await self.config.member(shared_user).set(shared_user_data)
-            await self.config.member(message.author).set(user_data)
+            await self.config.member(last_message.author).set(user_data)
             if not channel:
                 return 
             e = discord.Embed(title="Dankmemer Logs", description=f"{message.author.mention} gave {amount} {filtered_content.split('**')[2]} to {shared_user.mention} in {message.channel.mention}")
