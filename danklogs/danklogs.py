@@ -341,7 +341,9 @@ class DankLogs(commands.Cog):
 
             user_data["sharedusers"][str(shared_user.id)] += 1 
             user_data["shared"] += amount 
-            shared_user_data["received"] += amount 
+            if str(last_message.author.id) not in shared_user_data:
+                shared_user_data["received"][str(last_message.author.id)] = 0
+            shared_user_data["received"][str(last_message.author.id)] += amount 
             formatted_now = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S")
             user_data["logs"].append(f"At {formatted_now}, {amount} was shared to {shared_user} (ID of {shared_user.id})")
             shared_user_data["logs"].append(f"At {formatted_now}, {amount} was received from {message.author} (ID of {message.author.id})")
