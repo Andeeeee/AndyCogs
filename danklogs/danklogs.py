@@ -326,7 +326,7 @@ class DankLogs(commands.Cog):
         filtered_content = message.content.strip().lstrip(f"<@{last_message.author.id}>").lstrip(f"<@!{last_message.author.id}>").strip().lstrip("You gave").strip()
         filtered_content = " ".join(filtered_content.split()).strip()
 
-        amount = int(filtered_content.split("**")[1])
+        amount = int(filtered_content.split("**").strip("⏣ ")[1]) 
         member = message.channel.last_message.content.lower().lstrip("pls gift").lstrip("pls share").split()[0]
         shared_user = self.get_fuzzy_member(message, member)
         if not shared_user:
