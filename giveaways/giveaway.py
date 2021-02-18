@@ -242,7 +242,7 @@ class Giveaways(commands.Cog):
             return discord.Color(value=0xFFFF00)
         return discord.Color.green()
     
-    async def caluclate_multi(self, user: discord.Member):
+    async def calculate_multi(self, user: discord.Member):
         total_multi = 1
         for r in user.roles:
             total_multi += (await self.config.role(r).multiplier())
@@ -384,7 +384,7 @@ class Giveaways(commands.Cog):
                 continue
             can_join = await self.can_join(user, info)
             if can_join == True:
-                multi = self.caculate_multi(user)
+                multi = await self.caculate_multi(user)
                 for i in range(multi):
                     winners_list.append(user.mention)
 
@@ -708,9 +708,13 @@ class Giveaways(commands.Cog):
     
     @giveawayset.command(name="multi", aliases=["multiplier"])
     async def multi(self, ctx, role: Optional[discord.Role] = None, multi: Optional[int] = 0):
+        """Sets a multiplier for a role. At the end when a giveaway ends, for each role they have, the multilpier will add on that amount, not multiply.
+        It will enter the user that many times into the giveaway, if they enter a giveaway, they automatically have 1 entry. So each role multiplier adds one on to it. 
+        """
         if not role:
             role = ctx.guild.default_role 
-        
+        if multi > 500:
+            return await ctx.send("Sorry, the max multiplier is 500 to make giveaways more efficient")
         await self.config.role(role).multiplier.set(multi)
         await ctx.send(f"`{role}` will now have a multilpier of {multi}")
 
