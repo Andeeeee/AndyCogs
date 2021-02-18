@@ -348,7 +348,7 @@ class DankLogs(commands.Cog):
         if last_message.content.lower().startswith("pls gift") or last_message.content.lower().startswith("pls shareitem"):
             member = last_message.content.lower().lstrip("pls gift").lstrip("pls share item").split()[2]
         else:
-            member = last_message.content.lower().lstrip("pls share").strip("pls give").split()[0]
+            member = last_message.content.lower().lstrip("pls share").lstrip("pls give").split()[0]
         shared_user = self.get_fuzzy_member(message, member)
         if not shared_user:
             return 
@@ -356,7 +356,7 @@ class DankLogs(commands.Cog):
         shared_user_data = await self.config.member(shared_user).all()
         user_data = await self.config.member(last_message.author).all()
         
-        if last_message.content.lower().startswith("pls share"):
+        if last_message.content.lower().startswith("pls share") or last_message.content.lower().startswith("pls give"):
             if str(shared_user.id) not in user_data["sharedusers"]:
                 user_data["sharedusers"][str(shared_user.id)] = 0 
 
