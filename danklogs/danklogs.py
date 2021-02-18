@@ -275,7 +275,7 @@ class DankLogs(commands.Cog):
             user = ctx.author
 
         received = await self.config.member(user).receiveditems()
-        recived = sorted(received.items(), key = lambda m: m[1], reverse=True)
+        received = sorted(received.items(), key = lambda m: m[1], reverse=True)
 
         formatted_shared = ""
 
