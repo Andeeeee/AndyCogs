@@ -280,7 +280,7 @@ class DankLogs(commands.Cog):
         formatted_shared = ""
 
         for item, amount in received:
-            formatted_shared += f"<@{item}>: {amount}\n"
+            formatted_shared += f"{item}: {amount}\n"
         
         if len(formatted_shared) == 0 or formatted_shared == "":
             return await ctx.send("This user has received nothing")
