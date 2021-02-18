@@ -1,4 +1,4 @@
-import discord, unidecode
+import discord
 
 from datetime import datetime
 from rapidfuzz import process
@@ -6,6 +6,7 @@ from redbot.core import commands, Config
 from redbot.core.utils.chat_formatting import pagify
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 from typing import Optional 
+from unidecode import unidecode
 
 
 
@@ -352,7 +353,7 @@ class DankLogs(commands.Cog):
             channel = self.bot.get_channel(channel)
             if not channel:
                 return 
-            e = discord.Embed(title="Dankmemer Logs", description=f"{last_message.author.mention} shared {amount} to {shared_user.mention} in {message.channel.mention}")
+            e = discord.Embed(title="Dankmemer Logs", description=f"{last_message.author.mention} shared {amount} coins to {shared_user.mention} in {message.channel.mention}")
             await channel.send(embed=e)
         
         else:
