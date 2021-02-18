@@ -346,9 +346,9 @@ class DankLogs(commands.Cog):
 
         amount = int(filtered_content.split("**")[1].strip("⏣ ")) 
         if last_message.content.lower().startswith("pls gift"):
-            member = last_message.content.lower().lstrip("pls gift").split()[2]
+            member = last_message.content.lower().lstrip("pls gift").lstip("pls share item").split()[2]
         else:
-            member = last_message.content.lower().lstrip("pls gift").split()[0]
+            member = last_message.content.lower().lstrip("pls share").strip("pls give").split()[0]
         shared_user = self.get_fuzzy_member(message, member)
         if not shared_user:
             return 
