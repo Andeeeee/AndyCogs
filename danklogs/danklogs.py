@@ -316,10 +316,6 @@ class DankLogs(commands.Cog):
     async def on_message_without_command(self, message):
         if not message.author.id == 270904126974590976:
             return 
-        if message.content.startswith(f"<@{message.author.id}>") or message.content.startswith(f"<@!{message.author.id}>"):
-            pass 
-        else:
-            return 
         if "You gave" not in message.content:
             return 
         if not (await self.config.guild(message.guild).enabled()):
