@@ -65,7 +65,7 @@ class DankLogs(commands.Cog):
         return "{:,}".format(number)
     
     async def get_last_message(self, message):
-        async for m in message.channel.history:
+        async for m in message.channel.history(limit=5):
             if m.author.bot:
                 pass 
             else:
