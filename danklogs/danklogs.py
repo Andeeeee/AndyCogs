@@ -64,7 +64,7 @@ class DankLogs(commands.Cog):
     def comma_format(self, number: int):
         return "{:,}".format(number)
     
-    async def get_last_message(message):
+    async def get_last_message(self, message):
         async for m in message.channel.history:
             if m.author.bot:
                 pass 
