@@ -384,7 +384,7 @@ class Giveaways(commands.Cog):
                 continue
             can_join = await self.can_join(user, info)
             if can_join == True:
-                multi = await self.caculate_multi(user)
+                multi = await self.calculate_multi(user)
                 for i in range(multi):
                     winners_list.append(user.mention)
 
