@@ -322,12 +322,13 @@ class DankLogs(commands.Cog):
             return 
         if (await self.config.channel(message.channel).ignored()):
             return 
-        filtered_content = message.content.strip().lstrip(f"<@{message.author.id}>").lstrip(f"<@!{message.author.id}>").strip().lstrip("You gave").strip()
-        filtered_content = "".join(filtered_content.split()[0]).strip()
+        last_message = message.channel.last_message
+        filtered_content = message.content.strip().lstrip(f"<@{last_message.author.id}>").lstrip(f"<@!{last_message.author.id}>").strip().lstrip("You gave").strip()
+        filtered_content = " ".join(filtered_content.split()).strip()
 
         amount = int(filtered_content.split("**")[1])
         member = message.channel.last_message.content.lower().lstrip("pls gift").lstrip("pls share").split()[0]
-        shared_user = self.get_fuzzy_member(ctx, member)
+        shared_user = self.get_fuzzy_member(message, member)
         if not shared_user:
             return 
 
