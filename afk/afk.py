@@ -148,7 +148,10 @@ class Afk(commands.Cog):
                     userid = m[3:-1]
                 else:
                     userid = m[2:-1]
-                user = guild.get_member(int(userid))
+                try:
+                    user = guild.get_member(int(userid))
+                except ValueError:
+                    continue 
                 if not user:
                     continue 
                 
