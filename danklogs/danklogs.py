@@ -206,8 +206,8 @@ class DankLogs(commands.Cog):
 
         formatted_shared = ""
 
-        for user, shared in sharedusers:
-            formatted_shared += f"<@{user}>: {shared}\n"
+        for member, shared in sharedusers:
+            formatted_shared += f"<@{member}>: {shared}\n"
         
         if len(formatted_shared) == 0 or formatted_shared == "":
             return await ctx.send("This user has shared nothing")
@@ -242,8 +242,8 @@ class DankLogs(commands.Cog):
 
         formatted_shared = ""
 
-        for user, shared in giftedusers:
-            formatted_shared += f"<@{user}>: {shared}\n"
+        for member, shared in giftedusers:
+            formatted_shared += f"<@{member}>: {shared}\n"
         
         if len(formatted_shared) == 0 or formatted_shared == "":
             return await ctx.send("This user has shared nothing")
@@ -279,8 +279,8 @@ class DankLogs(commands.Cog):
 
         formatted_shared = ""
 
-        for user, shared in received:
-            formatted_shared += f"<@{user}>: {shared}\n"
+        for item, amount in received:
+            formatted_shared += f"<@{item}>: {amount}\n"
         
         if len(formatted_shared) == 0 or formatted_shared == "":
             return await ctx.send("This user has received nothing")
