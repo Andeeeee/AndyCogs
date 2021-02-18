@@ -333,17 +333,15 @@ class DankLogs(commands.Cog):
             return 
 
         shared_user_data = await self.config.member(shared_user).all()
-        user_data = await self.config.member(message.author).all()
+        user_data = await self.config.member(last_message.author).all()
         
-        if message.channel.last_message.content.lower().startswith("pls share"):
+        if last_message.content.lower().startswith("pls share"):
             if str(shared_user.id) not in user_data["sharedusers"]:
                 user_data["sharedusers"][str(shared_user.id)] = 0 
 
             user_data["sharedusers"][str(shared_user.id)] += 1 
             user_data["shared"] += amount 
-            if str(last_message.author.id) not in shared_user_data:
-                shared_user_data["received"][str(last_message.author.id)] = 0
-            shared_user_data["received"][str(last_message.author.id)] += amount 
+            shared_user_data["received"] += amount 
             formatted_now = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S")
             user_data["logs"].append(f"At {formatted_now}, {amount} was shared to {shared_user} (ID of {shared_user.id})")
             shared_user_data["logs"].append(f"At {formatted_now}, {amount} was received from {message.author} (ID of {message.author.id})")
@@ -376,6 +374,8 @@ class DankLogs(commands.Cog):
 
             channel = await self.config.guild(message.guild).channel()
             channel = self.bot.get_channel(channel)
+            await self.config.member(shared_user).set(shared_user_data)
+            await self.config.member(message.author).set(user_data)
             if not channel:
                 return 
             e = discord.Embed(title="Dankmemer Logs", description=f"{message.author.mention} gave {amount} {filtered_content.split('**')[2]} to {shared_user.mention} in {message.channel.mention}")
