@@ -269,6 +269,43 @@ class DankLogs(commands.Cog):
             await ctx.send(embed=e)
     
     @dankinfo.command()
+    async def receiveditems(self, ctx, user: Optional[discord.Member] = None):
+        """View the items a user has received"""
+        if not user:
+            user = ctx.author
+
+        received = await self.config.member(user).receiveditems()
+        recived = sorted(received.items(), key = lambda m: m[1], reverse=True)
+
+        formatted_shared = ""
+
+        for user, shared in received:
+            formatted_shared += f"<@{user}>: {shared}\n"
+        
+        if len(formatted_shared) == 0 or formatted_shared == "":
+            return await ctx.send("This user has received nothing")
+        
+        if len(formatted_shared) >= 2048:
+            pages = list(pagify(formatted_shared))
+            embeds = []
+            for i, p in enumerate(pages, start=1):
+                e = discord.Embed(
+                    title=f"Items {user} has received",
+                    description=p,
+                    color = await ctx.embed_color(),
+                )
+                embeds.append(e)
+            
+            await menu(ctx, embeds, DEFAULT_CONTROLS)
+        else:
+            e = discord.Embed(
+                title=f"Items {user} has received",
+                description=formatted_shared,
+                color = await ctx.embed_color()
+            )
+            await ctx.send(embed=e)
+    
+    @dankinfo.command()
     @commands.mod_or_permissions(manage_guild=True)
     async def logs(self, ctx, user: Optional[discord.Member] = None):
         if not user:
@@ -347,7 +384,7 @@ class DankLogs(commands.Cog):
             item = filtered_content.split("**")[2].split(',')[0].strip()
             if item not in user_data["gifted"]:
                 user_data["gifted"][item] = 0
-            user_data["gifted"][item] += 1
+            user_data["gifted"][item] += amount
 
             if item not in shared_user_data["receiveditems"]:
                 user_data["receiveditems"][item] = 0
