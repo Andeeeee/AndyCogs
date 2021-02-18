@@ -234,7 +234,7 @@ class DankLogs(commands.Cog):
         formatted_shared = ""
 
         for user, shared in sharedusers:
-            formatted_shared += f"<@{user}>: {shared}"
+            formatted_shared += f"<@{user}>: {shared}\n"
         
         if len(formatted_shared) == 0 or formatted_shared == "":
             return await ctx.send("This user has shared nothing")
@@ -270,7 +270,7 @@ class DankLogs(commands.Cog):
         formatted_shared = ""
 
         for user, shared in giftedusers:
-            formatted_shared += f"<@{user}>: {shared}"
+            formatted_shared += f"<@{user}>: {shared}\n"
         
         if len(formatted_shared) == 0 or formatted_shared == "":
             return await ctx.send("This user has shared nothing")
@@ -306,7 +306,7 @@ class DankLogs(commands.Cog):
         if len(logs) == 0:
             return await ctx.send("This user has no logs to show")
         
-        logs = "\n\n".join(logs)
+        logs = "\n\n".join(logs[::-1])
 
         if len(logs) >= 2048:
             pages = list(pagify(logs))
@@ -335,7 +335,10 @@ class DankLogs(commands.Cog):
         filtered_content = " ".join(filtered_content.split()).strip()
 
         amount = int(filtered_content.split("**")[1].strip("⏣ ")) 
-        member = last_message.content.lower().lstrip("pls gift").lstrip("pls share").split()[0]
+        if last_message.content.lower().startswith("pls gift"):
+            member = last_message.content.lower().lstrip("pls gift").split()[2]
+        else:
+            member = last_message.content.lower().lstrip("pls gift").split()[0]
         shared_user = self.get_fuzzy_member(message, member)
         if not shared_user:
             return 
