@@ -315,7 +315,6 @@ class DankLogs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_without_command(self, message):
-        await asyncio.sleep(0.2)
         if not message.author.id == 270904126974590976:
             return 
         if "You gave" not in message.content:
@@ -371,8 +370,8 @@ class DankLogs(commands.Cog):
             user_data["receiveditems"][filtered_content.split("**")[2]] += 1
 
             formatted_now = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S")
-            shared_user_data["logs"].append(f"On {formatted_now}, {last_message.author} gave {amount} {filtered_content.split('**')[2]}")
-            user_data["logs"].append(f"On {formatted_now}, {amount} {filtered_content.split('**')[2]} was sent to {shared_user}")
+            shared_user_data["logs"].append(f"On {formatted_now}, {last_message.author} gave {amount} {filtered_content.split('**')[1]}")
+            user_data["logs"].append(f"On {formatted_now}, {amount} {filtered_content.split('**')[1]} was sent to {shared_user}")
 
             channel = await self.config.guild(message.guild).channel()
             channel = self.bot.get_channel(channel)
