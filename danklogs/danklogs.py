@@ -70,6 +70,7 @@ class DankLogs(commands.Cog):
     
     @danklogset.command()
     async def channel(self, ctx, channel: Optional[discord.TextChannel] = None):
+        """Set the channel to log actions to"""
         if not channel:
             await self.config.guild(ctx.guild).channel.clear()
             await ctx.send("I will no longer have a channel")
@@ -293,7 +294,7 @@ class DankLogs(commands.Cog):
     async def on_message_without_command(self, message):
         if not message.author.id == 270904126974590976:
             return 
-        if not message.content.startswith(f"<@{message.author.id}>") or not message.content.startswith(f"<@!{message.author.id}>"):
+        if not message.content.startswith(f"<@{message.author.id}>") and not message.content.startswith(f"<@!{message.author.id}>"):
             return 
         if "You gave" not in message.content:
             return 
