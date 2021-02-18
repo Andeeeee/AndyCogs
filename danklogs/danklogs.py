@@ -65,7 +65,7 @@ class DankLogs(commands.Cog):
     @commands.group(aliases=["dls"])
     @commands.mod_or_permissions(manage_guild=True)
     async def danklogset(self, ctx):
-        "Set server settings for dank logs"
+        """Set server settings for dank logs"""
         pass 
     
     @danklogset.command()
@@ -79,13 +79,12 @@ class DankLogs(commands.Cog):
     
     @danklogset.command()
     async def enabled(self, ctx, state: Optional[bool] = False):
+        """Set whether tracking is enabled"""
         await self.config.guild(ctx.guild).enabled.set(state)
         if state == False:
             await ctx.send("No longer tracking dankmemer actions")
         else:
             await ctx.send("I will now track dankmemer actions")
-
-    
     
     @commands.group(aliases=["dankstats"], invoke_without_command=True)
     async def dankinfo(self, ctx, user: Optional[discord.Member] = None):
