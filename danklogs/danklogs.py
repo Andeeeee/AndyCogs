@@ -192,36 +192,9 @@ class DankLogs(commands.Cog):
             user = ctx.author 
         
         received = await self.config.member(user).received()
-        received = sorted(received.items(), key = lambda m: m[1], reverse=True)
-
-        formatted_received = ""
-
-        for item, amount in received:
-            formatted_received += f"{item}: {amount}\n"
         
-        if len(formatted_received) == 0 or formatted_received == "":
-            return await ctx.send("This user has not gifted anything yet")
-        
-        if len(formatted_received) >= 2048:
-            pages = list(pagify(formatted_received))
-            embeds = []
-            for i, p in enumerate(pages, start=1):
-                e = discord.Embed(
-                    title=f"Received Items for {user}",
-                    description=p,
-                    color = await ctx.embed_color(),
-                )
-                e.set_footer(text=f"Page {i} out of {len(pages)} pages")
-                embeds.append(e)
-            
-            await menu(ctx, embeds, DEFAULT_CONTROLS)
-        else:
-            e = discord.Embed(
-                title=f"Received Items for {user}",
-                description=formatted_received,
-                color = await ctx.embed_color()
-            )
-            await ctx.send(embed=e)
+
+        await ctx.send(f"**{user}** has received {received} coins")
     
     @dankinfo.command()
     async def sharedusers(self, ctx, user: Optional[discord.Member] = None):
@@ -378,7 +351,7 @@ class DankLogs(commands.Cog):
 
             if item not in shared_user_data["receiveditems"]:
                 user_data["receiveditems"][item] = 0
-            user_data["receiveditems"][item] += 1
+            user_data["receiveditems"][item] += amount
 
             formatted_now = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S")
             shared_user_data["logs"].append(f"On {formatted_now}, {last_message.author} gave {amount} {item}")
