@@ -9,6 +9,7 @@ from typing import Optional
 
 
 class DankLogs(commands.Cog):
+    """Track things for dankmemer"""
     def __init__(self, bot):
         self.bot = bot 
         self.config = Config.get_conf(self, 160805014090190130501014, True)
@@ -36,6 +37,7 @@ class DankLogs(commands.Cog):
         default_guild = {
             "channel": None,
             "toprole": None,
+            "enabled": False,
         }
 
         default_member = {
@@ -59,6 +61,30 @@ class DankLogs(commands.Cog):
     
     def comma_format(self, number: int):
         return "{:,}".format(number)
+    
+    @commands.group(aliases=["dls"])
+    @commands.mod_or_permissions(manage_guild=True)
+    async def danklogset(self, ctx):
+        "Set server settings for dank logs"
+        pass 
+    
+    @danklogset.command()
+    async def channel(self, ctx, channel: Optional[discord.TextChannel] = None):
+        if not channel:
+            await self.config.guild(ctx.guild).channel.clear()
+            await ctx.send("I will no longer have a channel")
+        else:
+            await self.config.guild(ctx.guild).channel.set(channel.id)
+            await ctx.send(f"I will now log actions to {channel.mention}")
+    
+    @danklogset.command()
+    async def enabled(self, ctx, state: Optional[bool] = False):
+        await self.config.guild(ctx.guild).enabled.set(state)
+        if state == False:
+            await ctx.send("No longer tracking dankmemer actions")
+        else:
+            await ctx.send("I will now track dankmemer actions")
+
     
     
     @commands.group(aliases=["dankstats"], invoke_without_command=True)
@@ -271,6 +297,10 @@ class DankLogs(commands.Cog):
         if not message.content.startswith(f"<@{message.author.id}>") or not message.content.startswith(f"<@!{message.author.id}>"):
             return 
         if "You gave" not in message.content:
+            return 
+        if not (await self.config.guild(message.guild).enabled()):
+            return 
+        if (await self.config.channel(message.channel).ignored()):
             return 
         filtered_content = message.content.strip().lstrip(f"<@{message.author.id}>").lstrip(f"<@!{message.author.id}>").strip().lstrip("You gave").strip()
         filtered_content = "".join(filtered_content.split()[0]).strip()
