@@ -78,6 +78,10 @@ class Giveaways(commands.Cog):
         default_global = {
             "secretblacklist": []
         }
+        
+        default_role = {
+            "multiplier": 0,
+        }
 
         self.message_cache = {}
         self.giveaway_cache = {}
@@ -88,6 +92,7 @@ class Giveaways(commands.Cog):
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
         self.config.register_global(**default_global)
+        self.config.register_role(**default_role)
 
 
 # -------------------------------------Functions---------------------------------
@@ -236,6 +241,13 @@ class Giveaways(commands.Cog):
         elif timeleft <= 600:
             return discord.Color(value=0xFFFF00)
         return discord.Color.green()
+    
+    async def caluclate_multi(self, user: discord.Member):
+        total_multi = 1
+        for r in user.roles:
+            total_multi += (await self.config.role(r).multiplier())
+        
+        return total_multi
 
     async def start_giveaway(self, messageid: int, info):
         channel = self.bot.get_channel(info["channel"])
@@ -372,7 +384,9 @@ class Giveaways(commands.Cog):
                 continue
             can_join = await self.can_join(user, info)
             if can_join == True:
-                winners_list.append(user.mention)
+                multi = self.caculate_multi(user)
+                for i in range(multi):
+                    winners_list.append(user.mention)
 
         final_list = []
 
@@ -691,6 +705,14 @@ class Giveaways(commands.Cog):
         roles.remove(role.id)
         await self.config.guild(ctx.guild).blacklist.set(roles)
         await ctx.send("Removed from the blacklisted roles")
+    
+    @giveawayset.command(name="multi", aliases=["multiplier"])
+    async def multi(self, ctx, role: Optional[discord.Role] = None, multi: Optional[int] = 0):
+        if not role:
+            role = ctx.guild.default_role 
+        
+        await self.config.role(role).multiplier.set(multi)
+        await ctx.send(f"`{role}` will now have a multilpier of {multi}")
 
 
     @giveawayset.command(name="settings", aliases=["showsettings", "stats"])
