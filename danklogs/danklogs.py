@@ -1,4 +1,4 @@
-import discord
+import discord, asyncio
 
 from datetime import datetime
 from rapidfuzz import process
@@ -315,6 +315,7 @@ class DankLogs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_without_command(self, message):
+        await asyncio.sleep(0.2)
         if not message.author.id == 270904126974590976:
             return 
         if "You gave" not in message.content:
@@ -328,7 +329,7 @@ class DankLogs(commands.Cog):
         filtered_content = " ".join(filtered_content.split()).strip()
 
         amount = int(filtered_content.split("**").strip("⏣ ")[1]) 
-        member = message.channel.last_message.content.lower().lstrip("pls gift").lstrip("pls share").split()[0]
+        member = last_message.content.lower().lstrip("pls gift").lstrip("pls share").split()[0]
         shared_user = self.get_fuzzy_member(message, member)
         if not shared_user:
             return 
