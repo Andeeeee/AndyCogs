@@ -63,11 +63,18 @@ class DankLogs(commands.Cog):
     def comma_format(self, number: int):
         return "{:,}".format(number)
     
-    def get_fuzzy_member(self, name: int, members):
+    def get_fuzzy_member(self, ctx, name):
         result = []
+        name = name.lstrip("<@!").lstrip("<@").rstrip(">")
+        if name.isdigit():
+            m = ctx.guild.get_member(int(name))
+            if not m:
+                pass 
+            else:
+                return m
         for r in process.extract(
             name,
-            {m: unidecode(m.name) for m in members},
+            {m: unidecode(m.name) for m in ctx.guild.members},
             limit=None,
             score_cutoff=75,
         ):
@@ -322,7 +329,7 @@ class DankLogs(commands.Cog):
 
         amount = int(filtered_content.split("**")[1])
         member = message.channel.last_message.content.lower().lstrip("pls gift").lstrip("pls share").split()[0]
-        shared_user = self.get_fuzzy_member(member, message.guild.members)
+        shared_user = self.get_fuzzy_member(ctx, member)
         if not shared_user:
             return 
 
