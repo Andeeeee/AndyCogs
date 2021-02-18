@@ -64,6 +64,13 @@ class DankLogs(commands.Cog):
     def comma_format(self, number: int):
         return "{:,}".format(number)
     
+    async def get_last_message(message):
+        async for m in message.channel.history:
+            if m.author.bot:
+                pass 
+            else:
+                return m
+    
     def get_fuzzy_member(self, ctx, name):
         result = []
         name = name.lstrip("<@!").lstrip("<@").rstrip(">")
@@ -323,7 +330,7 @@ class DankLogs(commands.Cog):
             return 
         if (await self.config.channel(message.channel).ignored()):
             return 
-        last_message = message.channel.last_message
+        last_message = await self.get_last_message(message)
         filtered_content = message.content.strip().lstrip(f"<@{last_message.author.id}>").lstrip(f"<@!{last_message.author.id}>").strip().lstrip("You gave").strip()
         filtered_content = " ".join(filtered_content.split()).strip()
 
