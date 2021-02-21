@@ -389,8 +389,8 @@ class DankLogs(commands.Cog):
             user_data["gifted"][item] += amount
 
             if item not in shared_user_data["receiveditems"]:
-                user_data["receiveditems"][item] = 0
-            user_data["receiveditems"][item] += amount
+                shared_user_data["receiveditems"][item] = 0
+            shared_user_data["receiveditems"][item] += amount
 
             formatted_now = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S")
             shared_user_data["logs"].append(f"On {formatted_now}, {last_message.author} gave {amount} {item}")
