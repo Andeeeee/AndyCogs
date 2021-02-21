@@ -65,7 +65,7 @@ class DankLogs(commands.Cog):
         return "{:,}".format(number)
     
     async def get_last_message(self, message):
-        async for m in message.channel.history(limit=5):
+        async for m in message.channel.history(before=message, limit=5):
             if m.author.bot:
                 pass 
             else:
@@ -346,7 +346,7 @@ class DankLogs(commands.Cog):
 
         amount = int(filtered_content.split("**")[1].strip("⏣ ").replace(",", "")) 
         if last_message.content.lower().startswith("pls gift") or last_message.content.lower().startswith("pls shareitem"):
-            member = last_message.content.lower().lstrip("pls gift").lstrip("pls share item").split()[2]
+            member = last_message.content.lower().lstrip("pls gift").lstrip("pls shareitem").split()[2]
         else:
             member = last_message.content.lower().lstrip("pls share").lstrip("pls give").split()[0]
             if member.isdigit():
@@ -402,7 +402,7 @@ class DankLogs(commands.Cog):
             await self.config.member(last_message.author).set(user_data)
             if not channel:
                 return  
-            e = discord.Embed(title="Dankmemer Logs", description=f"{message.author.mention} gave {amount} {item} to {shared_user.mention} in {message.channel.mention}\n [JUMP]({message.jump_url})")
+            e = discord.Embed(title="Dankmemer Logs", description=f"{last_message.author.mention} gave {amount} {item} to {shared_user.mention} in {message.channel.mention}\n [JUMP]({message.jump_url})")
             await channel.send(embed=e)
         
 
