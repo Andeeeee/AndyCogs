@@ -29,13 +29,19 @@ class Amari():
             text = await response.text()
         obj = BeautifulSoup(text, "html.parser")
         rank_list = obj.body.main.findAll("div")[2].div.find("table").findAll("tr")
+        tag = None 
         for tag in rank_list:
             if username in str(tag):
                 break
         check = re.compile(r"<tr><td>(\d+)<\/td><td>({})<\/td><td>(\d+)<\/td><td>(\d+)<\/td><\/tr>".format(username))
+        if not tag:
+            return None
         match = re.match(check, str(tag))
         
-        return int(match.group(4))
+        try:
+            return int(match.group(4))
+        except TypeError:
+            return 0
     
     async def get_weekly_rank(self, guild: int, user: discord.User):
         gid = guild
@@ -50,6 +56,12 @@ class Amari():
             if username in str(tag):
                 break
         check = re.compile(r"<tr><td>(\d+)<\/td><td>({})<\/td><td>(\d+)<\/td><td>(\d+)<\/td><\/tr>".format(username))
+        if not tag:
+            return 
         match = re.match(check, str(tag))
+
         
-        return int(match.group(3))
+        try:
+            return int(match.group(3))
+        except TypeError:
+            return 0
