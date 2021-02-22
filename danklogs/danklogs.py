@@ -17,24 +17,8 @@ class DankLogs(commands.Cog):
         self.config = Config.get_conf(self, 160805014090190130501014, True)
 
         default_item_values = {
-            "bank": 250000,
-            "pepe": 100000,
-            "pizza": 100000,
-            "pepecoin": 1000000,
-            "pepemedal": 8000000,
-            "pepetrophy": 45000000,
-            "toe": 1000000,
-            "cutter": 300000000,
-            "blob": 750000000,
-            "oddeye": 0,
-            "alcohol": 4000,
-            "apple": 1500,
-            "sand": 1500,
-            "phone": 700,
-            "coinbomb": 4000,
-            "fakeid": 750,
-        } 
-        #this will only be used for giveaways when they must have shared `x` coins
+            "alcohol": 10,
+        }
 
         default_guild = {
             "channel": None,
@@ -62,7 +46,7 @@ class DankLogs(commands.Cog):
         self.config.register_channel(**default_channel)
     
     def comma_format(self, number: int):
-        return "{:,}".format(number)
+        return "{:,}".format(int(number))
     
     async def get_last_message(self, message):
         async for m in message.channel.history(before=message, limit=5):
@@ -329,7 +313,40 @@ class DankLogs(commands.Cog):
         else:
             await ctx.send(embed=discord.Embed(title=f"Logs for {user}", description=logs, color = await ctx.embed_color()))
     
+    @dankinfo.command(aliases=["mostshared"])
+    async def topshared(self, ctx, amount: int = 10):
+        """View the people in the server that have shared the most COINS"""
+        member_data = await self.config.all_member(ctx.guild)
+        member_list = [(member, data["shared"]) for member, data in member_data.items() if data["shared"] > 0]
+        ordered_list = sorted(member_list, key=lambda m: m[1], reverse=True)[:amount]
 
+        if not ordered_list:
+            return await ctx.send("I have no tracked data for this server")
+        
+        leaderboard = []
+
+        for i, member, amount in enumerate(ordered_list, start=1):
+            leaderboard.append(f"{i}. {member}: {amount}")
+        
+        leaderboard = "\n".join(leaderboard)
+
+        if len(leaderboard) >= 2048:
+            pages = list(pagify(leaderboard))
+            embeds = []
+            for i, page in enumerate(pages, start=1):
+                e = discord.Embed(
+                    title=f"Share Leaderboard for {ctx.guild}",
+                    description=page,
+                    color = await ctx.embed_color()
+                )
+                e.set_footer(text=f"Page {i}/{len(pages)} pages")
+                embeds.append(e)
+            
+            await menu(ctx, embeds, DEFAULT_CONTROLS)
+        
+        else:
+            await ctx.send(embed=discord.Embed(title=f"Share Leaderboard for {ctx.guild}", description=leaderboard, color = await ctx.embed_color()))
+    
     @commands.Cog.listener()
     async def on_message_without_command(self, message):
         if not message.author.id == 270904126974590976:
@@ -366,8 +383,8 @@ class DankLogs(commands.Cog):
             user_data["shared"] += amount 
             shared_user_data["received"] += amount 
             formatted_now = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S")
-            user_data["logs"].append(f"At {formatted_now}, {amount} was shared to {shared_user} (ID of {shared_user.id})")
-            shared_user_data["logs"].append(f"At {formatted_now}, {amount} was received from {message.author} (ID of {message.author.id})")
+            user_data["logs"].append(f"At {formatted_now}, {self.comma_format(amount)} was shared to {shared_user} (ID of {shared_user.id})")
+            shared_user_data["logs"].append(f"At {formatted_now}, {self.comma_format(amount)} was received from {message.author} (ID of {message.author.id})")
             await self.config.member(shared_user).set(shared_user_data)
             await self.config.member(last_message.author).set(user_data)
 
@@ -375,7 +392,7 @@ class DankLogs(commands.Cog):
             channel = self.bot.get_channel(channel)
             if not channel:
                 return 
-            e = discord.Embed(title="Dankmemer Logs", description=f"{last_message.author.mention} shared {amount} coins to {shared_user.mention} in {message.channel.mention}\n [JUMP]({message.jump_url})")
+            e = discord.Embed(title="Dankmemer Logs", description=f"{last_message.author.mention} shared {self.comma_format(amount)} coins to {shared_user.mention} in {message.channel.mention}\n [JUMP]({message.jump_url})")
             await channel.send(embed=e)
         
         else:
@@ -393,8 +410,8 @@ class DankLogs(commands.Cog):
             shared_user_data["receiveditems"][item] += amount
 
             formatted_now = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S")
-            shared_user_data["logs"].append(f"On {formatted_now}, {last_message.author} gave {amount} {item}")
-            user_data["logs"].append(f"On {formatted_now}, {amount} {item} was sent to {shared_user}")
+            shared_user_data["logs"].append(f"On {formatted_now}, {last_message.author} gave {self.comma_format(amount)} {item}")
+            user_data["logs"].append(f"On {formatted_now}, {self.comma_format(amount)} {item} was sent to {shared_user}")
 
             channel = await self.config.guild(message.guild).channel()
             channel = self.bot.get_channel(channel)
