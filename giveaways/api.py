@@ -40,7 +40,7 @@ class Amari():
         
         try:
             return int(match.group(4))
-        except TypeError:
+        except (TypeError, AttributeError):
             return 0
     
     async def get_weekly_rank(self, guild: int, user: discord.User):
@@ -63,5 +63,5 @@ class Amari():
         
         try:
             return int(match.group(3))
-        except TypeError:
+        except (TypeError, AttributeError):
             return 0
