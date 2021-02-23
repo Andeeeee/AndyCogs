@@ -1,11 +1,29 @@
-import argparse #here we go again
+import argparse 
 import asyncio
 import discord 
+
+from rapidfuzz import process
 from redbot.core import commands, Config 
 from redbot.core.commands import Converter, BadArgument
+from redbot.core.utils.chat_formatting import humanize_list
 from typing import Optional
+from unidecode import unidecode
 
-class NoExitParzer(argparse.ArgumentParser):
+async def heist_manager(ctx):
+    if (await ctx.bot.is_owner(ctx.author)):
+        return True 
+    elif ctx.channel.permissions_for(ctx.author).administrator or ctx.channel.permissions_for(ctx.author).manage_guild:
+        return True 
+    else:
+        cog = ctx.bot.get_cog("Heist")
+        manager = await cog.config.guild(ctx.guild).manager()
+        if not manager:
+            return False 
+        if manager not in [r.id for r in ctx.author.roles]:
+            return False 
+        return True
+
+class NoExitParser(argparse.ArgumentParser):
     def error(self, message):
         raise commands.BadArgument(message)
 
@@ -37,16 +55,149 @@ class Heist(commands.Cog):
 
         default_guild = {
             "pingrole": None,
-            "waittime": 60,
+            "sendembed": True,
+            "manager": None
         }
 
         self.config.register_guild(**default_guild)
     
-    @commands.group(name="heist")
-    async def heist(self, ctx):
-        pass 
+    def convert_amount(self, amount: str):
+        conversions = {"k": 1000, "m": 1000000}
+        if amount[-1] not in conversions:
+            return round(int(amount))
+        else:
+            return round(int(amount[:-1]) * conversions[amount[-1]])
     
-    @heist.command(name="pingrole", aliases=["role"])
+    def display_time(self, seconds: int) -> str:
+        message = ""
+
+        intervals = (
+            ('week', 604_800),  # 60 * 60 * 24 * 7
+            ('day',   86_400),  # 60 * 60 * 24
+            ('hour',   3_600),  # 60 * 60
+            ('minute',    60),
+            ('second',     1),
+        )
+
+        for name, amount in intervals:
+            n, seconds = divmod(seconds, amount)
+
+            if n == 0:
+                continue
+
+            message += f'{n} {name + "s" * (n != 1)} '
+
+        return message.strip()
+    
+    def get_fuzzy_role(self, ctx, name: str):
+        result = []
+        for r in process.extract(
+            name,
+            {r: unidecode(r.name) for r in ctx.guild.roles},
+            limit=None,
+            score_cutoff=75,
+        ):
+            result.append((r[2], r[1]))
+        
+        if not result:
+            raise BadArgument("{} is not a valid role")
+
+        sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
+        return sorted_result[0][0]
+    
+    async def get_heist_message(self, ctx, flags, sleep_time, early_time, role):
+        heist_message = ""
+        early_heist_message = ""
+
+        if flags["ping"]:
+            pingrole = await self.config.guild(ctx.guild).pingrole()
+            role = ctx.guild.get_role(pingrole)
+            heist_message.append(f"{role.mention}: ")
+        
+        if flags["early-roles"]:
+            roles = humanize_list([r.name for r in flags["early-roles"]])
+            early_heist_message.append(f"Channel Unlocked for {roles}! Unlocking in {self.display_time(early_time)} ")
+        
+        heist_message.append(f"Channel Unlocked for {role.name}! Locking in {sleep_time} seconds")
+
+        return early_heist_message, heist_message
+    
+    async def clean_flags(self, ctx, flags):
+        if flags["donor"]:
+            try:
+                donor = ctx.guild.get_member(int(flags["donor"]))
+            except ValueError:
+                donor = discord.utils.get(ctx.guild.members, name=flags["donor"])
+            
+            if not donor:
+                raise BadArgument("{} is not a valid member for the donor flag".format(flags["donor"]))
+
+            flags["donor"] = donor
+        
+        if flags["amt"]:
+            try:
+                amt = self.convert_amount(flags["amt"])
+            except ValueError:
+                raise BadArgument("{} was not able to be converted to a proper amount".format(flags["amt"]))
+
+            flags["amt"] = amt
+        
+        if flags["total"]:
+            try:
+                total = self.convert_amount(flags["total"])
+            except ValueError:
+                raise BadArgument("{} was not able to be converted to a proper amount".format(flags["total"]))
+        
+        if flags["early-roles"]:
+            final_roles = []
+            for r in flags["early-roles"]:
+                try:
+                    role = ctx.guild.get_role(int(r))
+                except ValueError:
+                    role = self.get_fuzzy_role(r) 
+                final_roles.append(role)
+            flags["early-roles"] = final_roles 
+        
+        if flags["ping"]:
+            pingrole = await self.config.guild(ctx.guild).pingrole()
+            if not pingrole:
+                ping = False 
+            elif ctx.guild.get_role(pingrole) is None:
+                await self.config.guild(ctx.guild).pingrole.clear()
+                ping = False 
+            else:
+                ping = True 
+            flags["ping"] = ping
+            
+        return flags
+    
+    def get_sleep_time(self, long, early_roles, early_seconds):
+        if long:
+            sleep_time = 240 
+        if not early_roles:
+            return sleep_time, None
+            
+        sleep_time -= early_seconds
+        return sleep_time, early_seconds
+    
+    async def get_last_message(self, ctx, message):
+        async for m in ctx.channel.history(before=message, limit=1):
+            return m
+                
+    @commands.group()
+    async def heistset(self, ctx):
+        pass 
+
+    @heistset.command()
+    async def manager(self, ctx, role: Optional[discord.Role] = None):
+        if not role:
+            await self.config.guild(ctx.guild).manager.clear()
+            await ctx.send("Cleared the manager role for your server")
+        else:
+            await self.config.guild(ctx.guild).manager.set(role.id)
+            await ctx.send(f"**{role.name}** is now the manager role")
+    
+    @heistset.command(aliases=["role"])
     @commands.admin_or_permissions(manage_guild=True)
     async def pingrole(self, ctx, role: Optional[discord.Role] = None):
         """Set the role to ping for heist start"""
@@ -55,149 +206,114 @@ class Heist(commands.Cog):
             await ctx.send("Cleared your servers pingrole. I will no longer ping a role for heists")
         else:
             await self.config.guild(ctx.guild).pingrole.set(role.id)
-            await ctx.send(f"`{role}` will now be pinged for heists.")
+            await ctx.send(f"**{role.name}** will now be pinged for heists")
     
-    @heist.command(name="waittime", aliases=["time"])
-    @commands.admin_or_permissions(manage_guild=True)
-    async def heist_waittime(self, ctx, time: Optional[TimeConverter] = None):
-        """Set the delay time before the bot gives up on a heist. Cannot be less than 10 seconds or greater than 240 seconds"""
-        if not time:
-            return await ctx.send("The time was not specified or was invalid. Please try again")
-        elif time < 10 or time > 300:
-            return await ctx.send("The time cannot be less than 10 seconds and greater than 240 seconds.")
-        else:
-            await self.config.guild(ctx.guild).waittime.set(time)
-            await ctx.send(f"The time before I give up for heists is now {time} seconds")
-    
-    @heist.command(name="start", cooldown_after_parsing=True)
+    @commands.group()
+    async def heist(self, ctx):
+        pass 
+
+    @heist.command(cooldown_after_parsing=True)
     @commands.max_concurrency(1, commands.BucketType.channel)
     @commands.cooldown(1, 30, commands.BucketType.channel) 
-    @commands.mod_or_permissions(manage_channels=True, mention_everyone=True)
+    @commands.check(heist_manager)
     @commands.bot_has_permissions(manage_channels=True, mention_everyone=True)
-    async def h_start(
+    async def start(
         self,
         ctx,
-        four_minutes: Optional[bool] = False,
-        role: Optional[discord.Role] = None,
+        unlockrole: Optional[discord.Role] = None,
+        *args,
     ):
-        """Starts a heist, when dankmemer sends the heist message, it will unlock the channel
-        for a role, or for everyone, if four_minutes is True, it will lock in four minutes.
+        """Starts a heist"""
+        if not unlockrole:
+            unlockrole = ctx.guild.default_role
+            
+        allowed_mentions = discord.AllowedMentions(everyone=False, roles=True, users=True)
 
-        Flags:
-        Flags should be seperated from the main content with | 
-
-        --extraroles: Specify the role(s) to unlock before unlocking the role specified
-        --time: Specify the time the firstrole should have before the normal role unlocks
-
-        If time is not specified and firstrole is. The time will be 20 seconds.
-        If time is specified and firstrole is not, this will throw an error.
-        """
-
-        parser = NoExitParzer()
-        parser.add_argument("--firstrole", type=str, default=None, nargs="?")
-        parser.add_argument("--time", type=int, default=20, nargs="?")
-
-        try:
-            args = vars(parser.parse_known_args(ctx.message.content.split())[0])
-        except BadArgument as e:
-            ctx.command.reset_cooldown(ctx)
-            return await ctx.send(str(e))
+        parser = NoExitParser()
+        parser.add_argument("--long", action="store_true", default=False)
+        parser.add_argument("--embed", type=bool, default=False)
+        parser.add_argument("--ping", action="store_true", default=False)
+        parser.add_argument("--donor", default=None, nargs="?")
+        parser.add_argument("--amt", type=str, nargs="?", default=None)
+        parser.add_argument("--total", default=None, nargs="?")
+        parser.add_argument("--early-roles", default=None, nargs="*")
+        parser.add_argument("--early-seconds", default=30, type=int, nargs="?")
         
-
-        if args["firstrole"]:
-            firstrole = args["firstrole"].lstrip("<@&").rstrip(">")
-            
-            if firstrole.isdigit():
-                firstrole = ctx.guild.get_role(int(firstrole))
-            else:
-                firstrole = discord.utils.get(ctx.guild.roles, name=firstrole)
-            
-            if not firstrole:
-                await ctx.send("`{0}` was not recognized as a role").format(args["firstrole"])
-                ctx.command.reset_cooldown(ctx)
-                return 
+        if not args:
+            flags = {
+                "long": False,
+                "embed": False,
+                "ping": False,
+                "donor": None,
+                "amt": None,
+                "early-roles": None,
+                "early-seconds": 30,
+                "total": None,
+            }
         else:
-            firstrole = None 
-
-        if not role:
-            role = ctx.guild.default_role 
-
-        time = 90
-        formatted_time = "1 minute 30 seconds"
-
-        if four_minutes:
-            time = 240
-            formatted_time = "4 minutes"
-        
-        if args["time"] >= time:
-            await ctx.send("The delay time for firstrole cannot be greater than or equal to the heist time.")
-            ctx.command.reset_cooldown(ctx)
-            return 
+            try:
+                flags = vars((parser.parse_known_args(args))[0])
+            except BadArgument as e:
+                return await ctx.send(str(e))
             
-        if args["time"] and firstrole:
-            time = time - args["time"]
+            try:
+                args = await self.clean_flags(ctx, flags)
+            except BadArgument as e:
+                return await ctx.send(str(e))
         
-        waittime = await self.config.guild(ctx.guild).waittime()
+        sleep_time, early_time = self.get_sleep_time(flags["long"], flags["early-roles"], flags["early-seconds"])
+        heist_message, early_heist_message = await self.get_heist_message(ctx, flags, sleep_time, early_time, unlockrole)
 
-        correct_answer = "is starting a bank robbery"
+        emoji = self.bot.get_emoji(794006801019568138)
+        if not emoji:
+            await ctx.send("Waiting for a heist message, send `CANCEL` to cancel the heist")
+        else:
+            await ctx.send(f"Waiting for a heist message, send `CANCEL` to cancel the heist {emoji}")
+            
+        async def heist_check(m):
+            message = await self.get_last_message(ctx, m)
+            return (m.author.id == 270904126974590976 and not message.content.lower().startswith("pls say") and "They're trying to break into" in m.content) or m.content == "CANCEL"
 
-        await ctx.send("Waiting for the heist message...") 
-        
-        
-        def check(m):
-            return m.author.id == 270904126974590976 and m.channel == ctx.channel and correct_answer in m.content and m.channel.last_message is not None and not m.channel.last_message.content.startswith("pls say") 
         try:
-            message = await self.bot.wait_for("message", check=check, timeout=waittime)
+            m = await self.bot.wait_for("message", check=heist_check, timeout=60)
         except asyncio.TimeoutError:
-            return await ctx.send("Uh oh. No heist found. Try again later")
-
+            return await ctx.send("Uh oh, you ran out of time. Try again later")
         
-        mentions = discord.AllowedMentions(roles=True, everyone=False)
-        pingrole = await self.config.guild(ctx.guild).pingrole()
-        if pingrole:
-            pingrole = ctx.guild.get_role(pingrole)
-            if not pingrole:
-                await self.config.guild(ctx.guild).pingrole.clear()
-                heist_message = f"Channel unlocked for `{role.name}`! Locking in {formatted_time}"
-            else:
-                heist_message = f"{pingrole.mention}: Channel unlocked for `{role.name}`! Locking in {formatted_time}"
-        else:
-            heist_message = f"Channel unlocked for `{role.name}`! Locking in {formatted_time}"
-
-        if args["time"] and firstrole:
-            overwrites = ctx.channel.overwrites_for(firstrole)
-            overwrites.send_messages = True
-            try:
-                await ctx.channel.set_permissions(firstrole, overwrite=overwrites)
-            except (discord.errors.Forbidden, discord.HTTPException):
-                return await ctx.send("I do not have permissions to do this or an internal server error occured. Try again.")
-            await ctx.send(f"Channel Unlocked for `{firstrole.name}`!")
-            await asyncio.sleep(args["time"])
+        if m.content == "CANCEL":
+            return await ctx.send("Cancelled the heist")
         
-        overwrites = ctx.channel.overwrites_for(role)
+
+        if flags["early-roles"]:
+            for r in flags["early-roles"]:
+                overwrites = ctx.channel.overwrites_for(r)
+                overwrites.send_messages = True 
+                overwrites.read_messages = True 
+                await ctx.channel.set_permissions(r, overwrite=overwrites)
+            await ctx.send(early_heist_message, allowed_mentions=allowed_mentions)
+            await asyncio.sleep(early_time)
+        
+        overwrites = ctx.channel.overwrites_for(unlockrole)
         overwrites.send_messages = True 
+        overwrites.read_messages = True 
+        await ctx.channel.set_permissions(unlockrole, overwrite=overwrites)
+        
         try:
-            await ctx.channel.set_permissions(role, overwrite=overwrites)
-        except (discord.errors.Forbidden, discord.HTTPException):
-                return await ctx.send("I do not have permissions to do this or an internal server error occured. Try again.")             
-                
-        await ctx.channel.set_permissions(role, overwrite=overwrites)
-        await ctx.channel.send(heist_message, allowed_mentions=mentions)
-        await asyncio.sleep(time)
+            await ctx.send(heist_message, allowed_mentions=allowed_mentions)
+        except discord.HTTPException:
+            pass 
 
-        if args["time"] and firstrole:
-            overwrites = ctx.channel.overwrites_for(firstrole)
-            overwrites.send_messages = False
-            try:
-                await ctx.channel.set_permissions(firstrole, overwrite=overwrites)
-            except (discord.errors.Forbidden, discord.HTTPException):
-                return await ctx.send("I do not have permissions to do this or an internal server error occured. Try again.")
-
-        overwrites = ctx.channel.overwrites_for(role)
+        await asyncio.sleep(sleep_time)
+        
+        if flags["early-roles"]:
+            for r in flags["early-roles"]:
+                overwrites = ctx.channel.overwrites_for(r)
+                overwrites.send_messages = False
+                overwrites.read_messages = False
+                await ctx.channel.set_permissions(r, overwrite=overwrites)
+        
+        overwrites = ctx.channel.overwrites_for(unlockrole)
         overwrites.send_messages = False
-        try:
-            await ctx.channel.set_permissions(role, overwrite=overwrites)
-        except (discord.errors.Forbidden, discord.HTTPException):
-                return await ctx.send("I do not have permissions to do this or an internal server error occured. Try again.")      
+        overwrites.read_messages = False
+        await ctx.channel.set_permissions(unlockrole, overwrite=overwrites)
 
-        await ctx.channel.send("Times Up. Channel Locked.")       
+        await ctx.send("Times Up. Channel Locked")  
