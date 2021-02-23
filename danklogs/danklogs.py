@@ -1,4 +1,6 @@
-import discord, asyncio
+import asyncio
+import discord 
+import re
 
 from datetime import datetime
 from rapidfuzz import process
@@ -8,7 +10,9 @@ from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 from typing import Optional 
 from unidecode import unidecode
 
-
+gift_regex = re.compile(
+    r"You gave (?P<user>.+[a-zA-Z0-9_]) (?P<amount>[0-10]+)"
+)
 
 class DankLogs(commands.Cog):
     """Track things for dankmemer"""
@@ -178,7 +182,7 @@ class DankLogs(commands.Cog):
         received = await self.config.member(user).received()
         
 
-        await ctx.send(f"**{user}** has received {received} coins")
+        await ctx.send(f"**{user}** has received {self.comma_format(received)} coins")
     
     @dankinfo.command()
     async def sharedusers(self, ctx, user: Optional[discord.Member] = None):
@@ -360,14 +364,9 @@ class DankLogs(commands.Cog):
         last_message = await self.get_last_message(message)
         filtered_content = message.content.strip().lstrip(f"<@{last_message.author.id}>").lstrip(f"<@!{last_message.author.id}>").strip().lstrip("You gave").strip()
         filtered_content = " ".join(filtered_content.split()).strip()
-
-        amount = int(filtered_content.split("**")[1].strip("⏣ ").replace(",", "")) 
-        if last_message.content.lower().startswith("pls gift") or last_message.content.lower().startswith("pls shareitem"):
-            member = last_message.content.lower().lstrip("pls gift").lstrip("pls shareitem").split()[2]
-        else:
-            member = last_message.content.lower().lstrip("pls share").lstrip("pls give").split()[0]
-            if member.isdigit():
-                member = last_message.content.lower().lstrip("pls share").lstrip("pls give").split()[1]
+        match = re.match(gift_regex, message.content)
+        amount = int(match.group("amount").replace(",", ""))
+        member = match.group("user")
         shared_user = self.get_fuzzy_member(message, member)
         if not shared_user:
             return 
