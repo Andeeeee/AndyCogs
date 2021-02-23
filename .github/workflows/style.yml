@@ -1,22 +1,7 @@
-name: style
-
-on: [push, pull_request]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-      - run: npm install standard --global
-      - run: standard
-      - name: If needed, commit standard --fix changes to the pull request
-        if: failure()
-        run: |
-          standard --fix || true
-          printenv | grep GITHUB
-          git config --global user.name github-actions
-          git config --global user.email 'cclauss@users.noreply.github.com'
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
-          git checkout $GITHUB_HEAD_REF
-          git commit -am "fixup! Format JavaScript code to be Standard Style $GITHUB_EVENT_NAME"
-          git push
+- name: Black Check
+  # You may pin to the exact commit or the version.
+  # uses: jpetrucciani/black-check@6ccaad6b470e4f5999d70021474781a53769ed71
+  uses: jpetrucciani/black-check@20.8b1
+  with:
+    # File or directory to run black on
+    path: # optional, default is .
