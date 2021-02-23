@@ -120,7 +120,10 @@ class NotQuiteNitro(commands.Cog):
         cur = await self.config.guild(ctx.guild).auto()
 
         if auto is None:
-            auto = False if cur else True 
+            if cur:
+                auto = False 
+            else:
+                auto = True 
         
         await self.config.guild(ctx.guild).auto.set(auto)
         await self.tick(ctx)
@@ -133,13 +136,17 @@ class NotQuiteNitro(commands.Cog):
         cur = await self.config.guild(ctx.guild).delete()
 
         if delete is None:
-            delete = False if cur else True 
+            if cur:
+                delete = False 
+            else:
+                delete = True
         
         await self.config.guild(ctx.guild).delete.set(delete)
         await self.tick(ctx)
     
     @nqnset.command(aliases=["showsettings"])
     async def settings(self, ctx):
+        """Show server settings for Not Quite Nitro"""
         data = await self.config.guild(ctx.guild).all()
 
         e = discord.Embed(
