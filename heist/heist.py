@@ -122,7 +122,7 @@ class Heist(commands.Cog):
         
         heist_message += f"Channel Unlocked for {role.name}! Locking in {sleep_time} seconds"
 
-        return early_heist_message, heist_message
+        return heist_message, early_heist_message
     
     async def clean_flags(self, ctx, flags):
         if flags["donor"]:
@@ -276,8 +276,8 @@ class Heist(commands.Cog):
         else:
             await ctx.send(f"Waiting for a heist message, send `CANCEL` to cancel the heist {emoji}")
             
-        async def heist_check(m):
-            message = await self.get_last_message(ctx, m)
+        def heist_check(m):
+            message = asyncio.create_task(self.get_last_message(ctx, m))
             return (m.author.id == 270904126974590976 and not message.content.lower().startswith("pls say") and "They're trying to break into" in m.content) or m.content == "CANCEL"
 
         try:
