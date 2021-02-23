@@ -10,6 +10,8 @@ from typing import Optional
 from unidecode import unidecode
 
 async def heist_manager(ctx):
+    if not ctx.guild:
+        return 
     if (await ctx.bot.is_owner(ctx.author)):
         return True 
     elif ctx.channel.permissions_for(ctx.author).administrator or ctx.channel.permissions_for(ctx.author).manage_guild:
@@ -190,6 +192,7 @@ class Heist(commands.Cog):
 
     @heistset.command()
     async def manager(self, ctx, role: Optional[discord.Role] = None):
+        """Set the role that can create/start/update heists and amounts"""
         if not role:
             await self.config.guild(ctx.guild).manager.clear()
             await ctx.send("Cleared the manager role for your server")
