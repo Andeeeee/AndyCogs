@@ -11,7 +11,7 @@ from typing import Optional
 from unidecode import unidecode
 
 gift_regex = re.compile(
-    r"You gave (?P<user>.+[a-zA-Z0-9_]) (?P<amount>[0-10,]+)"
+    r"You gave (?P<user>.+[a-zA-Z0-9_]) \*\*(?P<amount>[0-10,]+)\*\* ?(?:(?P<item>[a-zA-Z0-9_]{2,32}))?"
 )
 
 class DankLogs(commands.Cog):
@@ -400,7 +400,7 @@ class DankLogs(commands.Cog):
                 user_data["giftedusers"][str(shared_user.id)] = 0 
             
             user_data["giftedusers"][str(shared_user.id)] += 1 
-            item = filtered_content.split("**")[2].split(',')[0].strip()
+            item = match.group("item")
             if item not in user_data["gifted"]:
                 user_data["gifted"][item] = 0
             user_data["gifted"][item] += amount
