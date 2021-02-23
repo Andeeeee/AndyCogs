@@ -362,7 +362,7 @@ class DankLogs(commands.Cog):
         if (await self.config.channel(message.channel).ignored()):
             return 
         last_message = await self.get_last_message(message)
-        filtered_content = message.content.strip().lstrip(f"<@{last_message.author.id}>").lstrip(f"<@!{last_message.author.id}>").replace("⏣ ", "").split("**")[:-1]
+        filtered_content = message.content.strip().lstrip(f"<@{last_message.author.id}>").lstrip(f"<@!{last_message.author.id}>").replace("⏣ ", "")
         filtered_content = "".join(filtered_content).strip()
 
         match = re.match(gift_regex, filtered_content)
