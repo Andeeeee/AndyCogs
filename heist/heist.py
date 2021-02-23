@@ -276,8 +276,8 @@ class Heist(commands.Cog):
         else:
             await ctx.send(f"Waiting for a heist message, send `CANCEL` to cancel the heist {emoji}")
             
-        def heist_check(m):
-            message = asyncio.create_task(self.get_last_message(ctx, m))
+        async def heist_check(m):
+            message = await self.get_last_message(ctx, m)
             return (m.author.id == 270904126974590976 and not message.content.lower().startswith("pls say") and "They're trying to break into" in m.content) or m.content == "CANCEL"
 
         try:
