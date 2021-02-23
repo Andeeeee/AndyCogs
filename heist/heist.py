@@ -118,9 +118,9 @@ class Heist(commands.Cog):
         
         if flags["early_roles"]:
             roles = humanize_list([r.name for r in flags["early_roles"]])
-            early_heist_message += f"Channel Unlocked for {roles}! Unlocking in {self.display_time(early_time)} "
+            early_heist_message += f"Channel Unlocked for **{roles}**! Unlocking in {self.display_time(early_time)} "
         
-        heist_message += f"Channel Unlocked for {role.name}! Locking in {self.display_time(sleep_time)} seconds"
+        heist_message += f"Channel Unlocked for {role.name}! Locking in {self.display_time(sleep_time)} "
 
         return heist_message, early_heist_message
     
@@ -320,7 +320,6 @@ class Heist(commands.Cog):
         
         overwrites = ctx.channel.overwrites_for(unlockrole)
         overwrites.send_messages = False
-        overwrites.read_messages = False
         await ctx.channel.set_permissions(unlockrole, overwrite=overwrites)
 
         await ctx.send("Times Up. Channel Locked")  
