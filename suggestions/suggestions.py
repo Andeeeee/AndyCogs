@@ -13,6 +13,9 @@ class Suggestions(commands.Cog):
             "channel": None, "decision_channel": None, "blacklist": [], "edit": False, "dm": True, "suggestions": {}, "anon": False,
         }
 
+
+        
+
         self.config.register_guild(**default_guild)
     
     @commands.group(name="suggestions", aliases=["suggestset"])
