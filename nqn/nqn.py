@@ -157,6 +157,8 @@ class NotQuiteNitro(commands.Cog):
         e.add_field(name="Automatic", value=data["auto"], inline=False)
         e.add_field(name="Delete", value=data["delete"], inline=False)
 
+        await ctx.send(embed=e)
+
     @commands.command(aliases=["notquitenitro"])
     async def nqn(self, ctx, * , message: str):
         new_message = re.sub(self.emoji_regex, self.sub, message)
