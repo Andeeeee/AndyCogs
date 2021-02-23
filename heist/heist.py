@@ -11,7 +11,7 @@ from unidecode import unidecode
 
 async def heist_manager(ctx):
     if not ctx.guild:
-        return 
+        return False
     if (await ctx.bot.is_owner(ctx.author)):
         return True 
     elif ctx.channel.permissions_for(ctx.author).administrator or ctx.channel.permissions_for(ctx.author).manage_guild:
@@ -176,6 +176,8 @@ class Heist(commands.Cog):
     def get_sleep_time(self, long, early_roles, early_seconds):
         if long:
             sleep_time = 240 
+        else:
+            sleep_time = 90
         if not early_roles:
             return sleep_time, None
             
@@ -216,6 +218,7 @@ class Heist(commands.Cog):
         pass 
 
     @heist.command(cooldown_after_parsing=True)
+    @commands.guild_only()
     @commands.max_concurrency(1, commands.BucketType.channel)
     @commands.cooldown(1, 30, commands.BucketType.channel) 
     @commands.check(heist_manager)
