@@ -116,8 +116,8 @@ class Heist(commands.Cog):
             role = ctx.guild.get_role(pingrole)
             heist_message += f"{role.mention}: "
         
-        if flags["early-roles"]:
-            roles = humanize_list([r.name for r in flags["early-roles"]])
+        if flags["early_roles"]:
+            roles = humanize_list([r.name for r in flags["early_roles"]])
             early_heist_message += f"Channel Unlocked for {roles}! Unlocking in {self.display_time(early_time)} "
         
         heist_message += f"Channel Unlocked for {role.name}! Locking in {self.display_time(sleep_time)} seconds"
@@ -150,15 +150,15 @@ class Heist(commands.Cog):
             except ValueError:
                 raise BadArgument("{} was not able to be converted to a proper amount".format(flags["total"]))
         
-        if flags["early-roles"]:
+        if flags["early_roles"]:
             final_roles = []
-            for r in flags["early-roles"]:
+            for r in flags["early_roles"]:
                 try:
                     role = ctx.guild.get_role(int(r))
                 except ValueError:
                     role = self.get_fuzzy_role(r) 
                 final_roles.append(role)
-            flags["early-roles"] = final_roles 
+            flags["early_roles"] = final_roles 
         
         if flags["ping"]:
             pingrole = await self.config.guild(ctx.guild).pingrole()
@@ -258,14 +258,12 @@ class Heist(commands.Cog):
             except BadArgument as e:
                 return await ctx.send(str(e))
             
-            return await ctx.send(flags)
-            
             try:
                 args = await self.clean_flags(ctx, flags)
             except BadArgument as e:
                 return await ctx.send(str(e))
         
-        sleep_time, early_time = self.get_sleep_time(flags["long"], flags["early-roles"], flags["early-seconds"])
+        sleep_time, early_time = self.get_sleep_time(flags["long"], flags["early_roles"], flags["early_seconds"])
         heist_message, early_heist_message = await self.get_heist_message(ctx, flags, sleep_time, early_time, unlockrole)
 
         emoji = self.bot.get_emoji(794006801019568138)
@@ -292,8 +290,8 @@ class Heist(commands.Cog):
             return await ctx.send("Cancelled the heist")
         
 
-        if flags["early-roles"]:
-            for r in flags["early-roles"]:
+        if flags["early_roles"]:
+            for r in flags["early_roles"]:
                 overwrites = ctx.channel.overwrites_for(r)
                 overwrites.send_messages = True 
                 overwrites.read_messages = True 
@@ -313,8 +311,8 @@ class Heist(commands.Cog):
 
         await asyncio.sleep(sleep_time)
         
-        if flags["early-roles"]:
-            for r in flags["early-roles"]:
+        if flags["early_roles"]:
+            for r in flags["early_roles"]:
                 overwrites = ctx.channel.overwrites_for(r)
                 overwrites.send_messages = False
                 overwrites.read_messages = False
