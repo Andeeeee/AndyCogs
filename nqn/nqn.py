@@ -62,7 +62,7 @@ class NotQuiteNitro(commands.Cog):
             await ctx.message.add_reaction(emoji)
     
     async def webhook_send(self, ctx: commands.Context, message: str, **kwargs) -> None:
-        if webhook := self.cache.get(ctx.channel.id):
+        if webhook := self.webhook_cache.get(ctx.channel.id):
             try:
                 await webhook.send(
                     content = message,
