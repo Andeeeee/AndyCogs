@@ -6,8 +6,6 @@ from typing import Optional
 from redbot.core.utils.chat_formatting import pagify
 import re
 
-mention_re = re.compile(r"(<@(|!|)\d*>)")
-
 class Afk(commands.Cog):
     """A cog for being afk and responding when idiots ping you"""
     def __init__(self, bot):
@@ -131,32 +129,19 @@ class Afk(commands.Cog):
         
         final_message = []
         
-        mentions = re.findall(mention_re, message.content)
+        mentions = message.mentions
         
         if not mentions:
             return 
 
-        if len(mentions) == 0:
-            return
-
 
         for mention in mentions:
             for m in mention:
-                if m == "!" or mention == "" or mention == " ":
-                    continue
-                if m.startswith("<@!"):
-                    userid = m[3:-1]
-                else:
-                    userid = m[2:-1]
-                try:
-                    user = guild.get_member(int(userid))
-                except ValueError:
-                    continue 
-                if not user:
+                if m == message.author:
                     continue 
                 
-                afk = await self.config.member(user).afk()
-                msg = await self.config.member(user).message()
+                afk = await self.config.member(m).afk()
+                msg = await self.config.member(m).message()
 
                 if not afk:
                     continue 
@@ -164,7 +149,7 @@ class Afk(commands.Cog):
                 afk = datetime.utcnow() - datetime.fromtimestamp(afk)
                 afk = self.display_time(round(afk.total_seconds()))
 
-                final_message.append(msg.replace("{author}", user.mention).replace("{time}", str(afk)))
+                final_message.append(msg.replace("{author}", m.mention).replace("{time}", str(afk)))
 
         
         if len(final_message) == 0:
