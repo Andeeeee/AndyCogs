@@ -245,7 +245,7 @@ class Heist(commands.Cog):
         parser.add_argument("--early-roles", default=None, nargs="*")
         parser.add_argument("--early-seconds", default=30, type=int, nargs="?")
         
-        if not args:
+        if not flags:
             flags = {
                 "long": False,
                 "embed": False,
