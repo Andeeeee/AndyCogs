@@ -227,7 +227,7 @@ class Heist(commands.Cog):
         self,
         ctx,
         unlockrole: Optional[discord.Role] = None,
-        *args,
+        *flags,
     ):
         """Starts a heist"""
         if not unlockrole:
@@ -258,7 +258,7 @@ class Heist(commands.Cog):
             }
         else:
             try:
-                flags = vars((parser.parse_known_args(args))[0])
+                flags = vars(parser.parse_args(flags))
             except BadArgument as e:
                 return await ctx.send(str(e))
             
