@@ -154,7 +154,7 @@ class NotQuiteNitro(commands.Cog):
             color = await ctx.embed_color(),
         )
 
-        e.add_field(name="Automatic", description=data["auto"])
+        e.add_field(name="Automatic", value=data["auto"], inline=False)
         e.add_field(name="Delete", value=data["delete"], inline=False)
 
     @commands.command(aliases=["notquitenitro"])
