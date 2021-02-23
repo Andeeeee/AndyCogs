@@ -11,7 +11,7 @@ from typing import Optional
 from unidecode import unidecode
 
 gift_regex = re.compile(
-    r"You gave (?P<user>.+[a-zA-Z0-9_]) (?P<amount>[0-10]+)"
+    r"You gave (?P<user>.+[a-zA-Z0-9_]) (?P<amount>[0-10,]+)"
 )
 
 class DankLogs(commands.Cog):
