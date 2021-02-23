@@ -278,7 +278,13 @@ class Heist(commands.Cog):
             
         async def heist_check(m):
             message = await self.get_last_message(ctx, m)
-            return (m.author.id == 270904126974590976 and not message.content.lower().startswith("pls say") and "They're trying to break into" in m.content) or m.content == "CANCEL"
+            if message.content.lower().startswith("pls say"):
+                return False 
+            if not m.author.id == 270904126974590976:
+                return False 
+            if "They're trying to break into" not in m.content:
+                return False 
+            return True
 
         try:
             m = await self.bot.wait_for("message", check=heist_check, timeout=60)
