@@ -248,8 +248,8 @@ class Heist(commands.Cog):
                 "ping": False,
                 "donor": None,
                 "amt": None,
-                "early-roles": None,
-                "early-seconds": 30,
+                "early_roles": None,
+                "early_seconds": 30,
                 "total": None,
             }
         else:
