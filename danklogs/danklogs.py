@@ -11,7 +11,7 @@ from typing import Optional
 from unidecode import unidecode
 
 gift_regex = re.compile(
-    r"You gave (?P<user>.+[a-zA-Z0-9_]) \*\*(?P<amount>[0-9,]+)\*\* ?(?:(?P<item>[a-zA-Z0-9_]{2,32}))?"
+    r"You gave (?P<user>.+[a-zA-Z0-9_])?  ?\*\*(?P<amount>[0-9,]+)\*\* ?(?:(?P<item>[a-zA-Z0-9_]{2,32}))?"
 )
 
 class DankLogs(commands.Cog):
@@ -362,7 +362,8 @@ class DankLogs(commands.Cog):
         if (await self.config.channel(message.channel).ignored()):
             return 
         last_message = await self.get_last_message(message)
-        filtered_content = message.content.strip().lstrip(f"<@{last_message.author.id}>").lstrip(f"<@!{last_message.author.id}>").replace("⏣ ", "")
+        filtered_content = message.content.strip().lstrip(f"<@{last_message.author.id}>").lstrip(f"<@!{last_message.author.id}>").replace("⏣ ", "").split()
+        filtered_content = [unidecode(elem) for elem in filtered_content]
         filtered_content = "".join(filtered_content).strip()
 
         match = re.match(gift_regex, unidecode(filtered_content))
