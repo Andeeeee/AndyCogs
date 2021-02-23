@@ -363,10 +363,9 @@ class DankLogs(commands.Cog):
             return 
         last_message = await self.get_last_message(message)
         filtered_content = message.content.strip().lstrip(f"<@{last_message.author.id}>").lstrip(f"<@!{last_message.author.id}>").replace("⏣ ", "").split()
-        filtered_content = [unidecode(elem) for elem in filtered_content]
-        filtered_content = "".join(filtered_content).strip()
+        filtered_content = "".join([unidecode(elem) for elem in filtered_content])
 
-        match = re.match(gift_regex, unidecode(filtered_content))
+        match = re.match(gift_regex, filtered_content)
         amount = int(match.group("amount").replace(",", ""))
         member = match.group("user")
         shared_user = self.get_fuzzy_member(message, member)
