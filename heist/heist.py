@@ -238,8 +238,8 @@ class Heist(commands.Cog):
         parser.add_argument("--donor", default=None, nargs="?")
         parser.add_argument("--amt", type=str, nargs="?", default=None)
         parser.add_argument("--total", default=None, nargs="?")
-        parser.add_argument("--earlyroles", default=None, nargs="*")
-        parser.add_argument("--earlyseconds", default=30, type=int, nargs="?")
+        parser.add_argument("--early-roles", default=None, nargs="*")
+        parser.add_argument("--early-seconds", default=30, type=int, nargs="?")
         
         if not flags:
             flags = {
@@ -257,6 +257,8 @@ class Heist(commands.Cog):
                 flags = vars(parser.parse_args(flags))
             except BadArgument as e:
                 return await ctx.send(str(e))
+            
+            return await ctx.send(flags)
             
             try:
                 args = await self.clean_flags(ctx, flags)
