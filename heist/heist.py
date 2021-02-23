@@ -120,7 +120,7 @@ class Heist(commands.Cog):
             roles = humanize_list([r.name for r in flags["early-roles"]])
             early_heist_message += f"Channel Unlocked for {roles}! Unlocking in {self.display_time(early_time)} "
         
-        heist_message += f"Channel Unlocked for {role.name}! Locking in {sleep_time} seconds"
+        heist_message += f"Channel Unlocked for {role.name}! Locking in {self.display_time(sleep_time)} seconds"
 
         return heist_message, early_heist_message
     
@@ -183,10 +183,6 @@ class Heist(commands.Cog):
             
         sleep_time -= early_seconds
         return sleep_time, early_seconds
-    
-    async def get_last_message(self, ctx, message):
-        async for m in ctx.channel.history(before=message, limit=1):
-            return m
                 
     @commands.group()
     async def heistset(self, ctx):
@@ -276,10 +272,7 @@ class Heist(commands.Cog):
         else:
             await ctx.send(f"Waiting for a heist message, send `CANCEL` to cancel the heist {emoji}")
             
-        async def heist_check(m):
-            message = await self.get_last_message(ctx, m)
-            if message.content.lower().startswith("pls say"):
-                return False 
+        def heist_check(m):
             if not m.author.id == 270904126974590976:
                 return False 
             if "They're trying to break into" not in m.content:
