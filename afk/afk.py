@@ -135,21 +135,20 @@ class Afk(commands.Cog):
             return 
 
 
-        for mention in mentions:
-            for m in mention:
-                if m == message.author:
-                    continue 
+        for m in mentions:
+            if m == message.author:
+                continue 
                 
-                afk = await self.config.member(m).afk()
-                msg = await self.config.member(m).message()
+            afk = await self.config.member(m).afk()
+            msg = await self.config.member(m).message()
 
-                if not afk:
-                    continue 
+            if not afk:
+                continue 
                     
-                afk = datetime.utcnow() - datetime.fromtimestamp(afk)
-                afk = self.display_time(round(afk.total_seconds()))
+            afk = datetime.utcnow() - datetime.fromtimestamp(afk)
+            afk = self.display_time(round(afk.total_seconds()))
 
-                final_message.append(msg.replace("{author}", m.mention).replace("{time}", str(afk)))
+            final_message.append(msg.replace("{author}", m.mention).replace("{time}", str(afk)))
 
         
         if len(final_message) == 0:
