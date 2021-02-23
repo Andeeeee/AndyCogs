@@ -114,13 +114,13 @@ class Heist(commands.Cog):
         if flags["ping"]:
             pingrole = await self.config.guild(ctx.guild).pingrole()
             role = ctx.guild.get_role(pingrole)
-            heist_message.append(f"{role.mention}: ")
+            heist_message += f"{role.mention}: "
         
         if flags["early-roles"]:
             roles = humanize_list([r.name for r in flags["early-roles"]])
-            early_heist_message.append(f"Channel Unlocked for {roles}! Unlocking in {self.display_time(early_time)} ")
+            early_heist_message += f"Channel Unlocked for {roles}! Unlocking in {self.display_time(early_time)} "
         
-        heist_message.append(f"Channel Unlocked for {role.name}! Locking in {sleep_time} seconds")
+        heist_message += f"Channel Unlocked for {role.name}! Locking in {sleep_time} seconds"
 
         return early_heist_message, heist_message
     
