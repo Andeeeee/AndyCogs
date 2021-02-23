@@ -10,19 +10,14 @@ class Suggestions(commands.Cog):
         self.config = Config.get_conf(self, identifier=160805014090190130501014, force_registration=True) #e
 
         default_guild = {
-            "channel": None,
-            "decision_channel": None,
-            "blacklist": [],
-            "edit": False,
-            "dm": True,
-            "suggestions": {},
-            "anon": False,
+            "channel": None, "decision_channel": None, "blacklist": [], "edit": False, "dm": True, "suggestions": {}, "anon": False,
         }
 
         self.config.register_guild(**default_guild)
     
     @commands.group(name="suggestions", aliases=["suggestset"])
     @commands.guild_only()
+    @commands.admin_or_permissions(manage_guild=True)
     async def suggestions(self, ctx):
         """A group for suggestion settings"""
         if not ctx.invoked_subcommand:
