@@ -96,14 +96,14 @@ class Giveaways(commands.Cog):
 
     # -------------------------------------Functions---------------------------------
     async def count_invites(self, member: discord.Member):
-        guild = member.guild 
+        guild = member.guild
         invites = 0
         if not guild.permissions_for(guild.me).manage_guild:
             return 0
-        for invite in (await guild.invites()):
+        for invite in await guild.invites():
             if invite.inviter == member:
                 invites += invite.uses
-        return invites 
+        return invites
 
     def convert_time(self, time: str):
         conversions = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
@@ -164,7 +164,7 @@ class Giveaways(commands.Cog):
             for r in data["bypassrole"]:
                 if r in [r.id for r in user.roles]:
                     return True
-        
+
         requirements = info["requirements"]
         if len(data["blacklist"]) == 0:
             pass
@@ -260,44 +260,43 @@ class Giveaways(commands.Cog):
                     False,
                     f"You need {requirements['weeklyamari'] - user_level} more weekly amari points to enter [JUMP_URL_HERE] giveaway",
                 )
-        
+
         if requirements["joindays"]:
             days = (datetime.utcnow() - user.joined_at).days
             if days < requirements["joindays"]:
                 return (
                     False,
-                    f"You need to be in the server for {requirements['joindays'] - days} more days to enter [JUMP_URL_HERE] giveaway"
+                    f"You need to be in the server for {requirements['joindays'] - days} more days to enter [JUMP_URL_HERE] giveaway",
                 )
         if requirements["server"]:
             server: discord.Guild = self.bot.get_guild(requirements["server"])
             if not server:
-                return True 
+                return True
             elif user.id not in [m.id for m in server.members]:
                 return (
                     False,
-                    f"You need to be in the **{server.name}** server to join [JUMP_URL_HERE] giveaway"
+                    f"You need to be in the **{server.name}** server to join [JUMP_URL_HERE] giveaway",
                 )
         if requirements["shared"]:
             cog = self.bot.get_cog("DankLogs")
             if not cog:
-                pass 
+                pass
             elif cog.__author__ != "Andy":
-                pass 
+                pass
             else:
                 shared = await cog.config.member(user).shared()
                 if shared < requirements["shared"]:
                     return (
                         False,
-                        f"You need to share {requirements['shared'] - shared} more coins in this server to join [JUMP_URL_HERE] giveaway"
+                        f"You need to share {requirements['shared'] - shared} more coins in this server to join [JUMP_URL_HERE] giveaway",
                     )
         if requirements["invites"]:
             invites = await self.count_invites(user)
             if invites < requirements["invites"]:
                 return (
                     False,
-                    f"You need to have {requirements['invites'] - invites} more invites to join [JUMP_URL_HERE] giveaway"
+                    f"You need to have {requirements['invites'] - invites} more invites to join [JUMP_URL_HERE] giveaway",
                 )
-                
 
         return True
 
@@ -316,11 +315,13 @@ class Giveaways(commands.Cog):
             total_multi += await self.config.role(r).multiplier()
 
         return total_multi
-    
+
     async def create_invite(self, guild: discord.Guild):
         for channel in guild.text_channels:
             if channel.permissions_for(guild.me).create_instant_invite:
-                invite = await channel.create_invite(reason="For a server join requirement")
+                invite = await channel.create_invite(
+                    reason="For a server join requirement"
+                )
                 return f"discord.gg/{invite.id}"
         return "Couldn't make an invite"
 
@@ -407,7 +408,9 @@ class Giveaways(commands.Cog):
             if requirements["amari"]:
                 e.add_field(name="Minimum Amari Level", value=requirements["amari"])
             if requirements["weeklyamari"]:
-                e.add_field(name="Minimum Weekly Amari", value=requirements["weeklyamari"])
+                e.add_field(
+                    name="Minimum Weekly Amari", value=requirements["weeklyamari"]
+                )
             if requirements["joindays"]:
                 e.add_field(name="Minimum Join Days", value=requirements["joindays"])
             if requirements["server"]:
@@ -416,9 +419,14 @@ class Giveaways(commands.Cog):
                     pass
                 else:
                     invite = await self.create_invite(server)
-                    e.add_field(name="Must be a member of the following server", value=f"**[{server.name}]({invite})**")
+                    e.add_field(
+                        name="Must be a member of the following server",
+                        value=f"**[{server.name}]({invite})**",
+                    )
             if requirements["invites"]:
-                e.add_field(name="Minimum number of invites", value=requirements["invites"])
+                e.add_field(
+                    name="Minimum number of invites", value=requirements["invites"]
+                )
             if requirements["shared"]:
                 e.add_field(name="Minimum Shared Coins", value=requirements["shared"])
 
@@ -538,7 +546,9 @@ class Giveaways(commands.Cog):
             if requirements["amari"]:
                 e.add_field(name="Minimum Amari Level", value=requirements["amari"])
             if requirements["weeklyamari"]:
-                e.add_field(name="Minimum Weekly Amari", value=requirements["weeklyamari"])
+                e.add_field(
+                    name="Minimum Weekly Amari", value=requirements["weeklyamari"]
+                )
             if requirements["joindays"]:
                 e.add_field(name="Minimum Join Days", value=requirements["joindays"])
             if requirements["server"]:
@@ -547,9 +557,14 @@ class Giveaways(commands.Cog):
                     pass
                 else:
                     invite = await self.create_invite(server)
-                    e.add_field(name="Must be a member of the following server", value=f"**[{server.name}]({invite})**")
+                    e.add_field(
+                        name="Must be a member of the following server",
+                        value=f"**[{server.name}]({invite})**",
+                    )
             if requirements["invites"]:
-                e.add_field(name="Minimum number of invites", value=requirements["invites"])
+                e.add_field(
+                    name="Minimum number of invites", value=requirements["invites"]
+                )
             if requirements["shared"]:
                 e.add_field(name="Minimum Shared Coins", value=requirements["shared"])
 
@@ -601,11 +616,13 @@ class Giveaways(commands.Cog):
 
             if requirements["mee6"]:
                 e.add_field(name="Minimum MEE6 Level", value=requirements["mee6"])
-            
+
             if requirements["amari"]:
                 e.add_field(name="Minimum Amari Level", value=requirements["amari"])
             if requirements["weeklyamari"]:
-                e.add_field(name="Minimum Weekly Amari", value=requirements["weeklyamari"])
+                e.add_field(
+                    name="Minimum Weekly Amari", value=requirements["weeklyamari"]
+                )
             if requirements["joindays"]:
                 e.add_field(name="Minimum Join Days", value=requirements["joindays"])
             if requirements["server"]:
@@ -614,12 +631,17 @@ class Giveaways(commands.Cog):
                     pass
                 else:
                     invite = await self.create_invite(server)
-                    e.add_field(name="Must be a member of the following server", value=f"**[{server.name}]({invite})**")
+                    e.add_field(
+                        name="Must be a member of the following server",
+                        value=f"**[{server.name}]({invite})**",
+                    )
             if requirements["invites"]:
-                e.add_field(name="Minimum number of invites", value=requirements["invites"])
+                e.add_field(
+                    name="Minimum number of invites", value=requirements["invites"]
+                )
             if requirements["shared"]:
                 e.add_field(name="Minimum Shared Coins", value=requirements["shared"])
-            
+
             if info["donor"]:
                 donor = message.guild.get_member(info["donor"])
                 if not donor:
@@ -1156,11 +1178,15 @@ class Giveaways(commands.Cog):
             Requirements should be split with either `|` or `;;` to have multiple requirements
 
             TYPES:
-            `amari` - The amari level the user should have 
-            `weeklyamari or wa` - The weekly amari the user should have 
-            `mee6` - The mee6 level the user should have 
+            `amari` - The minimum amari level the user should have 
+            `weeklyamari or wa` - The minimum weekly amari the user should have 
+            `mee6` - The minimum mee6 level the user should have 
+            `joindays` - The minimum amount of days the user has been in the server
+            `invites` - The minimum invites the user needs to have
+            `server` - The server a user should be in, the bot needs to be in the server as well
+            `shared` - The minimum amount of dankmemer coins the user needs to share in the server
 
-            `Ex. Developer;;mee6:5;;wa:1000;;amari:15`
+            `Ex. Developer;;mee6:5;;wa:1000;;amari:15;;server:discord.gg/someservercode`
 
             Specify `none` for the requirement to prevent the bot from converting roles
             """
@@ -1264,7 +1290,12 @@ class Giveaways(commands.Cog):
         gaws = await self.config.guild(guild).giveaways()
 
         if not requirements:
-            requirements = {"mee6": None, "amari": None, "weeklyamari": None, "roles": None}
+            requirements = {
+                "mee6": None,
+                "amari": None,
+                "weeklyamari": None,
+                "roles": None,
+            }
         else:
             if requirements["roles"]:
                 requirements["roles"] = [r.id for r in requirements["roles"]]
@@ -1276,9 +1307,13 @@ class Giveaways(commands.Cog):
                     try:
                         guild = await self.bot.fetch_invite(server)
                     except (discord.NotFound, discord.errors.Forbidden):
-                        return await ctx.send(f"I cannot fetch this invite, please make sure it is valid and I am in this server")
+                        return await ctx.send(
+                            f"I cannot fetch this invite, please make sure it is valid and I am in this server"
+                        )
                 if not server:
-                    return await ctx.send(f"I cannot fetch this invite, please make sure it is valid and I am in this server")
+                    return await ctx.send(
+                        f"I cannot fetch this invite, please make sure it is valid and I am in this server"
+                    )
                 requirements["server"] = server.id
 
         e = discord.Embed(
@@ -1309,7 +1344,7 @@ class Giveaways(commands.Cog):
         gaws[msg] = {}
         gaws[msg]["host"] = ctx.author.id
         gaws[msg]["Ongoing"] = True
-        gaws[msg]["requirements"] = requirements 
+        gaws[msg]["requirements"] = requirements
         gaws[msg]["winners"] = winners
         gaws[msg]["title"] = title
         gaws[msg]["endtime"] = datetime.utcnow().timestamp() + float(time)
