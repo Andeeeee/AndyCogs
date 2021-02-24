@@ -12,7 +12,7 @@
     "tags": [
         "fun", "utility"
     ],
-    "min_bot_version": "3.4.5",
+    "min_bot_version": "3.4.6.dev1",
     "hidden": false,
     "disabled": false,
     "type": "COG"
