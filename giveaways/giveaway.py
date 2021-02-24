@@ -1309,13 +1309,13 @@ class Giveaways(commands.Cog):
                     fetched_server = self.bot.get_guild(int(server))
                 except ValueError:
                     try:
-                        inv: discord.Invite = await self.bot.fetch_invite(fetched_server)
+                        inv: discord.Invite = await self.bot.fetch_invite(server)
                         fetched_server = inv.guild
                     except (discord.NotFound, discord.errors.Forbidden):
                         return await ctx.send(
                             f"I cannot fetch this invite, please make sure it is valid and I am in this server"
                         )
-                if not server:
+                if not fetched_server:
                     return await ctx.send(
                         f"I cannot fetch this invite, please make sure it is valid and I am in this server"
                     )
