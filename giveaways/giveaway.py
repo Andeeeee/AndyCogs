@@ -98,7 +98,7 @@ class Giveaways(commands.Cog):
     async def count_invites(self, member: discord.Member):
         guild = member.guild
         invites = 0
-        if not guild.permissions_for(guild.me).manage_guild:
+        if not guild.me.guild_permissions.manage_guild:
             return 0
         for invite in await guild.invites():
             if invite.inviter == member:
