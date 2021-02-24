@@ -18,6 +18,14 @@ gift_regex = re.compile(
 class DankLogs(commands.Cog):
     """Track things for dankmemer"""
 
+    __author__ = "Andy"
+    __version__ = "1.0.0"
+
+    def format_help_for_context(self, ctx):
+        pre_processed = super().format_help_for_context(ctx)
+        n = "\n" if "\n\n" not in pre_processed else ""
+        return f"{pre_processed}{n}\nCog Version: {self.__version__}"
+
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, 160805014090190130501014, True)
@@ -29,7 +37,6 @@ class DankLogs(commands.Cog):
         default_guild = {
             "channel": None,
             "toprole": None,
-            "enabled": True,
         }
 
         default_member = {
@@ -96,15 +103,6 @@ class DankLogs(commands.Cog):
         else:
             await self.config.guild(ctx.guild).channel.set(channel.id)
             await ctx.send(f"I will now log actions to {channel.mention}")
-
-    @danklogset.command()
-    async def enabled(self, ctx, state: Optional[bool] = False):
-        """Set whether tracking is enabled"""
-        await self.config.guild(ctx.guild).enabled.set(state)
-        if state == False:
-            await ctx.send("No longer tracking dankmemer actions")
-        else:
-            await ctx.send("I will now track dankmemer actions")
 
     @commands.group(aliases=["dankstats"], invoke_without_command=True)
     async def dankinfo(self, ctx, user: Optional[discord.Member] = None):
@@ -382,8 +380,7 @@ class DankLogs(commands.Cog):
             return
         if "You gave" not in message.content:
             return
-        if not (await self.config.guild(message.guild).enabled()):
-            return
+    
         if await self.config.channel(message.channel).ignored():
             return
         last_message = await self.get_last_message(message)
