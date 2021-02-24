@@ -1306,12 +1306,11 @@ class Giveaways(commands.Cog):
             if requirements["server"]:
                 server = requirements["server"]
                 try:
-                    server = self.bot.get_guild(int(server))
+                    fetched_server = self.bot.get_guild(int(server))
                 except ValueError:
                     try:
-                        server = server.lstrip("https://").lstrip("discord.com/invite/").lstrip("discord.gg/")
-                        inv: discord.Invite = await self.bot.fetch_invite(server)
-                        server = inv.guild
+                        inv: discord.Invite = await self.bot.fetch_invite(fetched_server)
+                        fetched_server = inv.guild
                     except (discord.NotFound, discord.errors.Forbidden):
                         return await ctx.send(
                             f"I cannot fetch this invite, please make sure it is valid and I am in this server"
@@ -1320,7 +1319,7 @@ class Giveaways(commands.Cog):
                     return await ctx.send(
                         f"I cannot fetch this invite, please make sure it is valid and I am in this server"
                     )
-                requirements["server"] = server.id
+                requirements["server"] = fetched_server.id
 
         e = discord.Embed(
             title=title,
