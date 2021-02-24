@@ -12,11 +12,8 @@ jobs:
       - uses: actions/checkout@v1
       - uses: actions/setup-python@v1
         with:
-          python_version: "3.8"
-      - run: "make install"
-        name: Install requirements
-      - run: "make reformat"
-        continue-on-error: true
+          python-version: "3.8"
+      - run: "black $GITHUB_EVENT_PATH"
         name: Style reformatting
       - name: Commit changes
         continue-on-error: true
