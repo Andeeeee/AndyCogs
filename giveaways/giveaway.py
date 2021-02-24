@@ -1203,7 +1203,7 @@ class Giveaways(commands.Cog):
         gaws[msg] = {}
         gaws[msg]["host"] = ctx.author.id
         gaws[msg]["Ongoing"] = True
-        gaws[msg]["requirements"] = {} if not 
+        gaws[msg]["requirements"] = requirements 
         gaws[msg]["winners"] = winners
         gaws[msg]["title"] = title
         gaws[msg]["endtime"] = datetime.utcnow().timestamp() + float(time)
