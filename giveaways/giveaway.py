@@ -1310,7 +1310,8 @@ class Giveaways(commands.Cog):
                 except ValueError:
                     try:
                         server = server.lstrip("https://").lstrip("discord.com/invite/").lstrip("discord.gg/")
-                        server = await self.bot.fetch_invite(server.lstrip(""))
+                        inv: discord.Invite = await self.bot.fetch_invite(server)
+                        server = inv.guild
                     except (discord.NotFound, discord.errors.Forbidden):
                         return await ctx.send(
                             f"I cannot fetch this invite, please make sure it is valid and I am in this server"
