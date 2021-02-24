@@ -1,17 +1,21 @@
 import asyncio
-import discord 
-from redbot.core import commands 
+import discord
+from redbot.core import commands
 from redbot.core.commands import BucketType
-from redbot.core import Config 
+from redbot.core import Config
 from typing import Optional
+
 
 async def is_guild_owner(ctx):
     return ctx.author.id == ctx.guild.owner.id
 
+
 class Applications(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot 
-        self.config = Config.get_conf(self, identifier=160805014090190130501014, force_registration=True)
+        self.bot = bot
+        self.config = Config.get_conf(
+            self, identifier=160805014090190130501014, force_registration=True
+        )
 
         default_guild = {
             "questions": {},
@@ -29,36 +33,35 @@ class Applications(commands.Cog):
 
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
-    
+
     def convert_role(self, guild, role):
         guild = self.bot.get_guild(int(guild))
 
         if role.startswith("<@&") and role.endswith(">"):
             role = role[3:-1]
-            
+
         newrole = discord.utils.get(guild.roles, name=role)
 
         if newrole is None:
             pass
         else:
-            return newrole 
+            return newrole
 
         newrole = guild.get_role(int(role))
 
         if not newrole:
-            pass 
+            pass
         else:
             return newrole
 
         return None
-    
 
     @commands.group(name="appset", aliases=["application", "applicationset"])
     @commands.guild_only()
     async def appset(self, ctx):
         if not ctx.invoked_subcommand:
             await ctx.send_help("appset")
-            
+
     @appset.command(name="channel", aliases=["submissionchannel"])
     @commands.guild_only()
     @commands.admin_or_permissions(manage_guild=True)
@@ -70,7 +73,7 @@ class Applications(commands.Cog):
         else:
             await self.config.guild(ctx.guild).channel.set(channel.id)
             await ctx.send(f"I will now send applications to <#{channel.id}>")
-    
+
     @appset.command(name="resultchannel", aliases=["decisionchannel"])
     @commands.guild_only()
     @commands.admin_or_permissions(manage_guild=True)
@@ -94,35 +97,45 @@ class Applications(commands.Cog):
             await self.config.guild(ctx.guild).dm.set(dm)
 
             if dm:
-                await ctx.send("I will now send users the results of their application.")
+                await ctx.send(
+                    "I will now send users the results of their application."
+                )
             else:
-                await ctx.send("I will no longer send users the results of their application.")
-                
+                await ctx.send(
+                    "I will no longer send users the results of their application."
+                )
+
     @appset.command(name="acceptrole", aliases=["role"])
     @commands.guild_only()
     @commands.check(is_guild_owner)
     async def acceptrole(self, ctx, role: Optional[discord.Role] = None):
         """Sets the role that can accept members"""
         if ctx.author.id != ctx.guild.owner.id:
-            return 
+            return
         if role is None:
             await self.config.guild(ctx.guild).acceptrole.set(None)
             await ctx.send("No users can accept members for roles")
         else:
             await self.config.guild(ctx.guild).acceptrole.set(role.id)
-            await ctx.send(f"Members with the role **{role.name}** can now accept members.")
-    
+            await ctx.send(
+                f"Members with the role **{role.name}** can now accept members."
+            )
+
     @appset.command(name="reset")
     @commands.guild_only()
     @commands.check(is_guild_owner)
     async def appset_reset(self, ctx):
         """Resets everything for this server (applications)"""
         try:
-            await ctx.send("Are you sure? Type `YES I WANT TO RESET` in the chat in the next 30 seconds (Caps Count)")
+            await ctx.send(
+                "Are you sure? Type `YES I WANT TO RESET` in the chat in the next 30 seconds (Caps Count)"
+            )
+
             def check(message):
                 return message.author == ctx.author and message.channel == ctx.channel
+
             msg = await self.bot.wait_for("message", check=check, timeout=30)
-        
+
         except asyncio.TimeoutError:
             await ctx.send("Looks like we won't reset your servers data today :/")
             return
@@ -131,8 +144,10 @@ class Applications(commands.Cog):
             await ctx.send("Looks like we won't reset your servers data today :/")
         else:
             await self.config.clear_all()
-            await ctx.send("I've cleared your guilds channels, resultchannels, DM settings, acceptroles, and currently logged member applications.")
-            
+            await ctx.send(
+                "I've cleared your guilds channels, resultchannels, DM settings, acceptroles, and currently logged member applications."
+            )
+
     @appset.command(name="settings", aliases=["showsettings", "viewsettings"])
     async def appset_settings(self, ctx):
         """View server settings for applications"""
@@ -142,57 +157,60 @@ class Applications(commands.Cog):
         dm = await self.config.guild(ctx.guild).dm()
 
         if not acceptrole:
-            pass 
+            pass
         else:
             acceptrole = ctx.guild.get_role(acceptrole)
             acceptrole = acceptrole.mention
-        
+
         if not resultchannel:
-            pass 
+            pass
         else:
             resultchannel = f"<#{resultchannel}>"
-        
+
         if not channel:
-            pass 
+            pass
         else:
             channel = f"<#{channel}>"
 
-        e = discord.Embed(title=f"Application settings for {ctx.guild.name}", color=discord.Color.green())
+        e = discord.Embed(
+            title=f"Application settings for {ctx.guild.name}",
+            color=discord.Color.green(),
+        )
         e.add_field(name="Acceptrole", value=acceptrole)
         e.add_field(name="Resultchannel", value=resultchannel)
         e.add_field(name="Channel", value=channel)
         e.add_field(name="DirectMessage", value=dm)
 
         await ctx.send(embed=e)
-    
+
     @appset.command(name="addposition")
     @commands.admin_or_permissions(manage_guild=True)
     async def addposition(self, ctx, role: Optional[discord.Role] = None):
         """Add roles that the acceptrole can accept, they still cant accept roles higher than them"""
         if not role:
             await ctx.send("You need to specify a valid role.")
-            return 
+            return
         positions = await self.config.guild(ctx.guild).positions()
         positions.append(role.id)
         await self.config.guild(ctx.guild).positions.set(positions)
         await ctx.send(f"**{role.name}** can now be accepted as a role")
-    
+
     @appset.command(name="removeposition")
     @commands.admin_or_permissions(manage_guild=True)
     async def removeposition(self, ctx, role: Optional[discord.Role] = None):
         """Remove a position that can be accepted for"""
         if not role:
             await ctx.send("Specify the role to remove.")
-            return 
+            return
         positions = await self.config.guild(ctx.guild).positions()
         if role.id not in positions:
             await ctx.send("This position is not in the position list.")
-            return 
+            return
         else:
             positions.remove(role.id)
             await self.config.guild(ctx.guild).positions.set(positions)
             await ctx.send(f"Removed **{role.name}** from the position list")
-    
+
     @appset.command(name="positions")
     async def positions(self, ctx):
         """View positions you can apply for"""
@@ -201,31 +219,35 @@ class Applications(commands.Cog):
         e = discord.Embed(
             title="Available positions",
             description=formatted_list,
-            color=discord.Color.blurple()
+            color=discord.Color.blurple(),
         )
         await ctx.send(embed=e)
-    
+
     @appset.command(name="create")
     async def create(self, ctx, name: str):
         """Create a set of applications"""
         allquestions = await self.config.guild(ctx.guild).questions()
         if name.lower() in allquestions:
-            return await ctx.send(f"This already exists, remove it with {ctx.prefix}appset remove {name}")
+            return await ctx.send(
+                f"This already exists, remove it with {ctx.prefix}appset remove {name}"
+            )
         allquestions[name.lower()] = [
-                "What name do you prefer to go by?",
-                "What age are you?",
-                "What time zone are you in?",
-                "Which position/role are you applying for?",
-                "Do you have any previous experience with this position or role? If so, please describe.",
-                "What bots are you most familiar and experienced with?",
-                "What makes you special? Why should we pick you for this role",
-                "Which hours can you be active daily?",
-                "How many days of the week can you be online?",
-                "Any final comments or things that we should be aware of?",
-            ]
+            "What name do you prefer to go by?",
+            "What age are you?",
+            "What time zone are you in?",
+            "Which position/role are you applying for?",
+            "Do you have any previous experience with this position or role? If so, please describe.",
+            "What bots are you most familiar and experienced with?",
+            "What makes you special? Why should we pick you for this role",
+            "Which hours can you be active daily?",
+            "How many days of the week can you be online?",
+            "Any final comments or things that we should be aware of?",
+        ]
         await self.config.guild(ctx.guild).questions.set(allquestions)
-        await ctx.send(f"Done. Set the questions with {ctx.prefix}appset questions {name}")
-    
+        await ctx.send(
+            f"Done. Set the questions with {ctx.prefix}appset questions {name}"
+        )
+
     @appset.command(name="remove")
     async def remove(self, ctx, name: str):
         """Remove a set of applications"""
@@ -235,17 +257,21 @@ class Applications(commands.Cog):
         del allquestions[name]
         await self.config.guild(ctx.guild).questions.set(allquestions)
         await ctx.send("Done.")
-        
+
     @appset.command(name="questions", aliases=["custom"])
     @commands.admin_or_permissions(manage_guild=True)
     async def questions(self, ctx, questionset: str):
         """Set the custom application questions"""
-        await ctx.send("Lets get started. I'll ask you for the questions, and they will be your questions, you can have up to 20 questions. Type `done` when you are done")
+        await ctx.send(
+            "Lets get started. I'll ask you for the questions, and they will be your questions, you can have up to 20 questions. Type `done` when you are done"
+        )
         questions = []
         allquestions = await self.config.guild(ctx.guild).questions()
         questionset = questionset.lower()
         if questionset not in allquestions:
-            return await ctx.send(f"This position does not exist. Its case sensitive. Type {ctx.prefix}appset positions for a list of positions. ")
+            return await ctx.send(
+                f"This position does not exist. Its case sensitive. Type {ctx.prefix}appset positions for a list of positions. "
+            )
 
         for i in range(20):
             await ctx.send(f"What will be question {i + 1}?")
@@ -262,7 +288,9 @@ class Applications(commands.Cog):
                 e = discord.Embed(title="Custom Questions", color=discord.Color.green())
 
                 for i in range(len(questions)):
-                    e.add_field(name=f"Question {i + 1}", value=questions[i], inline=False)
+                    e.add_field(
+                        name=f"Question {i + 1}", value=questions[i], inline=False
+                    )
                 await ctx.send(f"{ctx.author.mention} your custom questions", embed=e)
                 return
 
@@ -274,7 +302,7 @@ class Applications(commands.Cog):
 
         for i in range(20):
             e.add_field(name=f"Question {i + 1}", value=questions[i], inline=False)
-        
+
         await ctx.send(f"{ctx.author.mention} your custom questions", embed=e)
 
     @commands.command(name="apply")
@@ -283,8 +311,10 @@ class Applications(commands.Cog):
         """Apply in your server"""
         channel = await self.config.guild(ctx.guild).channel()
         if not channel:
-            await ctx.send("Uh oh, looks like the application channel for this server isn't set. Please ask an admin or above to set one.")
-            return 
+            await ctx.send(
+                "Uh oh, looks like the application channel for this server isn't set. Please ask an admin or above to set one."
+            )
+            return
         questions = await self.config.guild(ctx.guild).questions()
         if position.lower() not in questions:
             return await ctx.send("This position doesn't exist...")
@@ -303,7 +333,9 @@ class Applications(commands.Cog):
                 "Any final comments or things that we should be aware of?",
             ]
         await ctx.send("Started the application process in DM's")
-        await ctx.author.send("You've started the application process. You have a total of 3 minutes PER QUESTION.")
+        await ctx.author.send(
+            "You've started the application process. You have a total of 3 minutes PER QUESTION."
+        )
 
         answers = []
         questions = questions[position.lower()]
@@ -311,29 +343,40 @@ class Applications(commands.Cog):
         for question in questions:
             await ctx.author.send(question)
             try:
+
                 def check(message):
                     return message.author == ctx.author and message.guild is None
+
                 msg = await self.bot.wait_for("message", check=check, timeout=180)
                 answers.append(msg.content)
             except asyncio.TimeoutError:
-                await ctx.send("Uh oh, you've exceeded the time limit of 3 minutes per question.")
-                return 
+                await ctx.send(
+                    "Uh oh, you've exceeded the time limit of 3 minutes per question."
+                )
+                return
         try:
             channel = self.bot.get_channel(channel)
             if not ctx.channel.permissions_for(ctx.me).send_messages:
-                await ctx.send("Uh oh, I couldn't send messages in the application channel.")
-                return 
-            
-            e = discord.Embed(title="New Application", color=discord.Color.green(),
-            description=f"User ID: {ctx.author.id}\nUser Name and Tag: {ctx.author}\nPosition applying for: {position}")
+                await ctx.send(
+                    "Uh oh, I couldn't send messages in the application channel."
+                )
+                return
+
+            e = discord.Embed(
+                title="New Application",
+                color=discord.Color.green(),
+                description=f"User ID: {ctx.author.id}\nUser Name and Tag: {ctx.author}\nPosition applying for: {position}",
+            )
 
             for i in range(len(questions)):
                 e.add_field(name=questions[i], value=answers[i], inline=False)
             await self.config.member(ctx.author).answers.set(answers)
             await self.config.member(ctx.author).current_questions.set(questions)
             await channel.send(embed=e)
-            await ctx.author.send(f"Your application has been successfully sent to **{ctx.guild.name}**")
-        except(Exception) as e:
+            await ctx.author.send(
+                f"Your application has been successfully sent to **{ctx.guild.name}**"
+            )
+        except (Exception) as e:
             await ctx.author.send(f"Uh oh, something borked. The error was \n{e}")
 
     @commands.command(name="accept")
@@ -347,52 +390,62 @@ class Applications(commands.Cog):
         role = ctx.guild.get_role(role)
 
         if role not in ctx.author.roles:
-            await ctx.send(f"You need to have the role {role.name} to be able to accept members")
+            await ctx.send(
+                f"You need to have the role {role.name} to be able to accept members"
+            )
             return
         if not member:
             await ctx.send("Uh oh, please specify a member to accept")
             return
-        
+
         member = ctx.guild.get_member(member.id)
         member_data = await self.config.member(member).answers()
 
         if len(member_data) == 0:
             await ctx.send("This member hasn't applied for anything yet.")
-            return 
-        
+            return
+
         positions = await self.config.guild(ctx.guild).positions()
         if len(positions) == 0:
             await ctx.send("There are no positions to be accepted for.")
-            return 
+            return
 
         e = discord.Embed(title="Available positions", color=discord.Color.green())
-        
+
         for i in range(len(positions)):
             e.add_field(name=f"Position {i+1}", value=f"<@&{positions[i]}>")
         await ctx.send(embed=e)
 
-            
         try:
+
             def check(m):
-                return m.author == ctx.author and m.channel == ctx.channel and str(m.content).isdigit()
-            await ctx.send("Specify the number of the role you would like to accept them for.")
+                return (
+                    m.author == ctx.author
+                    and m.channel == ctx.channel
+                    and str(m.content).isdigit()
+                )
+
+            await ctx.send(
+                "Specify the number of the role you would like to accept them for."
+            )
             msg = await self.bot.wait_for("message", check=check, timeout=60)
-            
+
         except asyncio.TimeoutError:
             await ctx.send("You've exceeded the 1 minute time limit.")
             return
-        
+
         pos = int(msg.content)
         if pos > len(positions):
             await ctx.send("This position is not valid")
-            
+
         role = positions[pos - 1]
         role = ctx.guild.get_role(role)
-        
-        
+
         try:
+
             def check1(m):
                 return m.author == ctx.author and m.channel == ctx.channel
+
             await ctx.send("Please specify the reason here.")
             msg1 = await self.bot.wait_for("message", check=check1, timeout=60)
 
@@ -400,29 +453,35 @@ class Applications(commands.Cog):
             await ctx.send("Uh oh, you've exceeded the 1 minute time limit.")
 
         my_pos = ctx.me.top_role
-        my_pos = my_pos.id 
+        my_pos = my_pos.id
 
-        author_pos = ctx.author.top_role 
+        author_pos = ctx.author.top_role
         author_pos = author_pos.id
 
         if role.position >= my_pos:
-            await ctx.send("Uh oh, I cannot assign roles higher than or equal to my position.")
-            return 
+            await ctx.send(
+                "Uh oh, I cannot assign roles higher than or equal to my position."
+            )
+            return
         elif role.position >= author_pos:
             await ctx.send("You can't assign roles that are higher than you. :rage:")
-            return 
-        
+            return
+
         channel = await self.config.guild(ctx.guild).resultchannel()
         channel = self.bot.get_channel(channel)
         if not channel:
             pass
         else:
-            await channel.send(f"{member.mention} was accepted as {role.name} by {ctx.author.mention} with the reason {msg1.content}.")
+            await channel.send(
+                f"{member.mention} was accepted as {role.name} by {ctx.author.mention} with the reason {msg1.content}."
+            )
 
         await self.config.member(member).answers.set([])
         await self.config.member(member).current_questions.set([])
         await member.add_roles(role)
-        await member.send(f"You were accepted as **{role.name}** in **{ctx.guild.name}** with the reason {msg1.content}")
+        await member.send(
+            f"You were accepted as **{role.name}** in **{ctx.guild.name}** with the reason {msg1.content}"
+        )
         await ctx.send("Done.")
 
     @commands.command(name="deny")
@@ -432,29 +491,33 @@ class Applications(commands.Cog):
         acceptrole = await self.config.guild(ctx.guild).acceptrole()
         if not acceptrole:
             await ctx.send("This server has no configured acceptrole")
-            return 
+            return
 
         acceptrole = ctx.guild.get_role(acceptrole)
         if acceptrole not in ctx.author.roles:
-            await ctx.send(f"You need to have the **{acceptrole.name}** role to do this!")
-            return 
-        
+            await ctx.send(
+                f"You need to have the **{acceptrole.name}** role to do this!"
+            )
+            return
+
         if not member:
             await ctx.send("Please specify a valid member after this!")
             return
-        
+
         answers = await self.config.member(member).answers()
-        
+
         if len(answers) == 0:
             await ctx.send("This member has not applied for anything yet.")
             return
-        
+
         try:
             await ctx.send("Specify the reason here.")
+
             def check(message):
                 return message.author == ctx.author and message.channel == ctx.channel
+
             msg = await self.bot.wait_for("message", check=check, timeout=60)
-        
+
         except asyncio.TimeoutError:
             await ctx.send("You ran out of time, try again later")
             return
@@ -462,15 +525,18 @@ class Applications(commands.Cog):
         channel = await self.config.guild(ctx.guild).resultchannel()
         channel = self.bot.get_channel(channel)
         if not channel:
-            pass 
+            pass
         else:
-            await channel.send(f"{member.mention} was denied by {ctx.author.mention} with the reason {msg.content}")
-            
+            await channel.send(
+                f"{member.mention} was denied by {ctx.author.mention} with the reason {msg.content}"
+            )
+
         await self.config.member(member).answers.set([])
         await self.config.member(member).current_questions.set([])
-        await member.send(f"Your application was denied **{ctx.guild.name}** with the reason {msg.content}")
+        await member.send(
+            f"Your application was denied **{ctx.guild.name}** with the reason {msg.content}"
+        )
 
-    
     @commands.command(name="fetchapp", aliases=["getapp", "review"])
     @commands.guild_only()
     async def fetchapp(self, ctx, applicant: Optional[discord.Member] = None):
@@ -478,32 +544,35 @@ class Applications(commands.Cog):
 
         if not acceptrole:
             await ctx.send("Your server does not have an acceptrole setup.")
-            return 
-        
+            return
 
         acceptrole = ctx.guild.get_role(acceptrole)
 
         if acceptrole not in ctx.author.roles:
-            await ctx.send(f"You need to have the **{acceptrole.name}** role to view an application.")
-            return 
-        
+            await ctx.send(
+                f"You need to have the **{acceptrole.name}** role to view an application."
+            )
+            return
+
         if not applicant:
             await ctx.send("You need to specify the member after this!")
             return
-        
+
         answers = await self.config.member(applicant).answers()
         current_questions = await self.config.member(applicant).current_questions()
 
         if len(answers) == 0:
             await ctx.send("This user has not applied for anything yet.")
-            return 
-        
+            return
+
         else:
-            e = discord.Embed(title="Application", color=discord.Color.green(), description=
-            f"User ID: {applicant.id} \n Username & Tag: {applicant}")
+            e = discord.Embed(
+                title="Application",
+                color=discord.Color.green(),
+                description=f"User ID: {applicant.id} \n Username & Tag: {applicant}",
+            )
 
             for i in range(len(current_questions)):
                 e.add_field(name=current_questions[i], value=answers[i], inline=False)
-        
+
         await ctx.send(embed=e)
-    
