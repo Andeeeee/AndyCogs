@@ -321,8 +321,13 @@ class Giveaways(commands.Cog):
         for channel in guild.text_channels:
             if channel.permissions_for(guild.me).create_instant_invite:
                 invite = await channel.create_invite(
-                    reason="For a server join requirement"
+                    reason="For a server join requirement",
+                    unique=False
                 )
+                if not invite:
+                    invite = await channel.create_invite(
+                        reason="For a server join requirement"
+                    )
                 return f"https://discord.gg/{invite.id}"
         return "Couldn't make an invite"
 
