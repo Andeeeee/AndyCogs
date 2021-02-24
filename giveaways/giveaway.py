@@ -1295,6 +1295,10 @@ class Giveaways(commands.Cog):
                 "amari": None,
                 "weeklyamari": None,
                 "roles": None,
+                "joindays": None,
+                "invites": None,
+                "server": None,
+                "shared": None
             }
         else:
             if requirements["roles"]:

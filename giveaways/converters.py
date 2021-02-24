@@ -36,19 +36,27 @@ class FuzzyRole(RoleConverter):
     def __init__(self, response: bool = True):
         self.response = response
         super().__init__()
-    
+
     def danklog_check(self, ctx) -> Union[commands.Cog, bool]:
         cog = ctx.bot.get_cog("DankLogs")
         if not cog:
-            return False 
+            return False
         elif cog.__author__ != "Andy":
-            return False 
-        return cog 
-        
+            return False
+        return cog
 
     async def convert(self, ctx: commands.Context, argument: str) -> discord.Role:
         if argument.lower() == "none":
-            return {"mee6": None, "amari": None, "weeklyamari": None, "roles": None, "joindays": None, "invites": None, "shared": None, "server": None}
+            return {
+                "mee6": None,
+                "amari": None,
+                "weeklyamari": None,
+                "roles": None,
+                "joindays": None,
+                "invites": None,
+                "shared": None,
+                "server": None,
+            }
         final_results = []
         pattern = re.compile(r"\||;;")
         argument = pattern.split(argument)
@@ -58,9 +66,9 @@ class FuzzyRole(RoleConverter):
         amari = None
         wa = None
         joindays = None
-        shared = None 
-        invites = None 
-        server = None 
+        shared = None
+        invites = None
+        server = None
         for arg in argument:
             mee6_split = arg.split(":")
             if mee6_split[0] == "mee6" and len(mee6_split) >= 2:
@@ -101,17 +109,14 @@ class FuzzyRole(RoleConverter):
                     continue
                 except ValueError:
                     continue
-            
-            elif (
-                mee6_split[0] == "joindays"
-                and len(mee6_split) >= 2
-            ):
+
+            elif mee6_split[0] == "joindays" and len(mee6_split) >= 2:
                 try:
                     joindays = int(mee6_split[1])
                     if joindays < 0:
                         raise BadArgument()
                 except ValueError:
-                    continue 
+                    continue
             elif (
                 mee6_split[0] == "shared"
                 and len(mee6_split) >= 2
@@ -122,27 +127,21 @@ class FuzzyRole(RoleConverter):
                     if shared < 0:
                         raise BadArgument()
                 except ValueError:
-                    continue 
-            
-            elif (
-                mee6_split[0] == "invites"
-                and len(mee6_split) >= 2
-            ):
+                    continue
+
+            elif mee6_split[0] == "invites" and len(mee6_split) >= 2:
                 try:
                     invites = int(mee6_split[1])
                     if invites < 0:
                         raise BadArgument()
                 except ValueError:
-                    continue 
-            
-            elif (
-                mee6_split[0] == "server"
-                and len(mee6_split) >= 2
-            ):
+                    continue
+
+            elif mee6_split[0] == "server" and len(mee6_split) >= 2:
                 try:
                     server = mee6_split[0]
                 except ValueError:
-                    continue 
+                    continue
 
             arg = arg.lstrip("<@&").rstrip(">")
             if arg.isdigit():
@@ -167,11 +166,11 @@ class FuzzyRole(RoleConverter):
                 continue
             final_results.append(sorted_result[0][0])
             result = []
-        
+
         requirements = {}
-        requirements["roles"] = final_results 
-        requirements["mee6"] = mee6 
-        requirements["amari"] = amari 
+        requirements["roles"] = final_results
+        requirements["mee6"] = mee6
+        requirements["amari"] = amari
         requirements["weeklyamari"] = wa
         requirements["joindays"] = joindays
         requirements["shared"] = shared
