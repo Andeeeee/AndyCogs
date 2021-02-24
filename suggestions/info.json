@@ -1,12 +1,12 @@
 {
     "name": "suggestions",
     "short": "Suggestions for your server",
-    "description": "Suggest things in channels and other stuf",
+    "description": "Suggest things in channels and other stuff",
     "install_msg": "Remember to set a channel before trying to suggest something!",
     "author": [
         "Andy"
     ],
-    "required_cogs": "https://github.com/phenom4n4n/phen-cogs/tree/master/webhook",
+    "required_cogs": [],
     "requirements": [],
     "tags": [
         "utility"
