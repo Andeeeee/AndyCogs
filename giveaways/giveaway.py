@@ -154,6 +154,8 @@ class Giveaways(commands.Cog):
             for r in data["bypassrole"]:
                 if r in [r.id for r in user.roles]:
                     return True
+        
+        requirements = info["requirements"]
         if len(data["blacklist"]) == 0:
             pass
         else:
@@ -166,10 +168,10 @@ class Giveaways(commands.Cog):
                         False,
                         f"You have the {r.name} role which has prevented you from entering [JUMP_URL_HERE] giveaway",
                     )
-        if not info["requirement"] or len(info["requirement"]) == 0:
+        if not requirements:
             pass
         else:
-            for r in info["requirement"]:
+            for r in requirements["roles"]:
                 if r in [role.id for role in user.roles]:
                     continue
                 r = user.guild.get_role(int(r))
@@ -180,7 +182,7 @@ class Giveaways(commands.Cog):
                     f"You do not have the `{r.name}` role which is required for [JUMP_URL_HERE] giveaway",
                 )
 
-        if info["mee6"]:
+        if requirements["mee6"]:
             if str(user.guild.id) not in self.mee6_cache:
                 self.mee6_cache[str(user.guild.id)] = {}
             if self.mee6_cache[str(user.guild.id)].get(str(user.id), None) is None:
@@ -192,13 +194,13 @@ class Giveaways(commands.Cog):
             if choice == 3:
                 user_level = await mee6_api.get_user_rank(user.guild.id, user.id)
                 self.mee6_cache[str(user.guild.id)][str(user.id)] = user_level
-            if user_level < info["mee6"]:
+            if user_level < requirements["mee6"]:
                 return (
                     False,
-                    f"You need {info['mee6'] - user_level} more MEE6 levels to enter [JUMP_URL_HERE] giveaway",
+                    f"You need {requirements['mee6'] - user_level} more MEE6 levels to enter [JUMP_URL_HERE] giveaway",
                 )
 
-        if info["amari"]:
+        if requirements["amari"]:
             if str(user.guild.id) not in self.amari_cache:
                 self.amari_cache[str(user.guild.id)] = {}
             if self.amari_cache[str(user.guild.id)].get(str(user.id), None) is None:
@@ -214,13 +216,13 @@ class Giveaways(commands.Cog):
                 if not user_level:
                     return False
                 self.amari_cache[str(user.guild.id)][str(user.id)] = user_level
-            if user_level < info["amari"]:
+            if user_level < requirements["amari"]:
                 return (
                     False,
-                    f"You need {info['amari'] - user_level} more Amari levels to enter [JUMP_URL_HERE] giveaway",
+                    f"You need {requirements['amari'] - user_level} more Amari levels to enter [JUMP_URL_HERE] giveaway",
                 )
 
-        if info["weeklyamari"]:
+        if requirements["weeklyamari"]:
             if str(user.guild.id) not in self.weekly_amari_cache:
                 self.weekly_amari_cache[str(user.guild.id)] = {}
             if (
@@ -243,10 +245,10 @@ class Giveaways(commands.Cog):
                     return False
                 self.weekly_amari_cache[str(user.guild.id)][str(user.id)] = user_level
 
-            if user_level < info["weeklyamari"]:
+            if user_level < requirements["weeklyamari"]:
                 return (
                     False,
-                    f"You need {info['weeklyamari'] - user_level} more weekly amari points to enter [JUMP_URL_HERE] giveaway",
+                    f"You need {requirements['weeklyamari'] - user_level} more weekly amari points to enter [JUMP_URL_HERE] giveaway",
                 )
 
         return True
@@ -330,12 +332,13 @@ class Giveaways(commands.Cog):
                     name="Donor", value="<@{0}>".format(info["donor"]), inline=False
                 )
 
-            if info["requirement"]:
-                requirements = []
-                for r in info["requirement"]:
-                    requirements.append(f"<@&{r}>")
+            requirements = info["requirements"]
+            if requirements["roles"]:
+                roles = []
+                for r in requirements["roles"]:
+                    roles.append(f"<@&{r}>")
                 e.add_field(
-                    name="Requirement", value=humanize_list(requirements), inline=False
+                    name="Requirement", value=humanize_list(roles), inline=False
                 )
 
             if bypassrole:
@@ -344,12 +347,12 @@ class Giveaways(commands.Cog):
                     roles.append("<@&{0}>".format(r))
                 e.add_field(name="Bypassrole", value=humanize_list(roles), inline=False)
 
-            if info["mee6"]:
-                e.add_field(name="Minimum MEE6 Level", value=info["mee6"], inline=False)
-            if info["amari"]:
-                e.add_field(name="Minimum Amari Level", value=info["amari"])
-            if info["weeklyamari"]:
-                e.add_field(name="Minimum Weekly Amari", value=info["weeklyamari"])
+            if requirements["mee6"]:
+                e.add_field(name="Minimum MEE6 Level", value=requirements["mee6"], inline=False)
+            if requirements["amari"]:
+                e.add_field(name="Minimum Amari Level", value=requirements["amari"])
+            if requirements["weeklyamari"]:
+                e.add_field(name="Minimum Weekly Amari", value=requirements["weeklyamari"])
 
             e.timestamp = datetime.fromtimestamp(info["endtime"])
             e.set_footer(text="Winners: {0} | Ends at".format(info["winners"]))
@@ -449,24 +452,25 @@ class Giveaways(commands.Cog):
             e = discord.Embed(
                 title=info["title"], description=f"Host: <@{host}> \n Winners: None"
             )
-            if info["requirement"]:
-                requirements = []
-                for r in info["requirement"]:
+            requirements = info["requirements"]
+            if requirements["roles"]:
+                roles = []
+                for r in requirements["roles"]:
                     role = message.guild.get_role(r)
                     if not role:
                         continue
-                    requirements.append(role.mention)
+                    roles.append(role.mention)
                 e.add_field(
-                    name="Requirement", value=humanize_list(requirements), inline=False
+                    name="Requirement", value=humanize_list(roles), inline=False
                 )
 
-            if info["mee6"]:
-                e.add_field(name="Minimum MEE6 Level", value=info["mee6"])
+            if requirements["mee6"]:
+                e.add_field(name="Minimum MEE6 Level", value=requirements["mee6"])
 
-            if info["amari"]:
-                e.add_field(name="Minimum Amari Level", value=info["amari"])
-            if info["weeklyamari"]:
-                e.add_field(name="Minimum Weekly Amari", value=info["weeklyamari"])
+            if requirements["amari"]:
+                e.add_field(name="Minimum Amari Level", value=requirements["amari"])
+            if requirements["weeklyamari"]:
+                e.add_field(name="Minimum Weekly Amari", value=requirements["weeklyamari"])
 
             if info["donor"]:
                 donor = message.guild.get_member(info["donor"])
@@ -490,6 +494,7 @@ class Giveaways(commands.Cog):
             )
 
         else:
+            requirements = info["requirements"]
             winners = humanize_list(final_list)
             host = (
                 info["host"]
@@ -502,19 +507,24 @@ class Giveaways(commands.Cog):
                 description=f"Winner(s): {winners}\nHost: <@{host}>",
             )
 
-            if info["requirement"]:
-                requirements = []
-                for r in info["requirement"]:
+            if requirements["roles"]:
+                roles = []
+                for r in requirements["roles"]:
                     role = message.guild.get_role(r)
                     if not role:
                         continue
-                    requirements.append(role.mention)
+                    roles.append(role.mention)
                 e.add_field(
-                    name="Requirement", value=humanize_list(requirements), inline=False
+                    name="Requirement", value=humanize_list(roles), inline=False
                 )
 
-            if info["mee6"]:
-                e.add_field(name="Minimum MEE6 Level", value=info["mee6"])
+            if requirements["mee6"]:
+                e.add_field(name="Minimum MEE6 Level", value=requirements["mee6"])
+            
+            if requirements["amari"]:
+                e.add_field(name="Minimum Amari Level", value=requirements["amari"])
+            if requirements["weeklyamari"]:
+                e.add_field(name="Minimum Weekly Amari", value=requirements["weeklyamari"])
 
             if info["donor"]:
                 donor = message.guild.get_member(info["donor"])
@@ -1160,41 +1170,7 @@ class Giveaways(commands.Cog):
         gaws = await self.config.guild(guild).giveaways()
 
         if not requirements:
-            role = data["default_req"]
-            if not role or role == [None]:
-                roleid = None
-            else:
-                role = ctx.guild.get_role(role)
-                roleid = [role.id]
-        else:
-            if not requirements[0]:
-                roleid = None
-            else:
-                roleid = [r.id for r in requirements[0]]
-
-        if not requirements:
-            mee6 = None
-        else:
-            if not requirements[1]:
-                mee6 = None
-            else:
-                mee6 = int(requirements[1])
-
-        if not requirements:
-            amari = None
-        else:
-            if not requirements[2]:
-                amari = None
-            else:
-                amari = int(requirements[2])
-
-        if not requirements:
-            wa = None
-        else:
-            if not requirements[3]:
-                wa = None
-            else:
-                wa = int(requirements[3])
+            requirements = {"mee6": None, "amari": None, "weeklyamari": None, "roles": None}
 
         e = discord.Embed(
             title=title,
@@ -1224,15 +1200,12 @@ class Giveaways(commands.Cog):
         gaws[msg] = {}
         gaws[msg]["host"] = ctx.author.id
         gaws[msg]["Ongoing"] = True
-        gaws[msg]["requirement"] = roleid
+        gaws[msg]["requirements"] = requirements
         gaws[msg]["winners"] = winners
         gaws[msg]["title"] = title
         gaws[msg]["endtime"] = datetime.utcnow().timestamp() + float(time)
         gaws[msg]["channel"] = ctx.channel.id
         gaws[msg]["donor"] = flags["donor"]
-        gaws[msg]["mee6"] = mee6
-        gaws[msg]["amari"] = amari
-        gaws[msg]["weeklyamari"] = wa
 
         await self.config.guild(guild).giveaways.set(gaws)
 

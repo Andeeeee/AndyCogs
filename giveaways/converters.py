@@ -39,7 +39,7 @@ class FuzzyRole(RoleConverter):
 
     async def convert(self, ctx: commands.Context, argument: str) -> discord.Role:
         if argument.lower() == "none":
-            return []
+            return {"mee6": None, "amari": None, "weeklyamari": None, "roles": None}
         final_results = []
         pattern = re.compile(r"\||;;")
         argument = pattern.split(argument)
@@ -112,8 +112,14 @@ class FuzzyRole(RoleConverter):
                 continue
             final_results.append(sorted_result[0][0])
             result = []
+        
+        requirements = {}
+        requirements["roles"] = final_results 
+        requirements["mee6"] = mee6 
+        requirements["amari"] = amari 
+        requirements["weeklyamari"] = wa
 
-        return final_results, mee6, amari, wa
+        return requirements
 
 
 class IntOrLink(Converter):
