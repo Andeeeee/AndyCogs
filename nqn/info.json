@@ -7,7 +7,6 @@
     "author": [
         "Andy"
     ],
-    "required_cogs": [],
     "requirements": ["rapidfuzz", "unidecode"],
     "tags": [
         "utility"
