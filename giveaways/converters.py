@@ -139,7 +139,7 @@ class FuzzyRole(RoleConverter):
 
             elif mee6_split[0] == "server" and len(mee6_split) >= 2:
                 try:
-                    server = mee6_split[0]
+                    server = mee6_split[1]
                 except ValueError:
                     continue
 
