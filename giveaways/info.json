@@ -2,17 +2,17 @@
     "name": "Giveaways",
     "short": "Host giveaways",
     "description": "Host Giveaways for your server with features and requirements!",
-    "end_user_data_statement": "This cog will store your servers giveaways",
-    "install_msg": "Check out `[p]gset` to set your settings. Make sure to use `[p]gset manager add [role]` to set a role so you don't come complaining that giveaways broke",  
+    "end_user_data_statement": "This cog will store your servers giveaways, may store a LOT if you have a lot of servers",
+    "install_msg": "Check out `[p]gset]` to set your settings",   
     "author": [
         "Andy"
     ],
     "required_cogs": {},
-    "requirements": ["rapidfuzz", "unidecode", "mee6_py_api"],
+    "requirements": [],
     "tags": [
         "utility", "fun"
     ],
-    "min_bot_version": "3.4.6",
+    "min_bot_version": "3.4.5",
     "hidden": false,
     "disabled": false,
     "type": "COG"

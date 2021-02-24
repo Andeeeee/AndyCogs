@@ -1,4 +1,4 @@
-#Originally from Phen-Cogs https://github.com/phenom4n4n/phen-cogs/blob/master/lock/converters.py
+# Originally from Phen-Cogs https://github.com/phenom4n4n/phen-cogs/blob/master/lock/converters.py
 
 from typing import Union
 import re
@@ -17,10 +17,11 @@ link_regex = re.compile(
     r"[0-9]{15,19})\/(?P<message_id>[0-9]{15,19})\/?"
 )
 
-#thanks pheno
+# thanks pheno
 
 
 # original converter from https://github.com/TrustyJAID/Trusty-cogs/blob/master/serverstats/converters.py#L19
+
 
 class FuzzyRole(RoleConverter):
     """
@@ -45,21 +46,23 @@ class FuzzyRole(RoleConverter):
         guild = ctx.guild
         result = []
         mee6 = None
-        amari = None 
+        amari = None
         wa = None
         for arg in argument:
             mee6_split = arg.split(":")
             if mee6_split[0] == "mee6" and len(mee6_split) >= 2:
                 if guild.get_member(159985870458322944) is None:
-                    raise BadArgument("Can't add MEE6 requirements without MEE6 in your server")
+                    raise BadArgument(
+                        "Can't add MEE6 requirements without MEE6 in your server"
+                    )
                 try:
                     mee6 = int(mee6_split[1])
                     if mee6 < 0:
                         raise BadArgument("MEE6 arguments need to be greater than 0")
                     continue
                 except ValueError:
-                    continue 
-            
+                    continue
+
             elif mee6_split[0] == "amari" and len(mee6_split) >= 2:
                 if guild.get_member(339254240012664832) is None:
                     raise BadArgument()
@@ -67,26 +70,30 @@ class FuzzyRole(RoleConverter):
                     amari = int(mee6_split[1])
                     if amari < 0:
                         raise BadArgument()
-                    continue 
+                    continue
                 except ValueError:
-                    continue 
-            
-            elif mee6_split[0] == "wa" or mee6_split[0] == "weeklyamari" and len(mee6_split) >= 2:
+                    continue
+
+            elif (
+                mee6_split[0] == "wa"
+                or mee6_split[0] == "weeklyamari"
+                and len(mee6_split) >= 2
+            ):
                 if guild.get_member(339254240012664832) is None:
                     raise BadArgument()
                 try:
                     wa = int(mee6_split[1])
                     if wa < 0:
                         raise BadArgument()
-                    continue 
+                    continue
                 except ValueError:
-                    continue 
-                
+                    continue
+
             arg = arg.lstrip("<@&").rstrip(">")
             if arg.isdigit():
                 role = guild.get_role(int(arg))
                 if not role:
-                    pass 
+                    pass
                 else:
                     if role in final_results:
                         continue
@@ -100,19 +107,19 @@ class FuzzyRole(RoleConverter):
             ):
                 result.append((r[2], r[1]))
 
-            
             sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
             if sorted_result[0][0] in final_results:
                 continue
             final_results.append(sorted_result[0][0])
             result = []
-        
+
         return final_results, mee6, amari, wa
+
 
 class IntOrLink(Converter):
     async def convert(self, ctx, argument: str):
         if argument.isdigit():
-            return argument 
+            return argument
         if len(argument.split("-")) == 2:
             return argument.split("-")[1]
         match = re.search(link_regex, argument)
@@ -123,15 +130,16 @@ class IntOrLink(Converter):
         channel = ctx.bot.get_channel(channel_id)
 
         if channel is None or channel.guild is None or channel.guild != ctx.guild:
-            raise BadArgument("This was not recognized as a valid channel or the channel is not in the same server")
-        
+            raise BadArgument(
+                "This was not recognized as a valid channel or the channel is not in the same server"
+            )
+
         message = ctx.bot._connection._get_message(message_id)
-        
+
         if not message:
             try:
                 message = await channel.fetch_message(message_id)
             except discord.NotFound:
                 raise BadArgument("Message not found")
-        
+
         return message.id
-        

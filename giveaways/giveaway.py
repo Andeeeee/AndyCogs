@@ -23,9 +23,12 @@ class NoExitParser(argparse.ArgumentParser):
 
 
 async def is_manager(ctx):
-    if ctx.channel.permissions_for(ctx.author).administrator or ctx.channel.permissions_for(ctx.author).manage_guild:
+    if (
+        ctx.channel.permissions_for(ctx.author).administrator
+        or ctx.channel.permissions_for(ctx.author).manage_guild
+    ):
         return True
-    if (await ctx.bot.is_owner(ctx.author)):
+    if await ctx.bot.is_owner(ctx.author):
         return True
 
     cog = ctx.bot.get_cog("Giveaways")
@@ -46,9 +49,7 @@ class Giveaways(commands.Cog):
         self.bot = bot
         self.giveaway_task = bot.loop.create_task(self.giveaway_loop())
         self.config = Config.get_conf(
-            self,
-            identifier=160805014090190130501014,
-            force_registration=True
+            self, identifier=160805014090190130501014, force_registration=True
         )
 
         default_guild = {
@@ -75,10 +76,8 @@ class Giveaways(commands.Cog):
             "notes": [],
         }
 
-        default_global = {
-            "secretblacklist": []
-        }
-        
+        default_global = {"secretblacklist": []}
+
         default_role = {
             "multiplier": 0,
         }
@@ -94,8 +93,7 @@ class Giveaways(commands.Cog):
         self.config.register_global(**default_global)
         self.config.register_role(**default_role)
 
-
-# -------------------------------------Functions---------------------------------
+    # -------------------------------------Functions---------------------------------
 
     def convert_time(self, time: str):
         conversions = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
@@ -109,7 +107,7 @@ class Giveaways(commands.Cog):
                 return 5
 
         return int(time[:-1]) * conversions[time[-1]]
-    
+
     def comma_format(self, number: int):
         return "{:,}".format(number)
 
@@ -117,11 +115,11 @@ class Giveaways(commands.Cog):
         message = ""
 
         intervals = (
-            ('week', 604_800),  # 60 * 60 * 24 * 7
-            ('day',   86_400),  # 60 * 60 * 24
-            ('hour',   3_600),  # 60 * 60
-            ('minute',    60),
-            ('second',     1),
+            ("week", 604_800),  # 60 * 60 * 24 * 7
+            ("day", 86_400),  # 60 * 60 * 24
+            ("hour", 3_600),  # 60 * 60
+            ("minute", 60),
+            ("second", 1),
         )
 
         for name, amount in intervals:
@@ -141,8 +139,9 @@ class Giveaways(commands.Cog):
         for guild, data in (await self.config.all_guilds()).items():
             for messageid, info in data["giveaways"].items():
                 if info["Ongoing"]:
-                    self.tasks.append(asyncio.create_task(
-                        self.start_giveaway(int(messageid), info)))
+                    self.tasks.append(
+                        asyncio.create_task(self.start_giveaway(int(messageid), info))
+                    )
 
     async def can_join(self, user: discord.Member, info):
         data = await self.config.guild(user.guild).all()
@@ -162,19 +161,25 @@ class Giveaways(commands.Cog):
                 if r in [r.id for r in user.roles]:
                     r = user.guild.get_role(int(r))
                     if not r:
-                        continue 
-                    return False, f"You have the {r.name} role which has prevented you from entering [JUMP_URL_HERE] giveaway"
+                        continue
+                    return (
+                        False,
+                        f"You have the {r.name} role which has prevented you from entering [JUMP_URL_HERE] giveaway",
+                    )
         if not info["requirement"] or len(info["requirement"]) == 0:
-           pass 
+            pass
         else:
             for r in info["requirement"]:
                 if r in [role.id for role in user.roles]:
                     continue
                 r = user.guild.get_role(int(r))
                 if not r:
-                    continue 
-                return False, f"You do not have the `{r.name}` role which is required for [JUMP_URL_HERE] giveaway"
-        
+                    continue
+                return (
+                    False,
+                    f"You do not have the `{r.name}` role which is required for [JUMP_URL_HERE] giveaway",
+                )
+
         if info["mee6"]:
             if str(user.guild.id) not in self.mee6_cache:
                 self.mee6_cache[str(user.guild.id)] = {}
@@ -188,7 +193,10 @@ class Giveaways(commands.Cog):
                 user_level = await mee6_api.get_user_rank(user.guild.id, user.id)
                 self.mee6_cache[str(user.guild.id)][str(user.id)] = user_level
             if user_level < info["mee6"]:
-                return False, f"You need {info['mee6'] - user_level} more MEE6 levels to enter [JUMP_URL_HERE] giveaway"
+                return (
+                    False,
+                    f"You need {info['mee6'] - user_level} more MEE6 levels to enter [JUMP_URL_HERE] giveaway",
+                )
 
         if info["amari"]:
             if str(user.guild.id) not in self.amari_cache:
@@ -196,7 +204,7 @@ class Giveaways(commands.Cog):
             if self.amari_cache[str(user.guild.id)].get(str(user.id), None) is None:
                 user_level = await amari_api.get_amari_rank(user.guild.id, user)
                 if not user_level:
-                    return False 
+                    return False
                 self.amari_cache[str(user.guild.id)][str(user.id)] = user_level
             else:
                 user_level = self.amari_cache[str(user.guild.id)].get(str(user.id))
@@ -207,46 +215,56 @@ class Giveaways(commands.Cog):
                     return False
                 self.amari_cache[str(user.guild.id)][str(user.id)] = user_level
             if user_level < info["amari"]:
-                return False, f"You need {info['amari'] - user_level} more Amari levels to enter [JUMP_URL_HERE] giveaway"
-        
+                return (
+                    False,
+                    f"You need {info['amari'] - user_level} more Amari levels to enter [JUMP_URL_HERE] giveaway",
+                )
+
         if info["weeklyamari"]:
             if str(user.guild.id) not in self.weekly_amari_cache:
                 self.weekly_amari_cache[str(user.guild.id)] = {}
-            if self.weekly_amari_cache[str(user.guild.id)].get(str(user.id), None) is None:
+            if (
+                self.weekly_amari_cache[str(user.guild.id)].get(str(user.id), None)
+                is None
+            ):
                 user_level = await amari_api.get_weekly_rank(user.guild.id, user)
                 if not user_level:
-                    return False 
+                    return False
                 self.weekly_amari_cache[str(user.guild.id)][str(user.id)] = user_level
             else:
-                user_level = self.weekly_amari_cache[str(user.guild.id)].get(str(user.id))
-            
+                user_level = self.weekly_amari_cache[str(user.guild.id)].get(
+                    str(user.id)
+                )
+
             choice = randint(1, 6)
             if choice == 3:
                 user_level = await amari_api.get_weekly_rank(user.guild.id, user)
                 if not user_level:
-                    return False 
-                self.weekly_amari_cache[str(user.guild.id)][str(user.id)] = user_level 
-            
+                    return False
+                self.weekly_amari_cache[str(user.guild.id)][str(user.id)] = user_level
+
             if user_level < info["weeklyamari"]:
-                return False, f"You need {info['weeklyamari'] - user_level} more weekly amari points to enter [JUMP_URL_HERE] giveaway"
-            
+                return (
+                    False,
+                    f"You need {info['weeklyamari'] - user_level} more weekly amari points to enter [JUMP_URL_HERE] giveaway",
+                )
 
         return True
 
     def get_color(self, timeleft: int):
         if timeleft <= 30:
-           return discord.Color(value=0xFF0000)
+            return discord.Color(value=0xff0000)
         elif timeleft <= 240:
-           return discord.Color.orange()
+            return discord.Color.orange()
         elif timeleft <= 600:
-            return discord.Color(value=0xFFFF00)
+            return discord.Color(value=0xffff00)
         return discord.Color.green()
-    
+
     async def calculate_multi(self, user: discord.Member):
         total_multi = 1
         for r in user.roles:
-            total_multi += (await self.config.role(r).multiplier())
-        
+            total_multi += await self.config.role(r).multiplier()
+
         return total_multi
 
     async def start_giveaway(self, messageid: int, info):
@@ -256,7 +274,8 @@ class Giveaways(commands.Cog):
             return
 
         message = self.message_cache.get(
-            str(messageid), self.bot._connection._get_message(int(messageid)))
+            str(messageid), self.bot._connection._get_message(int(messageid))
+        )
 
         if not message:
             try:
@@ -274,19 +293,19 @@ class Giveaways(commands.Cog):
         while True:
             remaining = info["endtime"] - datetime.utcnow().timestamp()
             if str(messageid) not in gaws:
-                return 
+                return
             elif self.giveaway_cache.get(str(messageid), False) == False:
-                return 
+                return
 
             elif remaining <= 0:
-                self.message_cache[str(messageid)] = await channel.fetch_message(messageid)
+                self.message_cache[str(messageid)] = await channel.fetch_message(
+                    messageid
+                )
                 self.giveaway_cache[str(messageid)] = False
                 await self.end_giveaway(int(messageid), info)
                 return
 
-
-            remaining = datetime.fromtimestamp(
-                info["endtime"]) - datetime.utcnow()
+            remaining = datetime.fromtimestamp(info["endtime"]) - datetime.utcnow()
             pretty_time = self.display_time(round(remaining.total_seconds()))
 
             host = message.guild.get_member(info["host"])
@@ -299,26 +318,32 @@ class Giveaways(commands.Cog):
             color = self.get_color(remaining.total_seconds())
 
             e = discord.Embed(
-                title=info["title"], description=data["description"].replace("{emoji}", data["emoji"]), color=color)
+                title=info["title"],
+                description=data["description"].replace("{emoji}", data["emoji"]),
+                color=color,
+            )
             e.description += f"\nTime Left: {pretty_time} \n"
             e.description += f"Host: {host}"
 
             if info["donor"]:
                 e.add_field(
-                    name="Donor", value="<@{0}>".format(info["donor"]), inline=False)
+                    name="Donor", value="<@{0}>".format(info["donor"]), inline=False
+                )
 
             if info["requirement"]:
                 requirements = []
                 for r in info["requirement"]:
                     requirements.append(f"<@&{r}>")
-                e.add_field(name="Requirement", value=humanize_list(requirements), inline=False)
+                e.add_field(
+                    name="Requirement", value=humanize_list(requirements), inline=False
+                )
 
             if bypassrole:
                 roles = []
                 for r in bypassrole:
                     roles.append("<@&{0}>".format(r))
                 e.add_field(name="Bypassrole", value=humanize_list(roles), inline=False)
-            
+
             if info["mee6"]:
                 e.add_field(name="Minimum MEE6 Level", value=info["mee6"], inline=False)
             if info["amari"]:
@@ -327,11 +352,15 @@ class Giveaways(commands.Cog):
                 e.add_field(name="Minimum Weekly Amari", value=info["weeklyamari"])
 
             e.timestamp = datetime.fromtimestamp(info["endtime"])
-            e.set_footer(
-                text="Winners: {0} | Ends at".format(info["winners"]))
+            e.set_footer(text="Winners: {0} | Ends at".format(info["winners"]))
 
             try:
-                await message.edit(embed=e, content=data["startHeader"].replace("{giveawayEmoji}", data["emoji"]))
+                await message.edit(
+                    embed=e,
+                    content=data["startHeader"].replace(
+                        "{giveawayEmoji}", data["emoji"]
+                    ),
+                )
             except discord.NotFound:
                 return
 
@@ -339,7 +368,7 @@ class Giveaways(commands.Cog):
             await message.add_reaction(emoji)
             self.message_cache[str(messageid)] = message
 
-            await asyncio.sleep(round(remaining.total_seconds()/6))
+            await asyncio.sleep(round(remaining.total_seconds() / 6))
 
     async def end_giveaway(self, messageid: int, info, reroll: int = -1):
         channel = self.bot.get_channel(info["channel"])
@@ -356,7 +385,7 @@ class Giveaways(commands.Cog):
                 giveaways = await self.config.guild(channel.guild).giveaways()
                 giveaways.pop(str(messageid))
                 await self.config.guild(channel.guild).giveaways.set(giveaways)
-                return 
+                return
 
         giveaways = await self.config.guild(message.guild).giveaways()
         giveaways[str(messageid)]["Ongoing"] = False
@@ -371,10 +400,10 @@ class Giveaways(commands.Cog):
             if str(r) == data["emoji"]:
                 users = await message.reactions[i].users().flatten()
                 break
-    
+
         if users == [None]:
-            return 
-            
+            return
+
         bypassrole = await self.config.guild(message.guild).bypassrole()
 
         for user in users:
@@ -408,13 +437,18 @@ class Giveaways(commands.Cog):
                     x = True
                     break  # for when it runs out of reactions etc.
             if x:
-                continue 
+                continue
             final_list.append(win)
 
         if len(final_list) == 0:
-            host = info["host"] if message.guild.get_member(info["host"]) is not None else "Host Not Found"
+            host = (
+                info["host"]
+                if message.guild.get_member(info["host"]) is not None
+                else "Host Not Found"
+            )
             e = discord.Embed(
-                title=info["title"], description=f"Host: <@{host}> \n Winners: None")
+                title=info["title"], description=f"Host: <@{host}> \n Winners: None"
+            )
             if info["requirement"]:
                 requirements = []
                 for r in info["requirement"]:
@@ -422,11 +456,13 @@ class Giveaways(commands.Cog):
                     if not role:
                         continue
                     requirements.append(role.mention)
-                e.add_field(name="Requirement", value=humanize_list(requirements), inline=False)
-            
+                e.add_field(
+                    name="Requirement", value=humanize_list(requirements), inline=False
+                )
+
             if info["mee6"]:
                 e.add_field(name="Minimum MEE6 Level", value=info["mee6"])
-            
+
             if info["amari"]:
                 e.add_field(name="Minimum Amari Level", value=info["amari"])
             if info["weeklyamari"]:
@@ -445,13 +481,21 @@ class Giveaways(commands.Cog):
                     roles.append("<@&{0}>".format(r))
                 e.add_field(name="Bypassrole", value=humanize_list(roles), inline=False)
 
-            await channel.send(f"There were no valid entries for the **{info['title']}** giveaway \n{message.jump_url}")
-            await message.edit(content=data["endHeader"].replace("{giveawayEmoji}", data["emoji"]), embed=e)
+            await channel.send(
+                f"There were no valid entries for the **{info['title']}** giveaway \n{message.jump_url}"
+            )
+            await message.edit(
+                content=data["endHeader"].replace("{giveawayEmoji}", data["emoji"]),
+                embed=e,
+            )
 
         else:
             winners = humanize_list(final_list)
-            host = info["host"] if message.guild.get_member(
-                info["host"]) is not None else "Unknown Host"
+            host = (
+                info["host"]
+                if message.guild.get_member(info["host"]) is not None
+                else "Unknown Host"
+            )
 
             e = discord.Embed(
                 title=info["title"],
@@ -465,8 +509,10 @@ class Giveaways(commands.Cog):
                     if not role:
                         continue
                     requirements.append(role.mention)
-                e.add_field(name="Requirement", value=humanize_list(requirements), inline=False)
-            
+                e.add_field(
+                    name="Requirement", value=humanize_list(requirements), inline=False
+                )
+
             if info["mee6"]:
                 e.add_field(name="Minimum MEE6 Level", value=info["mee6"])
 
@@ -475,8 +521,7 @@ class Giveaways(commands.Cog):
                 if not donor:
                     pass
                 else:
-                    e.add_field(
-                        name="Donor", value=donor.mention, inline=False)
+                    e.add_field(name="Donor", value=donor.mention, inline=False)
 
             if bypassrole:
                 roles = []
@@ -485,10 +530,17 @@ class Giveaways(commands.Cog):
                     if not r:
                         continue
                     roles.append(r.mention)
-                e.add_field(name="Bypass Role(s)", value=humanize_list(roles), inline=False)
+                e.add_field(
+                    name="Bypass Role(s)", value=humanize_list(roles), inline=False
+                )
 
-            await message.edit(content=data["endHeader"].replace("{giveawayEmoji}", data["emoji"]), embed=e)
-            await message.channel.send(f"The winners for the **{info['title']}** giveaway are \n{winners}\n{message.jump_url}")
+            await message.edit(
+                content=data["endHeader"].replace("{giveawayEmoji}", data["emoji"]),
+                embed=e,
+            )
+            await message.channel.send(
+                f"The winners for the **{info['title']}** giveaway are \n{winners}\n{message.jump_url}"
+            )
 
             dmhost = await self.config.guild(message.guild).dmhost()
             dmwin = await self.config.guild(message.guild).dmwin()
@@ -500,30 +552,35 @@ class Giveaways(commands.Cog):
                     hostmessage = await self.config.guild(message.guild).hostmessage()
                     e = discord.Embed(
                         title=f"Your giveaway has ended",
-                        description=hostmessage.replace("{prize}", str(info["title"])).replace(
-                            "{winners}", winners).replace("{guild}", message.guild.name).replace("{url}", message.jump_url)
+                        description=hostmessage.replace("{prize}", str(info["title"]))
+                        .replace("{winners}", winners)
+                        .replace("{guild}", message.guild.name)
+                        .replace("{url}", message.jump_url),
                     )
                     try:
                         await host.send(embed=e)
                     except discord.errors.Forbidden:
-                        pass 
+                        pass
             if dmwin:
                 winmessage = await self.config.guild(message.guild).winmessage()
                 for mention in final_list:
                     mention = message.guild.get_member(
-                        int(mention.lstrip("<@!").lstrip("<@").rstrip(">")))
+                        int(mention.lstrip("<@!").lstrip("<@").rstrip(">"))
+                    )
                     if not mention:
                         continue
 
                     e = discord.Embed(
                         title=f"You won a giveaway!",
-                        description=winmessage.replace("{prize}", str(info["title"])).replace(
-                            "{host}", f"<@{info['host']}>").replace("{guild}", message.guild.name).replace("{url}", message.jump_url)
+                        description=winmessage.replace("{prize}", str(info["title"]))
+                        .replace("{host}", f"<@{info['host']}>")
+                        .replace("{guild}", message.guild.name)
+                        .replace("{url}", message.jump_url),
                     )
                     try:
                         await mention.send(embed=e)
                     except discord.errors.Forbidden:
-                        pass 
+                        pass
 
     def cog_unload(self):
         self.giveaway_task.cancel()
@@ -562,7 +619,8 @@ class Giveaways(commands.Cog):
         previous = await self.config.member(user).donated()
         previous += amt
         await self.config.member(user).donated.set(previous)
-# -------------------------------------gset---------------------------------
+
+    # -------------------------------------gset---------------------------------
 
     @commands.group(name="giveawayset", aliases=["gset"])
     @commands.guild_only()
@@ -607,7 +665,9 @@ class Giveaways(commands.Cog):
 
         await ctx.send(f"**{role.name}** will now be pinged if a ping is specified")
 
-    @giveawayset.command(name="defaultrequirement", aliases=["requirement", "defaultreq"])
+    @giveawayset.command(
+        name="defaultrequirement", aliases=["requirement", "defaultreq"]
+    )
     @commands.admin_or_permissions(administrator=True)
     async def defaultrequirement(self, ctx, role: Optional[discord.Role] = None):
         """The default requirement for giveaways"""
@@ -625,10 +685,14 @@ class Giveaways(commands.Cog):
         """Toggle whether to delete the giveaway creation message"""
         if not delete:
             await self.config.guild(ctx.guild).delete.set(False)
-            await ctx.send("I will no longer delete invocation messages when creating giveaways")
+            await ctx.send(
+                "I will no longer delete invocation messages when creating giveaways"
+            )
         else:
             await self.config.guild(ctx.guild).delete.set(True)
-            await ctx.send("I will now delete invocation messages when creating giveaways")
+            await ctx.send(
+                "I will now delete invocation messages when creating giveaways"
+            )
 
     @giveawayset.command(name="dmhost")
     @commands.admin_or_permissions(administrator=True)
@@ -652,7 +716,9 @@ class Giveaways(commands.Cog):
             await self.config.guild(ctx.guild).dmwin.set(True)
             await ctx.send("I will now dm winners")
 
-    @giveawayset.group(name="bypassrole", aliases=["aarole", "bprole", "alwaysallowedrole"])
+    @giveawayset.group(
+        name="bypassrole", aliases=["aarole", "bprole", "alwaysallowedrole"]
+    )
     @commands.admin_or_permissions(administrator=True)
     async def bypassrole(self, ctx):
         """Set the role that can bypass all giveaway requirements (or remove it)"""
@@ -705,24 +771,27 @@ class Giveaways(commands.Cog):
         roles.remove(role.id)
         await self.config.guild(ctx.guild).blacklist.set(roles)
         await ctx.send("Removed from the blacklisted roles")
-    
+
     @giveawayset.command(name="multi", aliases=["multiplier"])
-    async def multi(self, ctx, role: Optional[discord.Role] = None, multi: Optional[int] = 0):
+    async def multi(
+        self, ctx, role: Optional[discord.Role] = None, multi: Optional[int] = 0
+    ):
         """Sets a multiplier for a role. At the end when a giveaway ends, for each role they have, the multilpier will add on that amount, not multiply.
-        It will enter the user that many times into the giveaway, if they enter a giveaway, they automatically have 1 entry. So each role multiplier adds one on to it. 
+        It will enter the user that many times into the giveaway, if they enter a giveaway, they automatically have 1 entry. So each role multiplier adds one on to it.
         """
         if not role:
-            role = ctx.guild.default_role 
+            role = ctx.guild.default_role
         if multi > 500:
-            return await ctx.send("Sorry, the max multiplier is 500 to make giveaways more efficient")
+            return await ctx.send(
+                "Sorry, the max multiplier is 500 to make giveaways more efficient"
+            )
         await self.config.role(role).multiplier.set(multi)
         await ctx.send(f"`{role}` will now have a multilpier of {multi}")
-
 
     @giveawayset.command(name="settings", aliases=["showsettings", "stats"])
     async def settings(self, ctx):
         """View server settings"""
-        data=await self.config.guild(ctx.guild).all()
+        data = await self.config.guild(ctx.guild).all()
         bprole = data["bypassrole"]
         if len(bprole) == 0:
             bypass_roles = "None"
@@ -740,7 +809,7 @@ class Giveaways(commands.Cog):
             for r in blacklisted_roles:
                 blacklisted.append(f"<@&{r}>")
                 blacklisted_roles = humanize_list(blacklisted)
-        
+
         if len(data["manager"]) == 0:
             data["manager"] = "Not Set"
         else:
@@ -749,45 +818,70 @@ class Giveaways(commands.Cog):
                 managers.append(f"<@&{m}>")
             data["manager"] = humanize_list(managers)
 
-        e=discord.Embed(
+        e = discord.Embed(
             title=f"Giveaway Settings for {ctx.guild.name}",
             color=discord.Color.blurple(),
         )
         e.add_field(name="Manager Role", value="{0}".format(data["manager"]))
         e.add_field(name="Bypass Roles", value=bypass_roles)
         e.add_field(name="Blacklisted Roles", value=blacklisted_roles)
-        e.add_field(name="Default Requirement",value="{0}".format(f"<@&{data['default_req']}>" if data["default_req"] is not None else "None"))
-        e.add_field(name="Total Giveaways",value=len(data["giveaways"].keys()))
+        e.add_field(
+            name="Default Requirement",
+            value="{0}".format(
+                f"<@&{data['default_req']}>"
+                if data["default_req"] is not None
+                else "None"
+            ),
+        )
+        e.add_field(name="Total Giveaways", value=len(data["giveaways"].keys()))
         e.add_field(name="DM on win", value=data["dmwin"])
         e.add_field(name="DM host", value=data["dmhost"])
-        e.add_field(name="Autodelete invocation messages",
-                    value=data["delete"])
-        e.add_field(name="Pingrole", value="{0}".format(f"<@&{data['pingrole']}>" if data["pingrole"] is not None else "None"))
-        e.add_field(name="Host Message", value="```\n{0}```".format(
-            data["hostmessage"]), inline=False)
-        e.add_field(name="Win Message", value="```\n{0}```".format(
-            data["winmessage"]), inline=False)
-        e.add_field(name="Start Header", value="```\n{0}```".format(
-            data["startHeader"]), inline=False)
-        e.add_field(name="End Header", value="```\n{0}```".format(
-            data["endHeader"]), inline=False)
-        e.add_field(name="Description", value="```\n{0}```".format(
-            data["description"]), inline=False)
+        e.add_field(name="Autodelete invocation messages", value=data["delete"])
+        e.add_field(
+            name="Pingrole",
+            value="{0}".format(
+                f"<@&{data['pingrole']}>" if data["pingrole"] is not None else "None"
+            ),
+        )
+        e.add_field(
+            name="Host Message",
+            value="```\n{0}```".format(data["hostmessage"]),
+            inline=False,
+        )
+        e.add_field(
+            name="Win Message",
+            value="```\n{0}```".format(data["winmessage"]),
+            inline=False,
+        )
+        e.add_field(
+            name="Start Header",
+            value="```\n{0}```".format(data["startHeader"]),
+            inline=False,
+        )
+        e.add_field(
+            name="End Header",
+            value="```\n{0}```".format(data["endHeader"]),
+            inline=False,
+        )
+        e.add_field(
+            name="Description",
+            value="```\n{0}```".format(data["description"]),
+            inline=False,
+        )
         e.add_field(name="Emoji", value=data["emoji"])
-        
 
         await ctx.send(embed=e)
 
     @giveawayset.command(name="hostmessage")
     @commands.admin_or_permissions(administrator=True)
-    async def hostmessage(self, ctx, * , message: str=None):
+    async def hostmessage(self, ctx, *, message: str = None):
         """Set the message sent to the host when the giveaway ends. If there are no winners, it won't be sent.
-       Your dmhost settings need to be toggled for this to work.
-       Variables: {guild}: Server Name
-       {winners}: Winners of the giveaway
-       {prize}: The prize/title of the giveaway
-       {url}: The jump url
-       """
+        Your dmhost settings need to be toggled for this to work.
+        Variables: {guild}: Server Name
+        {winners}: Winners of the giveaway
+        {prize}: The prize/title of the giveaway
+        {url}: The jump url
+        """
         if not message:
             await self.config.guild(ctx.guild).hostmessage.clear()
             await ctx.send("I've reset your servers host message")
@@ -797,14 +891,14 @@ class Giveaways(commands.Cog):
 
     @giveawayset.command(name="winmessage")
     @commands.admin_or_permissions(administrator=True)
-    async def winmessage(self, ctx, * , message: str=None):
+    async def winmessage(self, ctx, *, message: str = None):
         """Set the message sent to the winner(s) when the giveaway ends. If there are no winners, it won't be sent.
-       Your dmwin settings need to be toggled for this to work.
-       Variables
-       {guild}: Your server name 
-       {host}: The host of the giveaway
-       {prize}: The title/prize of the giveaway
-       {url}: The jump url"""
+        Your dmwin settings need to be toggled for this to work.
+        Variables
+        {guild}: Your server name
+        {host}: The host of the giveaway
+        {prize}: The title/prize of the giveaway
+        {url}: The jump url"""
         if not message:
             await self.config.guild(ctx.guild).winmessage.clear()
             await ctx.send("I've reset your servers win message")
@@ -814,7 +908,7 @@ class Giveaways(commands.Cog):
 
     @giveawayset.command(name="startheader")
     @commands.admin_or_permissions(administrator=True)
-    async def startheader(self, ctx, * , message: str=None):
+    async def startheader(self, ctx, *, message: str = None):
         """Set the content for the giveaway message, not the embed. See gset description for that
         Variables
         {giveawayEmoji}: Your servers giveaway emoji, defaults to :tada: if you haven't set one"""
@@ -827,7 +921,7 @@ class Giveaways(commands.Cog):
 
     @giveawayset.command(name="endheader")
     @commands.admin_or_permissions(administrator=True)
-    async def endheader(self, ctx, * , message: str=None):
+    async def endheader(self, ctx, *, message: str = None):
         """Set the content for the giveaway message after it ends.
         Variables
         {giveawayEmoji}: Your servers giveaway emoji, defaults to :tada: if you haven't set one"""
@@ -837,10 +931,10 @@ class Giveaways(commands.Cog):
         else:
             await self.config.guild(ctx.guild).endHeader.set(message)
             await ctx.send(f"Your endheader is now `{message}`")
-    
+
     @giveawayset.command(name="description")
     @commands.admin_or_permissions(administrator=True)
-    async def description(self, ctx, * , message: str=None):
+    async def description(self, ctx, *, message: str = None):
         """Set the content for the giveaway message after it ends.
         Variables:
         {emoji}: The emoji you use for giveaways"""
@@ -850,7 +944,7 @@ class Giveaways(commands.Cog):
         else:
             await self.config.guild(ctx.guild).description.set(message)
             await ctx.send(f"Your embed description is now `{message}`")
-    
+
     @giveawayset.command(name="emoji")
     @commands.admin_or_permissions(administrator=True)
     async def emoji(self, ctx, emoji: Union[discord.Emoji, discord.PartialEmoji, None]):
@@ -862,7 +956,7 @@ class Giveaways(commands.Cog):
             await self.config.guild(ctx.guild).emoji.set(str(emoji))
             await ctx.send(f"Your emoji is now {str(emoji)}")
 
-# -------------------------------------giveaways---------------------------------
+    # -------------------------------------giveaways---------------------------------
     @commands.group(name="giveaway", aliases=["g"])
     @commands.guild_only()
     async def giveaway(self, ctx):
@@ -873,12 +967,14 @@ class Giveaways(commands.Cog):
     @commands.is_owner()
     async def secretblacklist(self, ctx):
         """Secretly blacklist people from winning ANY giveaways"""
-        pass 
+        pass
 
     @secretblacklist.command(name="add")
-    async def secretblacklist_add(self, ctx, user: Union[discord.Member, discord.User, int]):
+    async def secretblacklist_add(
+        self, ctx, user: Union[discord.Member, discord.User, int]
+    ):
         if isinstance(user, discord.Member) or isinstance(user, discord.User):
-            user = user.id 
+            user = user.id
         else:
             try:
                 user = await self.bot.fetch_user(user)
@@ -890,11 +986,13 @@ class Giveaways(commands.Cog):
         bl.append(user)
         await self.config.secretblacklist.set(bl)
         await ctx.send("Added to the blacklist")
-    
+
     @secretblacklist.command(name="remove")
-    async def secretblacklist_remove(self, ctx, user: Union[discord.Member, discord.User, int]):
+    async def secretblacklist_remove(
+        self, ctx, user: Union[discord.Member, discord.User, int]
+    ):
         if isinstance(user, discord.Member) or isinstance(user, discord.User):
-            user = user.id 
+            user = user.id
         else:
             try:
                 user = await self.bot.fetch_user(user)
@@ -911,8 +1009,8 @@ class Giveaways(commands.Cog):
     @commands.admin_or_permissions(manage_guild=True)
     async def clearended(self, ctx, *dontclear):
         """Clear the giveaways that have already ended in your server. Put all the message ids you dont want to clear after this to not clear them"""
-        gaws=await self.config.guild(ctx.guild).giveaways()
-        to_delete=[]
+        gaws = await self.config.guild(ctx.guild).giveaways()
+        to_delete = []
         for messageid, info in gaws.items():
             if str(messageid) in dontclear:
                 continue
@@ -929,7 +1027,8 @@ class Giveaways(commands.Cog):
         """Explanation on how to start a giveaway"""
         pages = []
 
-        pages.append("""Starting Giveaways:
+        pages.append(
+            """Starting Giveaways:
 
         Base Command: `[p] g start <time> [winners=1] [requirements=None] [flags]`
         `<time>` - The time the giveaway should last. Can be no less than 3 seconds and no more than 7 weeks
@@ -939,7 +1038,8 @@ class Giveaways(commands.Cog):
 
         The time can be `2d` or `30m`, where 2d would be 2 days. If no unit is specified it will default to seconds
         The winners can end with `w` or not. so `2w` and `2` would both work
-        """)
+        """
+        )
 
         pages.append(
             """Requirements and how to use them
@@ -995,13 +1095,14 @@ class Giveaways(commands.Cog):
 
         embeds = []
         for i, page in enumerate(pages, start=1):
-            e = discord.Embed(title=f"Giveaway Help Menu Page {i} out of {len(pages)} pages", description=page, color=await ctx.embed_color())
+            e = discord.Embed(
+                title=f"Giveaway Help Menu Page {i} out of {len(pages)} pages",
+                description=page,
+                color=await ctx.embed_color(),
+            )
             embeds.append(e)
-        
-        await menu(ctx, embeds, DEFAULT_CONTROLS)
-        
 
-        
+        await menu(ctx, embeds, DEFAULT_CONTROLS)
 
     @giveaway.command(name="start")
     @commands.check(is_manager)
@@ -1009,70 +1110,68 @@ class Giveaways(commands.Cog):
         self,
         ctx,
         time: str,
-        winners: str="1",
+        winners: str = "1",
         requirements: Optional[FuzzyRole] = None,
         *,
         title="Giveaway!",
-
     ):
-        """Start a giveaway in your server. Flags and Arguments are explained with .giveaway help
-        """
-        title=title.split("--")
-        title=title[0]
-        flags=ctx.message.content
-        winners=winners.rstrip("w")
+        """Start a giveaway in your server. Flags and Arguments are explained with .giveaway help"""
+        title = title.split("--")
+        title = title[0]
+        flags = ctx.message.content
+        winners = winners.rstrip("w")
 
         if not winners.isdigit():
-            return await ctx.send(f"I could not get an amount of winners from {winners}")
-        winners=int(winners)
+            return await ctx.send(
+                f"I could not get an amount of winners from {winners}"
+            )
+        winners = int(winners)
         if winners < 0:
             return await ctx.send("Can've have less than 1 winner")
 
-
-        parser=NoExitParser(description="argparse", add_help=False)
+        parser = NoExitParser(description="argparse", add_help=False)
 
         parser.add_argument("--ping", action="store_true", default=False)
-        parser.add_argument("--msg", nargs='*', type=str, default=None)
-        parser.add_argument("--donor", nargs='?', type=str, default=None)
-        parser.add_argument("--amt", nargs='?', type=int, default=0)
-        parser.add_argument("--note", nargs='*', type=str, default=None)
+        parser.add_argument("--msg", nargs="*", type=str, default=None)
+        parser.add_argument("--donor", nargs="?", type=str, default=None)
+        parser.add_argument("--amt", nargs="?", type=int, default=0)
+        parser.add_argument("--note", nargs="*", type=str, default=None)
         parser.add_argument("--mee6", nargs="?", type=int, default=None)
 
         try:
-            flags=vars(parser.parse_known_args(flags.split())[0])
+            flags = vars(parser.parse_known_args(flags.split())[0])
 
             if flags["donor"]:
-                donor=flags["donor"].lstrip("<@!").lstrip("<@").rstrip(">")
+                donor = flags["donor"].lstrip("<@!").lstrip("<@").rstrip(">")
                 if donor.isdigit():
-                    donor=ctx.guild.get_member(int(donor))
+                    donor = ctx.guild.get_member(int(donor))
                 else:
-                    donor=discord.utils.get(ctx.guild.members, name=donor)
+                    donor = discord.utils.get(ctx.guild.members, name=donor)
                 if not donor:
                     return await ctx.send("The donor provided is not valid")
-                flags["donor"]=donor.id
+                flags["donor"] = donor.id
 
         except Exception as exc:
             return await ctx.send(str(exc))
 
-        guild=ctx.guild
-        data=await self.config.guild(guild).all()
+        guild = ctx.guild
+        data = await self.config.guild(guild).all()
 
-        gaws=await self.config.guild(guild).giveaways()
-
+        gaws = await self.config.guild(guild).giveaways()
 
         if not requirements:
-            role=data["default_req"]
+            role = data["default_req"]
             if not role or role == [None]:
-                roleid=None
+                roleid = None
             else:
-                role=ctx.guild.get_role(role)
-                roleid= [role.id]
+                role = ctx.guild.get_role(role)
+                roleid = [role.id]
         else:
             if not requirements[0]:
                 roleid = None
             else:
-                roleid=[r.id for r in requirements[0]]
-        
+                roleid = [r.id for r in requirements[0]]
+
         if not requirements:
             mee6 = None
         else:
@@ -1080,24 +1179,24 @@ class Giveaways(commands.Cog):
                 mee6 = None
             else:
                 mee6 = int(requirements[1])
-        
+
         if not requirements:
-            amari = None 
+            amari = None
         else:
             if not requirements[2]:
-                amari = None 
+                amari = None
             else:
                 amari = int(requirements[2])
-        
+
         if not requirements:
-            wa = None 
+            wa = None
         else:
             if not requirements[3]:
-                wa = None 
+                wa = None
             else:
                 wa = int(requirements[3])
 
-        e=discord.Embed(
+        e = discord.Embed(
             title=title,
             description=f"Hosted By: {ctx.author.mention}",
             timestamp=datetime.utcnow(),
@@ -1106,36 +1205,38 @@ class Giveaways(commands.Cog):
 
         e.set_footer(text="Ending at")
 
-        time=self.convert_time(time)
+        time = self.convert_time(time)
         if time > 4233600 or time < 3:
-            return await ctx.send("The time cannot be more than 7 weeks and less than 3 seconds")
-        ending_time=datetime.utcnow().timestamp() + float(time)
-        ending_time=datetime.fromtimestamp(ending_time)
-        pretty_time=self.display_time(time)
+            return await ctx.send(
+                "The time cannot be more than 7 weeks and less than 3 seconds"
+            )
+        ending_time = datetime.utcnow().timestamp() + float(time)
+        ending_time = datetime.fromtimestamp(ending_time)
+        pretty_time = self.display_time(time)
 
         e.description += f"\n Time Left: {pretty_time}"
-        e.timestamp=ending_time
+        e.timestamp = ending_time
 
-        gaw_msg=await ctx.send(embed=e)
+        gaw_msg = await ctx.send(embed=e)
 
-        msg=str(gaw_msg.id)
+        msg = str(gaw_msg.id)
 
-        gaws[msg]={}
-        gaws[msg]["host"]=ctx.author.id
-        gaws[msg]["Ongoing"]=True
-        gaws[msg]["requirement"]=roleid
-        gaws[msg]["winners"]=winners
-        gaws[msg]["title"]=title
-        gaws[msg]["endtime"]=datetime.utcnow().timestamp() + float(time)
-        gaws[msg]["channel"]=ctx.channel.id
-        gaws[msg]["donor"]=flags["donor"]
+        gaws[msg] = {}
+        gaws[msg]["host"] = ctx.author.id
+        gaws[msg]["Ongoing"] = True
+        gaws[msg]["requirement"] = roleid
+        gaws[msg]["winners"] = winners
+        gaws[msg]["title"] = title
+        gaws[msg]["endtime"] = datetime.utcnow().timestamp() + float(time)
+        gaws[msg]["channel"] = ctx.channel.id
+        gaws[msg]["donor"] = flags["donor"]
         gaws[msg]["mee6"] = mee6
         gaws[msg]["amari"] = amari
         gaws[msg]["weeklyamari"] = wa
 
         await self.config.guild(guild).giveaways.set(gaws)
 
-        delete=await self.config.guild(ctx.guild).delete()
+        delete = await self.config.guild(ctx.guild).delete()
 
         if ctx.channel.permissions_for(ctx.me).manage_messages and delete:
             try:
@@ -1153,86 +1254,102 @@ class Giveaways(commands.Cog):
 
         if flags["amt"]:
             if flags["donor"]:
-                await self.add_amount(ctx.guild.get_member(flags["donor"]), flags["amt"])
+                await self.add_amount(
+                    ctx.guild.get_member(flags["donor"]), flags["amt"]
+                )
             else:
                 await self.add_amount(ctx.author, flags["amt"])
 
         if flags["donor"]:
-            hosted=await self.config.member(ctx.guild.get_member(flags["donor"])).hosted()
+            hosted = await self.config.member(
+                ctx.guild.get_member(flags["donor"])
+            ).hosted()
             hosted += 1
-            await self.config.member(ctx.guild.get_member(flags["donor"])).hosted.set(hosted)
+            await self.config.member(ctx.guild.get_member(flags["donor"])).hosted.set(
+                hosted
+            )
         else:
-            prev=await self.config.member(ctx.author).hosted()
+            prev = await self.config.member(ctx.author).hosted()
             prev += 1
             await self.config.member(ctx.author).hosted.set(prev)
 
-        self.message_cache[str(msg)]=gaw_msg
+        self.message_cache[str(msg)] = gaw_msg
         self.giveaway_cache[str(msg)] = True
 
         self.tasks.append(asyncio.create_task(self.start_giveaway(int(msg), gaws[msg])))
 
     @giveaway.command(name="end")
     @commands.check(is_manager)
-    async def end(self, ctx, messageid: Optional[IntOrLink]=None):
+    async def end(self, ctx, messageid: Optional[IntOrLink] = None):
         """End a giveaway"""
         if not messageid:
             if hasattr(ctx.message, "reference") and ctx.message.reference != None:
                 msg = ctx.message.reference.resolved
                 if isinstance(msg, discord.Message):
                     messageid = msg.id
-        gaws=await self.config.guild(ctx.guild).giveaways()
+        gaws = await self.config.guild(ctx.guild).giveaways()
         if messageid is None:
             for messageid, info in list(gaws.items())[::-1]:
                 if info["channel"] == ctx.channel.id and info["Ongoing"]:
                     await self.end_giveaway(messageid, info)
                     return
-            return await ctx.send("There aren't any giveaways in this channel, specify a message id/link to end another channels giveaways")
-        gaws=await self.config.guild(ctx.guild).giveaways()
+            return await ctx.send(
+                "There aren't any giveaways in this channel, specify a message id/link to end another channels giveaways"
+            )
+        gaws = await self.config.guild(ctx.guild).giveaways()
         if str(messageid) not in gaws:
             return await ctx.send("This isn't a giveaway.")
         elif gaws[str(messageid)]["Ongoing"] == False:
-            return await ctx.send(f"This giveaway has ended. You can reroll it with `{ctx.prefix}g reroll {messageid}`")
+            return await ctx.send(
+                f"This giveaway has ended. You can reroll it with `{ctx.prefix}g reroll {messageid}`"
+            )
         else:
             await self.end_giveaway(messageid, gaws[str(messageid)])
 
     @giveaway.command(name="reroll")
     @commands.check(is_manager)
-    async def reroll(self, ctx, messageid: Optional[IntOrLink], winners: Optional[int]=1):
+    async def reroll(
+        self, ctx, messageid: Optional[IntOrLink], winners: Optional[int] = 1
+    ):
         """Reroll a giveaway"""
         if not messageid:
             if hasattr(ctx.message, "reference") and ctx.message.reference != None:
                 msg = ctx.message.reference.resolved
                 if isinstance(msg, discord.Message):
                     messageid = msg.id
-        gaws=await self.config.guild(ctx.guild).giveaways()
+        gaws = await self.config.guild(ctx.guild).giveaways()
         if not messageid:
             for messageid, info in list(gaws.items())[::-1]:
                 if info["channel"] == ctx.channel.id and info["Ongoing"] == False:
                     await self.end_giveaway(messageid, info)
                     return
-            return await ctx.send("There aren't any giveaways in this channel, specify a message id/link to end another channels giveaways")
+            return await ctx.send(
+                "There aren't any giveaways in this channel, specify a message id/link to end another channels giveaways"
+            )
         elif winners <= 0:
             return await ctx.send("You can't have no winners.")
         if str(messageid) not in gaws:
             return await ctx.send("This giveaway does not exist")
         elif gaws[str(messageid)]["Ongoing"] == True:
-            return await ctx.send(f"This giveaway has not yet ended, you can end it with `{ctx.prefix}g end {messageid}`")
+            return await ctx.send(
+                f"This giveaway has not yet ended, you can end it with `{ctx.prefix}g end {messageid}`"
+            )
         else:
             await self.end_giveaway(messageid, gaws[str(messageid)], winners)
 
     @giveaway.command(name="ping")
     @commands.check(is_manager)
-    async def g_ping(self, ctx, *, message: str=None):
+    async def g_ping(self, ctx, *, message: str = None):
         """Ping the pingrole for your server with an optional message, it wont send anything if there isn't a pingrole"""
-        m=discord.AllowedMentions(roles=True, everyone=False)
+        m = discord.AllowedMentions(roles=True, everyone=False)
         await ctx.message.delete()
-        pingrole=await self.config.guild(ctx.guild).pingrole()
+        pingrole = await self.config.guild(ctx.guild).pingrole()
         if not pingrole:
             try:
                 return await ctx.send(message, allowed_mentions=m)
             except discord.HTTPException:
                 return
-        role=ctx.guild.get_role(pingrole)
+        role = ctx.guild.get_role(pingrole)
         if not role:
             await self.config.guild(ctx.guild).pingrole.clear()
             try:
@@ -1259,68 +1376,70 @@ class Giveaways(commands.Cog):
                     for messageid, info in giveaways.items():
                         if active:
                             if not info["Ongoing"]:
-                                continue 
-                        
+                                continue
+
                         if str(messageid) in self.message_cache:
-                            continue 
+                            continue
                         message = self.bot._connection._get_message(int(messageid))
                         channel = self.bot.get_channel(info["channel"])
                         if not channel:
-                            continue 
+                            continue
                         if not message:
                             try:
                                 message = await channel.fetch_message(int(messageid))
                             except discord.NotFound:
-                                continue 
-                        self.message_cache[messageid] = message 
+                                continue
+                        self.message_cache[messageid] = message
                         counter += 1
-                        
 
                     guild = self.bot.get_guild(int(guild_id))
                     if counter == 0:
-                        continue 
+                        continue
                     e.description += f"Cached {counter} messages in {guild.name}\n"
             else:
-                for messageid, info in (await self.config.guild(ctx.guild).giveaways()).items():
+                for messageid, info in (
+                    await self.config.guild(ctx.guild).giveaways()
+                ).items():
                     if active:
                         if not info["Ongoing"]:
-                            continue 
-                    
+                            continue
+
                     if str(messageid) in self.message_cache:
-                        continue 
+                        continue
                     message = self.bot._connection._get_message(int(messageid))
                     channel = self.bot.get_channel(info["channel"])
                     if not channel:
-                        continue 
+                        continue
                     if not message:
                         try:
                             message = await channel.fetch_message(int(messageid))
                         except discord.NotFound:
-                            continue 
+                            continue
                         self.message_cache[messageid] = message
                         counter += 1
-                
+
                 e.description += f"Cached {counter} messages in {ctx.guild.name}"
 
-        await ctx.send(embed=e)            
-
+        await ctx.send(embed=e)
 
     @giveaway.command(name="list")
     @commands.cooldown(1, 30, commands.BucketType.member)
     @commands.max_concurrency(2, commands.BucketType.user)
-    async def g_list(self, ctx, can_join: bool=False):
+    async def g_list(self, ctx, can_join: bool = False):
         """List the giveways in the server. Specify True for can_join paramater to only list the ones you can join"""
         async with ctx.typing():
-            giveaway_list=[]
-            bypassrole=await self.config.guild(ctx.guild).bypassrole()
-            counter=0
-            gaws=await self.config.guild(ctx.guild).giveaways()
-            startmessage=await ctx.send("0 giveaways gathered")
+            giveaway_list = []
+            bypassrole = await self.config.guild(ctx.guild).bypassrole()
+            counter = 0
+            gaws = await self.config.guild(ctx.guild).giveaways()
+            startmessage = await ctx.send("0 giveaways gathered")
             for messageid, info in gaws.items():
-                messageid=str(messageid)
+                messageid = str(messageid)
                 try:
                     if counter % 20 == 0:
-                        await startmessage.edit(content=f"{counter} messages out of {len(gaws.values())} messages gathered")
+                        await startmessage.edit(
+                            content=f"{counter} messages out of {len(gaws.values())} messages gathered"
+                        )
                 except ZeroDivisionError:
                     pass
                 counter += 1
@@ -1329,10 +1448,13 @@ class Giveaways(commands.Cog):
                 if not can_join:
                     jump_url = f"https://discord.com/channels/{ctx.guild.id}/{info['channel']}/{messageid}"
 
-                    
-                    header=f"[{info['title']}]({jump_url})"
-                    header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
-                    header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
+                    header = f"[{info['title']}]({jump_url})"
+                    header += " | Winners: {0} | Host: <@{1}>".format(
+                        info["winners"], info["host"]
+                    )
+                    header += " | Channel: <#{0}> | ID: {1}".format(
+                        info["channel"], messageid
+                    )
                     can_join_var = await self.can_join(ctx.author, info)
                     if can_join_var == True:
                         header += " :white_check_mark: You can join this giveaway\n"
@@ -1343,142 +1465,157 @@ class Giveaways(commands.Cog):
                     giveaway_list.append(header)
                 else:
                     jump_url = f"https://discord.com/channels/{ctx.guild.id}/{info['channel']}/{messageid}`"
-                    header=f"[{info['title']}]({jump_url})"
-                    header += " | Winners: {0} | Host: <@{1}>".format(info["winners"], info["host"])
-                    header += " | Channel: <#{0}> | ID: {1}".format(info["channel"], messageid)
+                    header = f"[{info['title']}]({jump_url})"
+                    header += " | Winners: {0} | Host: <@{1}>".format(
+                        info["winners"], info["host"]
+                    )
+                    header += " | Channel: <#{0}> | ID: {1}".format(
+                        info["channel"], messageid
+                    )
                     can_join_var = await self.can_join(ctx.author, info)
                     if can_join_var == True:
                         header += " :white_check_mark: You can join this giveaway\n"
                         giveaway_list.append(header)
-                    
-            
+
         await startmessage.delete()
 
-        formatted_giveaways="\n".join(giveaway_list)
+        formatted_giveaways = "\n".join(giveaway_list)
         if len(formatted_giveaways) > 2048:
-            pages=list(pagify(formatted_giveaways))
-            embeds=[]
+            pages = list(pagify(formatted_giveaways))
+            embeds = []
 
             for i, page in enumerate(pages, start=1):
-                e=discord.Embed(
+                e = discord.Embed(
                     title=f"Giveaways Page {i}/{len(pages)}",
                     description=page,
-                    color=discord.Color.green()
+                    color=discord.Color.green(),
                 )
                 embeds.append(e)
             await menu(ctx, embeds, DEFAULT_CONTROLS)
         else:
-            e=discord.Embed(
+            e = discord.Embed(
                 title="Giveaway Page 1",
                 description=formatted_giveaways,
-                color=discord.Color.green()
+                color=discord.Color.green(),
             )
             await ctx.send(embed=e)
-              
 
     @giveaway.command(name="cancel")
     @commands.check(is_manager)
-    async def cancel(self, ctx, giveaway: Optional[IntOrLink]=None):
+    async def cancel(self, ctx, giveaway: Optional[IntOrLink] = None):
         """Cancel a giveaway"""
         if not giveaway:
             if hasattr(ctx.message, "reference") and ctx.message.reference != None:
                 msg = ctx.message.reference.resolved
                 if isinstance(msg, discord.Message):
                     giveaway = msg.id
-        gaws=await self.config.guild(ctx.guild).giveaways()
+        gaws = await self.config.guild(ctx.guild).giveaways()
         if not giveaway:
             for messageid, info in list(gaws.items())[::-1]:
                 if info["Ongoing"] and info["channel"] == ctx.channel.id:
-                    chan=self.bot.get_channel(info["channel"])
+                    chan = self.bot.get_channel(info["channel"])
                     if not chan:
                         continue
                     try:
-                        m=self.message_cache.get(giveaway, await chan.fetch_message(int(messageid)))
+                        m = self.message_cache.get(
+                            giveaway, await chan.fetch_message(int(messageid))
+                        )
                     except discord.NotFound:
                         continue
 
-                    e=discord.Embed(
+                    e = discord.Embed(
                         title=info["title"],
                         description=f"Giveaway Cancelled\n",
                         color=discord.Color.red(),
-                        timestamp=datetime.utcnow()
+                        timestamp=datetime.utcnow(),
                     )
                     e.description += "Hosted By: <@{0}>\nCancelled By: {1}".format(
-                        info["host"], ctx.author.mention)
+                        info["host"], ctx.author.mention
+                    )
                     e.set_footer(text="Cancelled at")
 
                     try:
                         await m.edit(content="Giveaway Cancelled", embed=e)
                     except discord.NotFound:
                         continue
-                    info["Ongoing"]=False
-                    gaws[messageid]=info
+                    info["Ongoing"] = False
+                    gaws[messageid] = info
                     await self.config.guild(ctx.guild).giveaways.set(gaws)
-                    self.giveaway_cache[messageid] = False 
-                    return await ctx.send("Cancelled the giveaway for **{0}**".format(info["title"]))
+                    self.giveaway_cache[messageid] = False
+                    return await ctx.send(
+                        "Cancelled the giveaway for **{0}**".format(info["title"])
+                    )
 
-            return await ctx.send("There are no active giveaways in this channel to be cancelled, specify a message id/link after this in another channel to cancel one")
-        giveaway=str(giveaway)
+            return await ctx.send(
+                "There are no active giveaways in this channel to be cancelled, specify a message id/link after this in another channel to cancel one"
+            )
+        giveaway = str(giveaway)
         if giveaway not in gaws.keys():
             return await ctx.send("This giveaway does not exist")
         if not gaws[giveaway]["Ongoing"]:
             return await ctx.send("This giveaway has ended")
 
-        data=gaws[giveaway]
-        chan=self.bot.get_channel(data["channel"])
+        data = gaws[giveaway]
+        chan = self.bot.get_channel(data["channel"])
         if not chan:
             return await ctx.send("This message is no longer available")
         try:
-            m=self.message_cache.get(giveaway, await chan.fetch_message(int(giveaway)))
+            m = self.message_cache.get(
+                giveaway, await chan.fetch_message(int(giveaway))
+            )
         except discord.NotFound:
             return await ctx.send("Couldn't find this giveaway")
 
-        gaws[giveaway]["Ongoing"]=False
-        self.giveaway_cache[giveaway] = False 
+        gaws[giveaway]["Ongoing"] = False
+        self.giveaway_cache[giveaway] = False
         await self.config.guild(ctx.guild).giveaways.set(gaws)
 
-        e=discord.Embed(
+        e = discord.Embed(
             title=data["title"],
             description=f"Giveaway Cancelled\n",
             color=discord.Color.red(),
-            timestamp=datetime.utcnow()
+            timestamp=datetime.utcnow(),
         )
 
         e.description += "Hosted By: <@{0}>\nCancelled By: {1}".format(
-            data["host"], ctx.author.mention)
+            data["host"], ctx.author.mention
+        )
         e.set_footer(text="Cancelled at")
         try:
             await m.edit(content="Giveaway Cancelled", embed=e)
         except discord.NotFound:
             return await ctx.send("I couldn't find this giveaway")
-        gaws[giveaway]["Ongoing"]=False
+        gaws[giveaway]["Ongoing"] = False
         await self.config.guild(ctx.guild).giveaways.set(gaws)
-        await ctx.send("Cancelled the giveaway for **{0}**").format(data["title"])
-    
+        await ctx.send("Cancelled the giveaway for **{0}**".format(data["title"]))
 
+    # -------------------------------------gprofile---------------------------------
 
-# -------------------------------------gprofile---------------------------------
-
-    @commands.group(name="giveawayprofile", aliases=["gprofile"], invoke_without_command=True)
+    @commands.group(
+        name="giveawayprofile", aliases=["gprofile"], invoke_without_command=True
+    )
     @commands.guild_only()
-    async def giveawayprofile(self, ctx, member: Optional[discord.Member]=None):
+    async def giveawayprofile(self, ctx, member: Optional[discord.Member] = None):
         """View your giveaway donations and notes"""
         if not ctx.invoked_subcommand:
             if not member:
                 pass
             else:
-                ctx.author=member
-            donated=await self.config.member(ctx.author).donated()
-            format_donated="{:,}".format(donated)
-            notes=await self.config.member(ctx.author).notes()
-            hosted=await self.config.member(ctx.author).hosted()
+                ctx.author = member
+            donated = await self.config.member(ctx.author).donated()
+            format_donated = "{:,}".format(donated)
+            notes = await self.config.member(ctx.author).notes()
+            hosted = await self.config.member(ctx.author).hosted()
             try:
-                average_donated="{:,}".format(round(donated/hosted))
+                average_donated = "{:,}".format(round(donated / hosted))
             except ZeroDivisionError:
-                average_donated=0
+                average_donated = 0
 
-            e=discord.Embed(
-                title="Donated", description=f"Giveaways Hosted: {hosted} \n", color=ctx.author.color)
+            e = discord.Embed(
+                title="Donated",
+                description=f"Giveaways Hosted: {hosted} \n",
+                color=ctx.author.color,
+            )
             e.description += f"Amount Donated: {format_donated} \n"
             e.description += f"Average Donation Value: {average_donated}"
 
@@ -1488,72 +1625,82 @@ class Giveaways(commands.Cog):
                 e.set_footer(text=f"{len(notes)} notes")
 
             await ctx.send(embed=e)
-    
+
     @giveawayprofile.command(name="top", aliases=["leaderboard", "lb"])
     async def top(self, ctx, amt: int = 10):
         """View the top donators"""
         if amt < 1:
             return await ctx.send("no")
         member_data = await self.config.all_members(ctx.guild)
-        sorted_data = [(member, data["donated"]) for member, data in member_data.items() if data["donated"] > 0 and ctx.guild.get_member(int(member)) is not None]
-        ordered_data = sorted(sorted_data[:amt], key = lambda m: m[1], reverse=True)
-        
+        sorted_data = [
+            (member, data["donated"])
+            for member, data in member_data.items()
+            if data["donated"] > 0 and ctx.guild.get_member(int(member)) is not None
+        ]
+        ordered_data = sorted(sorted_data[:amt], key=lambda m: m[1], reverse=True)
+
         if len(ordered_data) == 0:
             return await ctx.send("I have no data for your server")
-        
+
         formatted_string = ""
 
         for i, data in enumerate(ordered_data, start=1):
             formatted_string += f"{i}. <@{data[0]}>: {self.comma_format(data[1])}\n"
-        
+
         if len(formatted_string) >= 2048:
             embeds = []
             pages = list(pagify(formatted_string))
             for page in pages:
-                e = discord.Embed(title="Donation Leaderboard", description=page, color=ctx.author.color)
+                e = discord.Embed(
+                    title="Donation Leaderboard",
+                    description=page,
+                    color=ctx.author.color,
+                )
                 embeds.append(e)
-            
+
             await menu(ctx, embeds, DEFAULT_CONTROLS)
         else:
-            await ctx.send(embed=discord.Embed(title="Donation Leaderboard", description=formatted_string, color=ctx.author.color))
-            
+            await ctx.send(
+                embed=discord.Embed(
+                    title="Donation Leaderboard",
+                    description=formatted_string,
+                    color=ctx.author.color,
+                )
+            )
+
     @giveawayprofile.command(name="notes")
-    async def gprofile_notes(self, ctx, member: Optional[discord.Member]=None):
+    async def gprofile_notes(self, ctx, member: Optional[discord.Member] = None):
         """View your giveaway notes"""
         if member:
-            ctx.author=member
-        notes=await self.config.member(ctx.author).notes()
+            ctx.author = member
+        notes = await self.config.member(ctx.author).notes()
         if len(notes) == 0:
             return await ctx.send("You have no notes")
 
-        formatted_notes=[]
+        formatted_notes = []
 
         for i, note in enumerate(notes, start=1):
             formatted_notes.append(f"{i}. {note}")
 
-        formatted_notes="\n\n".join(formatted_notes)
+        formatted_notes = "\n\n".join(formatted_notes)
 
         if len(formatted_notes) >= 2048:
-            embeds=[]
-            pages=list(pagify(formatted_notes))
+            embeds = []
+            pages = list(pagify(formatted_notes))
             for i, page in enumerate(pages, start=1):
-                e=discord.Embed(
-                    title="Notes",
-                    description=page,
-                    color=ctx.author.color
+                e = discord.Embed(
+                    title="Notes", description=page, color=ctx.author.color
                 )
                 e.set_footer(text=f"{i} out of {len(pages)} pages.")
                 embeds.append(e)
             await menu(ctx, embeds, DEFAULT_CONTROLS)
         else:
-            e=discord.Embed(
-                title="Notes",
-                description=formatted_notes,
-                color=ctx.author.color
+            e = discord.Embed(
+                title="Notes", description=formatted_notes, color=ctx.author.color
             )
             await ctx.send(embed=e)
 
-# -------------------------------------gstore---------------------------------
+    # -------------------------------------gstore---------------------------------
 
     @commands.group(name="giveawaystore", aliases=["gstore"])
     @commands.check(is_manager)
@@ -1562,21 +1709,29 @@ class Giveaways(commands.Cog):
         pass
 
     @giveawaystore.command(name="clear")
-    async def gstore_clear(self, ctx, member: Optional[discord.Member]=None):
+    async def gstore_clear(self, ctx, member: Optional[discord.Member] = None):
         """Clear everything for a member"""
         if not member:
             return await ctx.send("A member needs to be specified after this")
         else:
+
             def check(m):
                 return m.author == ctx.author and m.channel == ctx.channel
-            await ctx.send(f"Are you sure? This will clear all of **{member.name}'s** data. Type `YES I WANT TO DO THIS` exact below if you are sure")
+
+            await ctx.send(
+                f"Are you sure? This will clear all of **{member.name}'s** data. Type `YES I WANT TO DO THIS` exact below if you are sure"
+            )
             try:
-                msg=await self.bot.wait_for("message", check=check, timeout=20)
+                msg = await self.bot.wait_for("message", check=check, timeout=20)
             except asyncio.TimeoutError:
-                return await ctx.send(f"Looks like we won't be removing **{member.name}'s** data.")
+                return await ctx.send(
+                    f"Looks like we won't be removing **{member.name}'s** data."
+                )
 
             if msg.content != "YES I WANT TO DO THIS":
-                return await ctx.send(f"Looks like we won't clear **{member.name}**'s data.")
+                return await ctx.send(
+                    f"Looks like we won't clear **{member.name}**'s data."
+                )
             await self.config.member(member).clear()
             await ctx.send(f"I've removed **{member.name}**'s data")
 
@@ -1586,36 +1741,40 @@ class Giveaways(commands.Cog):
         pass
 
     @donate.command(name="add")
-    async def donate_add(self, ctx, member: Optional[discord.Member]=None, amt: str=None):
+    async def donate_add(
+        self, ctx, member: Optional[discord.Member] = None, amt: str = None
+    ):
         """Add an amount to a users donations"""
         if not member:
             return await ctx.send("A member needs to be specified after this")
         if not amt:
             return await ctx.send("You need to specify an amount to donate")
-        amt=amt.replace(",", "")
+        amt = amt.replace(",", "")
 
         if not str(amt).isdigit():
             return await ctx.send("This isn't a number.")
 
-        previous_amount=await self.config.member(member).donated()
-        new_amount=int(amt) + previous_amount
+        previous_amount = await self.config.member(member).donated()
+        new_amount = int(amt) + previous_amount
         await self.config.member(member).donated.set(new_amount)
         await ctx.send("Done.")
 
     @donate.command(name="remove")
-    async def donate_remove(self, ctx, member: Optional[discord.Member]=None, amt: str=None):
+    async def donate_remove(
+        self, ctx, member: Optional[discord.Member] = None, amt: str = None
+    ):
         """Remove a certain amount from a members donation amount"""
         if not member:
             return await ctx.send("A member needs to be specified after this")
         if not amt:
             return await ctx.send("You need to specify an amount to donate")
-        amt=amt.replace(",", "")
+        amt = amt.replace(",", "")
 
         if not str(amt).isdigit():
             return await ctx.send("This isn't a number.")
 
-        previous_amount=await self.config.member(member).donated()
-        new_amount=previous_amount - int(amt)
+        previous_amount = await self.config.member(member).donated()
+        new_amount = previous_amount - int(amt)
         if new_amount < 0:
             return await ctx.send("You can't go below 0")
         await self.config.member(member).donated.set(new_amount)
@@ -1627,40 +1786,42 @@ class Giveaways(commands.Cog):
         pass
 
     @note.command(name="add")
-    async def note_add(self, ctx, member: Optional[discord.Member]=None, *, note: str=None):
+    async def note_add(
+        self, ctx, member: Optional[discord.Member] = None, *, note: str = None
+    ):
         """Add a note to a member"""
         if not member:
             return await ctx.send("A member needs to be specified.")
         if not note:
             return await ctx.send("A note needs to be specified.")
 
-        notes=await self.config.member(member).notes()
+        notes = await self.config.member(member).notes()
         notes.append(note)
         await self.config.member(member).notes.set(notes)
         await ctx.send("Added a note.")
 
     @note.command(name="remove")
-    async def note_remove(self, ctx, member: Optional[discord.Member]=None, note: Optional[int]=None):
+    async def note_remove(
+        self, ctx, member: Optional[discord.Member] = None, note: Optional[int] = None
+    ):
         """Remove a note from a member, you can do `[p]gprofile notes @member` to find the note ID, and specify that for the note param"""
         if not member:
             return await ctx.send("A member needs to be specified.")
         if not note:
             return await ctx.send("A note ID needs to be specified.")
 
-        notes=await self.config.member(member).notes()
+        notes = await self.config.member(member).notes()
         if note > len(notes):
             return await ctx.send("This note does not exist")
         else:
-            notes.pop(note-1)
+            notes.pop(note - 1)
         await self.config.member(member).notes.set(notes)
         await ctx.send("Removed a note.")
 
-
-
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        channel=self.bot.get_channel(payload.channel_id)
-        user=channel.guild.get_member(payload.user_id)
+        channel = self.bot.get_channel(payload.channel_id)
+        user = channel.guild.get_member(payload.user_id)
         if user.bot:
             return
         data = await self.config.guild(channel.guild).all()
@@ -1678,15 +1839,23 @@ class Giveaways(commands.Cog):
 
         bypassrole = data["bypassrole"]
         if bypassrole in [r.id for r in user.roles]:
-            return 
-        
+            return
+
         can_join = await self.can_join(user, gaws[str(payload.message_id)])
         if can_join == True:
-            return 
+            return
         else:
-            message = self.message_cache.get(str(payload.message_id), self.bot._connection._get_message(payload.message_id) )
+            message = self.message_cache.get(
+                str(payload.message_id),
+                self.bot._connection._get_message(payload.message_id),
+            )
             if not message:
                 message = channel.get_partial_message(payload.message_id)
             await message.remove_reaction(str(payload.emoji), user)
-            e = discord.Embed(title="Missing Giveaway Requirement", description=can_join[1].replace("[JUMP_URL_HERE]", f"[this]({message.jump_url})"))
+            e = discord.Embed(
+                title="Missing Giveaway Requirement",
+                description=can_join[1].replace(
+                    "[JUMP_URL_HERE]", f"[this]({message.jump_url})"
+                ),
+            )
             await user.send(embed=e)
