@@ -273,9 +273,10 @@ class Giveaways(commands.Cog):
             if not server:
                 return True
             elif user.id not in [m.id for m in server.members]:
+                invite = await self.create_invite(server)
                 return (
                     False,
-                    f"You need to be in the **{server.name}** server to join [JUMP_URL_HERE] giveaway",
+                    f"You need to be in the **[{server.name}]({invite})** server to join [JUMP_URL_HERE] giveaway",
                 )
         if requirements["shared"]:
             cog = self.bot.get_cog("DankLogs")
