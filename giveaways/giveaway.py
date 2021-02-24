@@ -322,7 +322,7 @@ class Giveaways(commands.Cog):
                 invite = await channel.create_invite(
                     reason="For a server join requirement"
                 )
-                return f"discord.gg/{invite.id}"
+                return f"https://discord.gg/{invite.id}"
         return "Couldn't make an invite"
 
     async def start_giveaway(self, messageid: int, info):
