@@ -168,7 +168,7 @@ class Giveaways(commands.Cog):
                         False,
                         f"You have the {r.name} role which has prevented you from entering [JUMP_URL_HERE] giveaway",
                     )
-        if not requirements:
+        if not requirements["roles"]:
             pass
         else:
             for r in requirements["roles"]:
