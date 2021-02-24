@@ -1,15 +1,13 @@
-import discord 
+import discord
 import asyncio
-from redbot.core import commands, Config 
+from redbot.core import commands, Config
 from typing import Optional, Union
 from random import choice
 
 
-#While it says MurderMystery, I've began to think of this as mini among us lmao
-
 class MurderMystery(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot 
+        self.bot = bot
         self.config = Config.get_conf(
             self,
             identifier=160805014090190130501014,
@@ -18,27 +16,29 @@ class MurderMystery(commands.Cog):
 
         default_guild = {
             "rounds": {},
-            "maxplayers": 69, 
+            "maxplayers": 69,
             "waittime": 90,
             "roundtime": 60,
             "discusstime": 20,
-            "Session": {"Players": [], "Active": False, "detective": None, "murderer": None, "killed": []},
+            "Session": {
+                "Players": [],
+                "Active": False,
+                "detective": None,
+                "murderer": None,
+                "killed": [],
+            },
         }
 
-        default_member = {
-            "turn": False,
-            "votes": 0,
-            "wrong": False
-        }
+        default_member = {"turn": False, "votes": 0, "wrong": False}
 
         self.config.register_guild(**default_guild)
-        self.config.register_member(**default_member) 
-    
+        self.config.register_member(**default_member)
+
     @commands.group(name="murdermystery", aliases=["mm"])
     @commands.guild_only()
     async def murdermystery(self, ctx):
-        pass 
-    
+        pass
+
     @murdermystery.command(name="players", aliases=["maxplayers"])
     @commands.admin()
     async def players(self, ctx, number: Optional[int] = None):
@@ -60,7 +60,7 @@ class MurderMystery(commands.Cog):
             return await ctx.send("Can't wait less than 10 seconds")
         await self.config.guild(ctx.guild).waittime.set(number)
         await ctx.send(f"The wait time has been set to {number}")
-    
+
     @murdermystery.command(name="roundtime")
     @commands.admin()
     async def roundtime(self, ctx, number: Optional[int] = None):
@@ -71,7 +71,7 @@ class MurderMystery(commands.Cog):
             return await ctx.send("Can't have a time less than 10 seconds")
         await self.config.guild(ctx.guild).roundtime.set(number)
         await ctx.send(f"The round time has been set to {number}")
-    
+
     @murdermystery.command(name="discusstime")
     @commands.admin()
     async def discusstime(self, ctx, number: Optional[int] = None):
@@ -79,7 +79,9 @@ class MurderMystery(commands.Cog):
         if not number:
             return await ctx.send("You need to specify a round time")
         if number <= 10 or number > 600:
-            return await ctx.send("Can't have a time less than 10 seconds or greater than 5 minutes")
+            return await ctx.send(
+                "Can't have a time less than 10 seconds or greater than 5 minutes"
+            )
         await self.config.guild(ctx.guild).discusstime.set(number)
         await ctx.send(f"The discuss time has been set to {number}")
 
@@ -106,15 +108,21 @@ class MurderMystery(commands.Cog):
 
     async def game_check(self, ctx, settings):
         if settings["Session"]["Active"]:
-            await ctx.send("You cannot join or start a game of murder mystery while one is active.")
+            await ctx.send(
+                "You cannot join or start a game of murder mystery while one is active."
+            )
             return False
 
         if ctx.author.id in settings["Session"]["Players"]:
             await ctx.send("You are already in the waiting room.")
             return False
 
-        if len(settings["Session"]["Players"]) >= (await self.config.guild(ctx.guild).maxplayers()):
-            await ctx.send("This game is full. Wait for this game to finish before joining.")
+        if len(settings["Session"]["Players"]) >= (
+            await self.config.guild(ctx.guild).maxplayers()
+        ):
+            await ctx.send(
+                "This game is full. Wait for this game to finish before joining."
+            )
             return False
         else:
             return True
@@ -133,20 +141,26 @@ class MurderMystery(commands.Cog):
             await asyncio.sleep(waittime)
             await self.start_game(ctx)
         else:
-            await ctx.send("{} was added to the waiting room.".format(ctx.author.mention))
-    
+            await ctx.send(
+                "{} was added to the waiting room.".format(ctx.author.mention)
+            )
+
     async def reset_game(self, ctx):
         await self.config.guild(ctx.guild).Session.clear()
-    
+
     async def start_game(self, ctx):
         await self.config.guild(ctx.guild).Session.Active.set(True)
         data = await self.config.guild(ctx.guild).Session.all()
         players = [ctx.guild.get_member(player) for player in data["Players"]]
-        filtered_players = [player for player in players if isinstance(player, discord.Member)]
+        filtered_players = [
+            player for player in players if isinstance(player, discord.Member)
+        ]
         if len(filtered_players) <= 2:
             await self.reset_game(ctx)
-            return await ctx.send("You need at least three players to play. One detective, one murderer, and at least one bystander")
-        
+            return await ctx.send(
+                "You need at least three players to play. One detective, one murderer, and at least one bystander"
+            )
+
         detective = choice(players)
         murderer = choice(players)
 
@@ -171,11 +185,15 @@ class MurderMystery(commands.Cog):
             elif player.id == settings["murderer"]:
                 await player.send("You are the murderer")
             else:
-                await player.send("You are a bystander, try to find the murderer with voting.")
+                await player.send(
+                    "You are a bystander, try to find the murderer with voting."
+                )
         while True:
             responses = {}
             discuss = await self.config.guild(ctx.guild).discusstime()
-            await ctx.send(f"A round has started! Please run your respective commands in DMs try to win! You have {discuss} time to discuss who is the murderer.")
+            await ctx.send(
+                f"A round has started! Please run your respective commands in DMs try to win! You have {discuss} time to discuss who is the murderer."
+            )
             await asyncio.sleep(discuss)
             await ctx.send("Discussion Time over! Turns started.")
             for player in settings["Players"]:
@@ -185,15 +203,23 @@ class MurderMystery(commands.Cog):
                     continue
                 if player.id in settings["killed"]:
                     continue
-                await player.send("What are you going to do for your turn, if you are the murderer, you can type `kill [userid]`, if you are the detective, you can send `detect [userid]`, if you are a bystander, you can send `vote [userid]`, or you can type anything else to skip.")
+                await player.send(
+                    "What are you going to do for your turn, if you are the murderer, you can type `kill [userid]`, if you are the detective, you can send `detect [userid]`, if you are a bystander, you can send `vote [userid]`, or you can type anything else to skip."
+                )
                 turn = await self.config.member(player).turn()
                 try:
+
                     def check(m):
                         return m.author == player and not turn and (m.guild is None)
-                    r = await self.bot.wait_for("message", check=check, timeout=round_time)
+
+                    r = await self.bot.wait_for(
+                        "message", check=check, timeout=round_time
+                    )
                     responses[str(player.id)] = r.content
                 except asyncio.TimeoutError:
-                    await ctx.send(f"{player} took to long to make a move. Turn skipped.")
+                    await ctx.send(
+                        f"{player} took to long to make a move. Turn skipped."
+                    )
                     continue
 
             for user, response in responses.items():
@@ -201,11 +227,11 @@ class MurderMystery(commands.Cog):
                 if response.startswith("kill"):
                     if user.id != settings["murderer"]:
                         await user.send("You can't do this. You just wasted a turn")
-                        continue 
+                        continue
                     response = response.split()
                     if len(response) == 1:
                         await user.send("You need to specify someone to kill smh.")
-                        continue 
+                        continue
                     response = response[1]
                     try:
                         killed = ctx.guild.get_member(int(response))
@@ -214,21 +240,23 @@ class MurderMystery(commands.Cog):
                         continue
                     if not killed:
                         await user.send("Couldn't find this user")
-                    
+
                     settings["killed"].append(killed.id)
                 elif response.startswith("detect"):
                     wrong = await self.config.member(user).wrong()
                     if wrong:
-                        await ctx.send("You guessed the wrong person, you need to wait until next turn to keep guessing")
+                        await ctx.send(
+                            "You guessed the wrong person, you need to wait until next turn to keep guessing"
+                        )
                         await self.config.member(ctx.author).wrong.set(False)
                         continue
                     if user.id != settings["detective"]:
                         await user.send("You can't do this. You just wasted a turn")
-                        continue 
+                        continue
                     response = response.split()
                     if len(response) == 1:
                         await user.send("You need to specify someone to detect smh.")
-                        continue 
+                        continue
                     response = response[1]
                     try:
                         killed = ctx.guild.get_member(int(response))
@@ -240,15 +268,17 @@ class MurderMystery(commands.Cog):
                     settings["killed"].append(killed.id)
 
                     if killed.id != settings["murderer"]:
-                        await user.send("You killed the wrong person. You will have to wait another turn before guessing.")
+                        await user.send(
+                            "You killed the wrong person. You will have to wait another turn before guessing."
+                        )
                         await self.config.member(user).wrong.set(True)
                         continue
-                
+
                 elif response.startswith("vote"):
                     response = response.split()
                     if len(response) == 1:
                         await user.send("You need to specify someone to vote smh.")
-                        continue 
+                        continue
                     response = response[1]
                     try:
                         voteout = ctx.guild.get_member(int(response))
@@ -257,11 +287,11 @@ class MurderMystery(commands.Cog):
                         continue
                     if not voteout:
                         await user.send("Couldn't find this user")
-                    
+
                     votes = await self.config.member(voteout).votes()
                     votes += 1
                     await self.config.member(voteout).votes.set(votes)
-            
+
             await self.config.guild(ctx.guild).Session.set(settings)
 
             settings = await self.config.guild(ctx.guild).Session()
@@ -271,10 +301,14 @@ class MurderMystery(commands.Cog):
             players = settings["Players"]
 
             if detective in killed:
-                await ctx.send("The detective has been killed! A unanimous vote must be done to vote the murderer out.")
+                await ctx.send(
+                    "The detective has been killed! A unanimous vote must be done to vote the murderer out."
+                )
             if murderer in killed:
                 await ctx.send("The murderer has been found!")
-                await ctx.send(f"The detective was: <@{detective}\nThe murderer was <@{murderer}>")
+                await ctx.send(
+                    f"The detective was: <@{detective}\nThe murderer was <@{murderer}>"
+                )
                 await self.config.guild(ctx.guild).Session.clear()
                 for user in players:
                     user = ctx.guild.get_member(user)
@@ -285,16 +319,20 @@ class MurderMystery(commands.Cog):
                 votes = await self.config.member(user).votes()
                 await self.config.member(user).votes.clear()
                 if votes + 1 < len(players) - len(killed):
-                    continue   
+                    continue
                 else:
-                    await ctx.send(f"{user.mention} has been voted out. This is sad. Wait till next round to see the results.")
+                    await ctx.send(
+                        f"{user.mention} has been voted out. This is sad. Wait till next round to see the results."
+                    )
                     settings["killed"].append(user.id)
                     await self.config.member(user).votes.clear()
-                    
+
             if len(players) - len(killed) <= 3:
                 await ctx.send("The game is over. There are less than 3 people left.")
-                await ctx.send(f"The detective was <@{detective}> and the murderer was <@{murderer}>")
+                await ctx.send(
+                    f"The detective was <@{detective}> and the murderer was <@{murderer}>"
+                )
                 await self.reset_game(ctx)
-                return 
-            
+                return
+
             await self.config.guild(ctx.guild).Session.set(settings)
