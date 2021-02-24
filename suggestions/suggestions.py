@@ -16,6 +16,7 @@ class Suggestions(commands.Cog):
 
 
 
+
         self.config.register_guild(**default_guild)
     
     @commands.group(name="suggestions", aliases=["suggestset"])
