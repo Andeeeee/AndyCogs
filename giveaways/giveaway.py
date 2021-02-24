@@ -102,7 +102,7 @@ class Giveaways(commands.Cog):
             return 0
         for invite in await guild.invites():
             if invite.inviter == member:
-                invites += invite.uses
+                invites += invite.approximate_member_count
         return invites
 
     def convert_time(self, time: str):
