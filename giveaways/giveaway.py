@@ -102,7 +102,7 @@ class Giveaways(commands.Cog):
             return 0
         for invite in await guild.invites():
             if invite.inviter == member:
-                invites += invite.approximate_member_count
+                invites += invite.uses
         return invites
 
     def convert_time(self, time: str):
@@ -1188,7 +1188,7 @@ class Giveaways(commands.Cog):
             `weeklyamari or wa` - The minimum weekly amari the user should have 
             `mee6` - The minimum mee6 level the user should have 
             `joindays` - The minimum amount of days the user has been in the server
-            `invites` - The minimum invites the user needs to have
+            `invites` - The minimum invites the user needs to have. it is a total amount, so left users will be counted in
             `server` - The server a user should be in, the bot needs to be in the server as well
             `shared` - The minimum amount of dankmemer coins the user needs to share in the server
 
