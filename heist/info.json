@@ -1,0 +1,19 @@
+{
+    "name": "heist",
+    "short": "dankmemer heists with options",
+    "description": "manage and track dankmemer heists with ease",
+    "end_user_data_statement": "Stores each members amount, as well as the total amount",
+    "install_msg": "Check out `[p]heist start` to start one",   
+    "author": [
+        "Andy"
+    ],
+    "required_cogs": {},
+    "requirements": [],
+    "tags": [
+        "fun", "dankmemer", "utility"
+    ],
+    "min_bot_version": "3.4.6",
+    "hidden": false,
+    "disabled": false,
+    "type": "COG"
+}
