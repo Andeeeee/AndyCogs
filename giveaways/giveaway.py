@@ -1171,6 +1171,9 @@ class Giveaways(commands.Cog):
 
         if not requirements:
             requirements = {"mee6": None, "amari": None, "weeklyamari": None, "roles": None}
+        else:
+            if requirements["roles"]:
+                requirements["roles"] = [r.id for r in requirements["roles"]]
 
         e = discord.Embed(
             title=title,
@@ -1200,7 +1203,7 @@ class Giveaways(commands.Cog):
         gaws[msg] = {}
         gaws[msg]["host"] = ctx.author.id
         gaws[msg]["Ongoing"] = True
-        gaws[msg]["requirements"] = requirements
+        gaws[msg]["requirements"] = {} if not 
         gaws[msg]["winners"] = winners
         gaws[msg]["title"] = title
         gaws[msg]["endtime"] = datetime.utcnow().timestamp() + float(time)
