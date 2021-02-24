@@ -115,6 +115,7 @@ class FuzzyRole(RoleConverter):
                     joindays = int(mee6_split[1])
                     if joindays < 0:
                         raise BadArgument()
+                    continue
                 except ValueError:
                     continue
             elif (
@@ -126,6 +127,7 @@ class FuzzyRole(RoleConverter):
                     shared = int(mee6_split[1])
                     if shared < 0:
                         raise BadArgument()
+                    continue
                 except ValueError:
                     continue
 
@@ -134,12 +136,14 @@ class FuzzyRole(RoleConverter):
                     invites = int(mee6_split[1])
                     if invites < 0:
                         raise BadArgument()
+                    continue
                 except ValueError:
                     continue
 
             elif mee6_split[0] == "server" and len(mee6_split) >= 2:
                 try:
                     server = mee6_split[1]
+                    continue
                 except ValueError:
                     continue
 
