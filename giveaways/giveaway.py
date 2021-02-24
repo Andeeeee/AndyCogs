@@ -1309,7 +1309,7 @@ class Giveaways(commands.Cog):
                     server = self.bot.get_guild(int(server))
                 except ValueError:
                     try:
-                        server = server.lstrip("https://discord.com/invite/").lstrip("discord.gg/")
+                        server = server..lstrip("https://").lstrip("discord.com/invite/").lstrip("discord.gg/")
                         server = await self.bot.fetch_invite(server.lstrip(""))
                     except (discord.NotFound, discord.errors.Forbidden):
                         return await ctx.send(
