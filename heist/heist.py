@@ -58,8 +58,9 @@ class TimeConverter(Converter):
         time = time[:-1]
         if not str(time).isdigit():
             raise BadArgument(f"{time} was not able to be converted to a time.")
-        
+
         return int(time) * multiplier
+
 
 class MoneyConverter(Converter):
     async def convert(self, ctx: commands.Context, amount: str) -> int:
@@ -67,7 +68,9 @@ class MoneyConverter(Converter):
 
         if str(amount[-1]) not in conversions:
             if not str(amount).isdigit():
-                raise BadArgument(f"{amount} was not able to be converted to an amount.")
+                raise BadArgument(
+                    f"{amount} was not able to be converted to an amount."
+                )
             return int(amount)
 
         multiplier = conversions[str(amount[-1])]
@@ -75,7 +78,7 @@ class MoneyConverter(Converter):
         amt = amount[:-1]
         if not str(amt).isdigit():
             raise BadArgument(f"{amount} was not able to be converted to a time.")
-        
+
         return int(amt) * multiplier
 
 
@@ -128,7 +131,7 @@ class Heist(commands.Cog):
 
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
-    
+
     def comma_format(self, number: int):
         return "{:,}".format(int(number))
 
@@ -155,7 +158,9 @@ class Heist(commands.Cog):
             formatted_donors = ""
             for i, info in enumerate(data["donators"].items(), start=1):
                 funded_amount += info[1]
-                formatted_donors += "{}. <@{}>: {}\n".format(i, info[0], self.comma_format(info[1]))
+                formatted_donors += "{}. <@{}>: {}\n".format(
+                    i, info[0], self.comma_format(info[1])
+                )
             e.add_field(name="Funding", value=formatted_donors, inline=False)
         e.set_footer(text="Starting at")
         e.description += f"\nTotal Funded Amount: {self.comma_format(funded_amount)}/{self.comma_format(data['amount'])}"
@@ -205,8 +210,8 @@ class Heist(commands.Cog):
 
         if flags["ping"]:
             pingrole = await self.config.guild(ctx.guild).pingrole()
-            role = ctx.guild.get_role(pingrole)
-            heist_message += f"{role.mention}: "
+            pingrole = ctx.guild.get_role(pingrole)
+            heist_message += f"{pingrole.mention}: "
 
         if flags["early_roles"]:
             roles = humanize_list([r.name for r in flags["early_roles"]])
@@ -436,7 +441,12 @@ class Heist(commands.Cog):
 
     @heist.command()
     async def create(
-        self, ctx: commands.Context, amount: MoneyConverter, ending: TimeConverter, *, title: str
+        self,
+        ctx: commands.Context,
+        amount: MoneyConverter,
+        ending: TimeConverter,
+        *,
+        title: str,
     ):
         heists = await self.config.guild(ctx.guild).heists()
 
@@ -451,12 +461,16 @@ class Heist(commands.Cog):
         e = await self.gen_heist_embed(ctx, data)
         message = await ctx.send(embed=e)
 
-        heists[str(message.id)] = data 
+        heists[str(message.id)] = data
         await self.config.guild(ctx.guild).heists.set(heists)
-    
+
     @heist.command()
     async def fund(
-        self, ctx: commands.Context, message: Optional[IntOrLink], user: discord.Member, amount: MoneyConverter
+        self,
+        ctx: commands.Context,
+        message: Optional[IntOrLink],
+        user: discord.Member,
+        amount: MoneyConverter,
     ):
         if not message:
             if hasattr(ctx.message, "reference") and ctx.message.reference != None:
@@ -464,7 +478,9 @@ class Heist(commands.Cog):
                 if isinstance(msg, discord.Message):
                     message = msg.id
                 else:
-                    return await ctx.send("Message is a required argument that is missing")
+                    return await ctx.send(
+                        "Message is a required argument that is missing"
+                    )
             else:
                 return await ctx.send("Message is a required argument that is missing")
 
@@ -474,20 +490,27 @@ class Heist(commands.Cog):
             return await ctx.send("This heist does not exist")
         else:
             if str(user.id) not in heists[messageid]["donators"]:
-                heists[messageid]["donators"][str(user.id)] = 0 
-            heists[messageid]["donators"][str(user.id)] += amount 
+                heists[messageid]["donators"][str(user.id)] = 0
+            heists[messageid]["donators"][str(user.id)] += amount
             await self.config.guild(ctx.guild).heists.set(heists)
-        
+
         e = await self.gen_heist_embed(ctx, heists[messageid])
         channel = self.bot.get_channel(heists[messageid]["channel"])
         if not channel:
-            return await ctx.send("I couldn't find this channel, it was probably deleted")
+            return await ctx.send(
+                "I couldn't find this channel, it was probably deleted"
+            )
         message = channel.get_partial_message(int(messageid))
         try:
             await message.edit(embed=e)
         except discord.NotFound:
             return await ctx.send("I couldn't find this message")
         except discord.HTTPException:
-            return await ctx.send("Uh oh, looks like you've got too many donors that I can fit into a field")
-        await ctx.send(f"Edited and funded the message, view it at {message.jump_url}")
+            return await ctx.send(
+                "Uh oh, looks like you've got too many donors that I can fit into a field"
+            )
 
+        donated = await self.member(user).donated()
+        donated += amount
+        await self.config.member(user).donated.set(donated)
+        await ctx.send(f"Edited and funded the message, view it at {message.jump_url}")
