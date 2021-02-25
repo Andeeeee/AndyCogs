@@ -128,6 +128,9 @@ class Heist(commands.Cog):
 
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
+    
+    def comma_format(self, number: int):
+        return "{:,}".format(int(number))
 
     def convert_amount(self, amount: str):
         conversions = {"k": 1000, "m": 1000000}
@@ -152,10 +155,10 @@ class Heist(commands.Cog):
             formatted_donors = ""
             for i, info in enumerate(data["donators"].items(), start=1):
                 funded_amount += info[1]
-                formatted_donors += "{}. <@{}>: {}\n".format(i, info[0], info[1])
+                formatted_donors += "{}. <@{}>: {}\n".format(i, info[0], self.comma_format(info[1]))
             e.add_field(name="Funding", value=formatted_donors, inline=False)
         e.set_footer(text="Starting at")
-        e.description += f"\nTotal Funded Amount: {funded_amount}/{data['amount']}"
+        e.description += f"\nTotal Funded Amount: {self.comma_format(funded_amount)}/{self.comma_format(data['amount'])}"
 
         return e
 
