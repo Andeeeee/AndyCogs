@@ -339,14 +339,14 @@ class DankLogs(commands.Cog):
             for member, data in member_data.items()
             if data["shared"] > 0 and ctx.guild.get_member(int(member)) is not None
         ]
-        ordered_list = sorted(member_list, key=lambda m: m[1], reverse=True)[:(amount)]
+        ordered_list = sorted(member_list, key=lambda m: m[1], reverse=True)[:amount]
 
         if not ordered_list:
             return await ctx.send("I have no tracked data for this server")
 
         leaderboard = []
 
-        for i, member, amount in enumerate(ordered_list, start=1):
+        for i, member, amount in enumerate(ordered_list.items(), start=1):
             leaderboard.append(f"{i}. {member}: {amount}")
 
         leaderboard = "\n".join(leaderboard)
