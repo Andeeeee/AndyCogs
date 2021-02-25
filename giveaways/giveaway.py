@@ -714,7 +714,7 @@ class Giveaways(commands.Cog):
         for task in self.tasks:
             task.cancel()
 
-    async def send_final_message(self, ctx, ping, msg):
+    async def send_final_message(self, ctx, ping, msg, embed):
         allowed_mentions = discord.AllowedMentions(roles=True, everyone=False)
         final_message = ""
         if ping:
@@ -734,8 +734,10 @@ class Giveaways(commands.Cog):
 
         if final_message == "" or len(final_message) == 0:
             return
-
-        await ctx.send(final_message, allowed_mentions=allowed_mentions)
+        if embed:
+            e = discord.Embed(description=final_message, color = await ctx.embed_color())
+        else:
+            await ctx.send(final_message, allowed_mentions=allowed_mentions)
 
     async def setnote(self, user: discord.Member, note: list):
         notes = await self.config.member(user).notes()
@@ -1206,9 +1208,11 @@ class Giveaways(commands.Cog):
 
             FLAGS:
             `--ping` - Putting this flag will ping the giveaway pingrole (if set), for your server
-            `--msg` - Adds a message after the giveaway.
-            `--note` - Adds a note to store to the users giveaway profile 
-            `--amt` - Stores an amount (must be integer) to the users giveaway profile
+            `--msg <message>` - Adds a message after the giveaway.
+            `--note <note>` - Adds a note to store to the users giveaway profile 
+            `--amt <int>` - Stores an amount (must be integer) to the users giveaway profile
+            `--donor <donor>` - Add a field with the donors mention
+            `--embed`, toggles whether to send the message as an embed, only works if you have a message flag
             """
         )
 
@@ -1267,7 +1271,7 @@ class Giveaways(commands.Cog):
         parser.add_argument("--donor", nargs="?", type=str, default=None)
         parser.add_argument("--amt", nargs="?", type=int, default=0)
         parser.add_argument("--note", nargs="*", type=str, default=None)
-        parser.add_argument("--mee6", nargs="?", type=int, default=None)
+        parser.add_argument("--embed", action="store_true", default=False)
 
         try:
             flags = vars(parser.parse_known_args(flags.split())[0])
@@ -1367,7 +1371,7 @@ class Giveaways(commands.Cog):
             except discord.HTTPException:
                 pass
 
-        await self.send_final_message(ctx, flags["ping"], flags["msg"])
+        await self.send_final_message(ctx, flags["ping"], flags["msg"], flags["embed"])
 
         if flags["note"]:
             if flags["donor"]:
