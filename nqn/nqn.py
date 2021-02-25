@@ -48,7 +48,7 @@ class NotQuiteNitro(commands.Cog):
             limit=None,
             score_cutoff=75,
         ):
-            results.append(r[2], r[1])
+            results.append((r[2], r[1]))
 
         if not results:
             return None
