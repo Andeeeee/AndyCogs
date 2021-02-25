@@ -133,9 +133,9 @@ class Heist(commands.Cog):
             e.add_field(name="Funding", value="No funders yet...", inline=False)
         else:
             formatted_donors = ""
-            for i, donor, amount in enumerate(data["donators"].items(), start=1):
-                funded_amount += amount
-                formatted_donors += "{}. <@{}>: {}\n".format(i, donor, amount)
+            for i, data in enumerate(data["donators"].items(), start=1):
+                funded_amount += data[1]
+                formatted_donors += "{}. <@{}>: {}\n".format(i, data[0], data[1])
             e.add_field(name="Funding", value=formatted_donors, inline=False)
         e.set_footer(text="Starting at")
         e.description += f"\nTotal Funded Amount: {funded_amount}/{data['amount']}"
