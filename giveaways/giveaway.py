@@ -301,14 +301,15 @@ class Giveaways(commands.Cog):
 
         return True
 
-    def get_color(self, timeleft: int):
+    async def get_color(self, ctx, timeleft: int):
         if timeleft <= 30:
             return discord.Color(value=0xff0000)
         elif timeleft <= 240:
             return discord.Color.orange()
         elif timeleft <= 600:
             return discord.Color(value=0xffff00)
-        return discord.Color.green()
+        color = await ctx.embed_color()
+        return color
 
     async def calculate_multi(self, user: discord.Member):
         total_multi = 1
@@ -378,7 +379,7 @@ class Giveaways(commands.Cog):
             else:
                 host = host.mention
 
-            color = self.get_color(remaining.total_seconds())
+            color = await self.get_color(ctx, remaining.total_seconds())
 
             e = discord.Embed(
                 title=info["title"],
