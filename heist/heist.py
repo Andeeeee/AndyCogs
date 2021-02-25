@@ -61,6 +61,23 @@ class TimeConverter(Converter):
         
         return int(time) * multiplier
 
+class MoneyConverter(Converter):
+    async def convert(self, ctx: commands.Context, amount: str) -> int:
+        conversions = {"k": 1000, "m": 1000000}
+
+        if str(amount[-1]) not in conversions:
+            if not str(amount).isdigit():
+                raise BadArgument(f"{amount} was not able to be converted to an amount.")
+            return int(amount)
+
+        multiplier = conversions[str(amount[-1])]
+
+        amt = amount[:-1]
+        if not str(amt).isdigit():
+            raise BadArgument(f"{amount} was not able to be converted to a time.")
+        
+        return int(amt) * multiplier
+
 
 class IntOrLink(Converter):
     async def convert(self, ctx, argument: str):
@@ -416,7 +433,7 @@ class Heist(commands.Cog):
 
     @heist.command()
     async def create(
-        self, ctx: commands.Context, amount: int, ending: TimeConverter, *, title: str
+        self, ctx: commands.Context, amount: MoneyConverter, ending: TimeConverter, *, title: str
     ):
         heists = await self.config.guild(ctx.guild).heists()
 
@@ -436,7 +453,7 @@ class Heist(commands.Cog):
     
     @heist.command()
     async def fund(
-        self, ctx: commands.Context, message: Optional[IntOrLink], user: discord.Member, amount: int
+        self, ctx: commands.Context, message: Optional[IntOrLink], user: discord.Member, amount: MoneyConverter
     ):
         if not message:
             if hasattr(ctx.message, "reference") and ctx.message.reference != None:
