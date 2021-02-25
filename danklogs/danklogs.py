@@ -333,7 +333,7 @@ class DankLogs(commands.Cog):
     @dankinfo.command(aliases=["mostshared"])
     async def topshared(self, ctx, amount: int = 10):
         """View the people in the server that have shared the most COINS"""
-        member_data = await self.config.all_member(ctx.guild)
+        member_data = await self.config.all_members(ctx.guild)
         member_list = [
             (member, data["shared"])
             for member, data in member_data.items()
@@ -380,7 +380,7 @@ class DankLogs(commands.Cog):
             return
         if "You gave" not in message.content:
             return
-    
+
         if await self.config.channel(message.channel).ignored():
             return
         last_message = await self.get_last_message(message)
