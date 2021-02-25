@@ -346,8 +346,8 @@ class DankLogs(commands.Cog):
 
         leaderboard = []
 
-        for i, member, amount in enumerate(ordered_list.items(), start=1):
-            leaderboard.append(f"{i}. {member}: {amount}")
+        for i, data in enumerate(ordered_list.items(), start=1):
+            leaderboard.append(f"{i}. <@{data[0]}>: {self.comma_format(data[1])}")
 
         leaderboard = "\n".join(leaderboard)
 
