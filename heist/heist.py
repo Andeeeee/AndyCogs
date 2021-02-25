@@ -1,13 +1,22 @@
 import argparse
 import asyncio
 import discord
+import re
 
+from datetime import datetime
 from rapidfuzz import process
 from redbot.core import commands, Config
+from redbot.core.bot import Red
 from redbot.core.commands import Converter, BadArgument
 from redbot.core.utils.chat_formatting import humanize_list
 from typing import Optional
 from unidecode import unidecode
+
+link_regex = re.compile(
+    r"https?:\/\/(?:(?:ptb|canary)\.)?discord(?:app)?\.com"
+    r"\/channels\/(?P<guild_id>[0-9]{15,19})\/(?P<channel_id>"
+    r"[0-9]{15,19})\/(?P<message_id>[0-9]{15,19})\/?"
+)
 
 
 async def heist_manager(ctx):
@@ -37,7 +46,7 @@ class NoExitParser(argparse.ArgumentParser):
 
 class TimeConverter(Converter):
     async def convert(self, ctx: commands.Context, time: str) -> int:
-        conversions = {"s": 1, "m": 60}
+        conversions = {"s": 1, "m": 60, "h": 3600, "d": 3600 * 24, "w": 3600 * 24 * 7}
 
         if str(time[-1]) not in conversions:
             if not str(time).isdigit():
@@ -49,12 +58,41 @@ class TimeConverter(Converter):
         time = time[:-1]
         if not str(time).isdigit():
             raise BadArgument(f"{time} was not able to be converted to a time.")
-
+        
         return int(time) * multiplier
 
 
+class IntOrLink(Converter):
+    async def convert(self, ctx, argument: str):
+        if argument.isdigit():
+            return argument
+        if len(argument.split("-")) == 2:
+            return argument.split("-")[1]
+        match = re.search(link_regex, argument)
+        if not match:
+            raise BadArgument("Not a valid message")
+        message_id = int(match.group("message_id"))
+        channel_id = int(match.group("channel_id"))
+        channel = ctx.bot.get_channel(channel_id)
+
+        if channel is None or channel.guild is None or channel.guild != ctx.guild:
+            raise BadArgument(
+                "This was not recognized as a valid channel or the channel is not in the same server"
+            )
+
+        message = ctx.bot._connection._get_message(message_id)
+
+        if not message:
+            try:
+                message = await channel.fetch_message(message_id)
+            except discord.NotFound:
+                raise BadArgument("Message not found")
+
+        return message.id
+
+
 class Heist(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: Red):
         self.bot = bot
         self.config = Config.get_conf(
             self,
@@ -62,9 +100,17 @@ class Heist(commands.Cog):
             force_registration=True,
         )
 
-        default_guild = {"pingrole": None, "sendembed": True, "manager": None}
+        default_guild = {
+            "pingrole": None,
+            "sendembed": True,
+            "manager": None,
+            "amount": None,
+            "heists": {},
+        }
+        default_member = {"donated": 0, "hosted": 0}
 
         self.config.register_guild(**default_guild)
+        self.config.register_member(**default_member)
 
     def convert_amount(self, amount: str):
         conversions = {"k": 1000, "m": 1000000}
@@ -72,6 +118,29 @@ class Heist(commands.Cog):
             return round(int(amount))
         else:
             return round(int(amount[:-1]) * conversions[amount[-1]])
+
+    async def gen_heist_embed(self, ctx: commands.Context, data: dict) -> discord.Embed:
+        funded_amount = 0
+        e = discord.Embed(
+            title=data["title"],
+            description="<@{}> will be hosting a heist for {}!".format(
+                data["host"], data["amount"]
+            ),
+            timestamp=datetime.fromtimestamp(data["starting"]),
+            color=await ctx.embed_color(),
+        )
+        if not data["donators"]:
+            e.add_field(name="Funding", value="No funders yet...", inline=False)
+        else:
+            formatted_donors = ""
+            for i, donor, amount in enumerate(data["donators"].items(), start=1):
+                funded_amount += amount
+                formatted_donors += "{}. <@{}>: {}\n".format(i, donor, amount)
+            e.add_field(name="Funding", value=formatted_donors, inline=False)
+        e.set_footer(text="Starting at")
+        e.description += f"\nTotal Funded Amount: {funded_amount}/{amount}"
+
+        return e
 
     def display_time(self, seconds: int) -> str:
         message = ""
@@ -318,14 +387,12 @@ class Heist(commands.Cog):
             for r in flags["early_roles"]:
                 overwrites = ctx.channel.overwrites_for(r)
                 overwrites.send_messages = True
-                overwrites.read_messages = True
                 await ctx.channel.set_permissions(r, overwrite=overwrites)
             await ctx.send(early_heist_message, allowed_mentions=allowed_mentions)
             await asyncio.sleep(early_time)
 
         overwrites = ctx.channel.overwrites_for(unlockrole)
         overwrites.send_messages = True
-        overwrites.read_messages = True
         await ctx.channel.set_permissions(unlockrole, overwrite=overwrites)
 
         try:
@@ -339,7 +406,6 @@ class Heist(commands.Cog):
             for r in flags["early_roles"]:
                 overwrites = ctx.channel.overwrites_for(r)
                 overwrites.send_messages = False
-                overwrites.read_messages = False
                 await ctx.channel.set_permissions(r, overwrite=overwrites)
 
         overwrites = ctx.channel.overwrites_for(unlockrole)
@@ -347,3 +413,61 @@ class Heist(commands.Cog):
         await ctx.channel.set_permissions(unlockrole, overwrite=overwrites)
 
         await ctx.send("Times Up. Channel Locked")
+
+    @heist.command()
+    async def create(
+        self, ctx: commands.Context, amount: int, ending: TimeConverter, *, title: str
+    ):
+        heists = await self.config.guild(ctx.guild).heists()
+
+        data = {}
+        data["starting"] = datetime.utcnow().timestamp() + ending
+        data["host"] = ctx.author.id
+        data["amount"] = amount
+        data["title"] = title
+        data["donators"] = {}
+        data["channel"] = ctx.channel.id
+
+        e = await self.gen_heist_embed(ctx, data)
+        message = await ctx.send(embed=e)
+
+        heists[str(message.id)] = data 
+        await self.config.guild(ctx.guild).heists.set(heists)
+    
+    @heist.command()
+    async def fund(
+        self, ctx: commands.Context, message: Optional[IntOrLink], user: discord.Member, amount: int
+    ):
+        if not message:
+            if hasattr(ctx.message, "reference") and ctx.message.reference != None:
+                msg = ctx.message.reference.resolved
+                if isinstance(msg, discord.Message):
+                    message = msg.id
+                else:
+                    return await ctx.send("Message is a required argument that is missing")
+            else:
+                return await ctx.send("Message is a required argument that is missing")
+
+        heists = await self.config.guild(ctx.guild).heists()
+        messageid = str(message)
+        if heists.get(messageid) is None:
+            return await ctx.send("This heist does not exist")
+        else:
+            if str(user.id) not in heists[messageid]["donators"]:
+                heists[messageid]["donators"][str(user.id)] = 0 
+            heists[messageid]["donators"][str(user.id)] += amount 
+            await self.config.guild(ctx.guild).heists.set(heists)
+        
+        e = await self.gen_heist_embed(ctx, heists[messageid])
+        channel = self.bot.get_channel(heists[messageid]["channel"])
+        if not channel:
+            return await ctx.send("I couldn't find this channel, it was probably deleted")
+        message = channel.get_partial_message(int(messageid))
+        try:
+            await message.edit(embed=e)
+        except discord.NotFound:
+            return await ctx.send("I couldn't find this message")
+        except discord.HTTPException:
+            return await ctx.send("Uh oh, looks like you've got too many donors that I can fit into a field")
+        await ctx.send(f"Edited and funded the message, view it at {message.jump_url}")
+
