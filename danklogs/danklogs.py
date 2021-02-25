@@ -337,9 +337,9 @@ class DankLogs(commands.Cog):
         member_list = [
             (member, data["shared"])
             for member, data in member_data.items()
-            if data["shared"] > 0
+            if data["shared"] > 0 and ctx.guild.get_member(int(member)) is not None
         ]
-        ordered_list = sorted(member_list, key=lambda m: m[1], reverse=True)[:amount]
+        ordered_list = sorted(member_list, key=lambda m: m[1], reverse=True)[:(amount)]
 
         if not ordered_list:
             return await ctx.send("I have no tracked data for this server")
