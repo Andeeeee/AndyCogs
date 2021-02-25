@@ -301,7 +301,7 @@ class Giveaways(commands.Cog):
 
         return True
 
-    def get_color(self, ctx, timeleft: int):
+    def get_color(self, timeleft: int):
         if timeleft <= 30:
             return discord.Color(value=0xff0000)
         elif timeleft <= 240:
