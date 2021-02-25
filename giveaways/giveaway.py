@@ -321,8 +321,7 @@ class Giveaways(commands.Cog):
         for channel in guild.text_channels:
             if channel.permissions_for(guild.me).create_instant_invite:
                 invite = await channel.create_invite(
-                    reason="For a server join requirement",
-                    unique=False
+                    reason="For a server join requirement", unique=False
                 )
                 if not invite:
                     invite = await channel.create_invite(
@@ -386,7 +385,7 @@ class Giveaways(commands.Cog):
                 description=data["description"].replace("{emoji}", data["emoji"]),
                 color=color,
             )
-            e.description += f"\nTime Left: {pretty_time} \n"
+            e.description += f"\nTime Left: **{pretty_time}** \n"
             e.description += f"Host: {host}"
 
             if info["donor"]:
@@ -399,9 +398,7 @@ class Giveaways(commands.Cog):
                 roles = []
                 for r in requirements["roles"]:
                     roles.append(f"<@&{r}>")
-                e.add_field(
-                    name="Requirement", value=humanize_list(roles), inline=False
-                )
+                e.add_field(name="Roles", value=humanize_list(roles), inline=False)
 
             if bypassrole:
                 roles = []
@@ -542,9 +539,7 @@ class Giveaways(commands.Cog):
                     if not role:
                         continue
                     roles.append(role.mention)
-                e.add_field(
-                    name="Requirement", value=humanize_list(roles), inline=False
-                )
+                e.add_field(name="Roles", value=humanize_list(roles), inline=False)
 
             if requirements["mee6"]:
                 e.add_field(name="Minimum MEE6 Level", value=requirements["mee6"])
@@ -1304,7 +1299,7 @@ class Giveaways(commands.Cog):
                 "joindays": None,
                 "invites": None,
                 "server": None,
-                "shared": None
+                "shared": None,
             }
         else:
             if requirements["roles"]:
