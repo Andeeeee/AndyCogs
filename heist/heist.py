@@ -138,7 +138,7 @@ class Heist(commands.Cog):
                 formatted_donors += "{}. <@{}>: {}\n".format(i, donor, amount)
             e.add_field(name="Funding", value=formatted_donors, inline=False)
         e.set_footer(text="Starting at")
-        e.description += f"\nTotal Funded Amount: {funded_amount}/{amount}"
+        e.description += f"\nTotal Funded Amount: {funded_amount}/{data['amount']}"
 
         return e
 
