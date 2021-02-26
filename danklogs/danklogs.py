@@ -122,13 +122,13 @@ class DankLogs(commands.Cog):
         else:
             await self.config.guild(ctx.guild).channel.set(channel.id)
             await ctx.send(f"I will now log actions to {channel.mention}")
-    
+
     @danklogset.command(aliases=["itemprice"])
     async def itemvalue(self, ctx, item: str, price: int):
         item_values = await self.config.guild(ctx.guild).itemvalues()
         if item not in item_values:
             return await ctx.send("This item does not exist")
-        item_values[item] = price 
+        item_values[item] = price
         await self.config.guild(ctx.guild).itemvalues.set(item_values)
         await ctx.send(f"Done. The price for **{item}** is now **{price}**")
 
@@ -206,6 +206,21 @@ class DankLogs(commands.Cog):
             await ctx.send(embed=e)
 
     @dankinfo.command()
+    async def itemvalues(self, ctx):
+        """View the values of the items set for your server. You can change them with `[p]danklogset itemvalue <item> <price>`"""
+        item_values = await self.config.guild(ctx.guild).itemvalues()
+        formatted_items = ""
+
+        for item, price in item_values.items():
+            formatted_items += f"{item}: {price}"
+        e = discord.Embed(
+            title="Item Values",
+            color=await ctx.embed_color(),
+            description=formatted_items,
+        )
+        await ctx.send(embed=e)
+
+    @dankinfo.command()
     async def received(self, ctx, user: Optional[discord.Member] = None):
         """View the items a user has received"""
         if not user:
@@ -267,8 +282,10 @@ class DankLogs(commands.Cog):
         for item, amount in received.items():
             total_amount += amount * item_prices[item]
         return await ctx.send(
-            "You have received **{}** worth of items in **{}**"
-        .format(self.comma_format(total_amount), ctx.guild.name))
+            "You have received **{}** worth of items in **{}**".format(
+                self.comma_format(total_amount), ctx.guild.name
+            )
+        )
 
     @dankinfo.command()
     async def giftedamount(self, ctx, user: Optional[discord.Member] = None):
@@ -285,9 +302,11 @@ class DankLogs(commands.Cog):
 
         for item, amount in gifted.items():
             total_amount += amount * item_prices[item]
-        return await ctx.send("You have shared **{}** worth of items in **{}**".format(
-            self.comma_format(total_amount), ctx.guild.name
-        ))
+        return await ctx.send(
+            "You have shared **{}** worth of items in **{}**".format(
+                self.comma_format(total_amount), ctx.guild.name
+            )
+        )
 
     @dankinfo.command()
     async def giftedusers(self, ctx, user: Optional[discord.Member] = None):
