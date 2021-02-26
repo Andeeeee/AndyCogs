@@ -121,6 +121,15 @@ class DankLogs(commands.Cog):
         else:
             await self.config.guild(ctx.guild).channel.set(channel.id)
             await ctx.send(f"I will now log actions to {channel.mention}")
+    
+    @danklogset.command(aliases=["itemprice"])
+    async def itemvalue(self, ctx, item: str, price: int):
+        item_values = await self.config.guild(ctx.guild).itemvalues()
+        if item not in item_values:
+            return await ctx.send("This item does not exist")
+        item_values[item] = price 
+        await self.config.guild(ctx.guild).itemvalues.set(item_values)
+        await ctx.send(f"Done. The price for **{item}** is now **{price}**")
 
     @commands.group(aliases=["dankstats"], invoke_without_command=True)
     async def dankinfo(self, ctx, user: Optional[discord.Member] = None):
