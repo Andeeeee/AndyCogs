@@ -362,7 +362,7 @@ class Giveaways(commands.Cog):
                     messageid
                 )
                 self.giveaway_cache[str(messageid)] = False
-                await self.end_giveaway(int(messageid), info)
+                self.tasks.append(asyncio.create_task(self.end_giveaway(int(messageid), info)))
                 return
 
             remaining = datetime.fromtimestamp(info["endtime"]) - datetime.utcnow()
