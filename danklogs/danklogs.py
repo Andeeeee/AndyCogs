@@ -268,7 +268,7 @@ class DankLogs(commands.Cog):
             total_amount += amount * item_prices[item]
         return await ctx.send(
             "You have received **{}** worth of items in **{}**"
-        ).format(self.comma_format(total_amount), ctx.guild.name)
+        .format(self.comma_format(total_amount), ctx.guild.name))
 
     @dankinfo.command()
     async def giftedamount(self, ctx, user: Optional[discord.Member] = None):
@@ -285,9 +285,9 @@ class DankLogs(commands.Cog):
 
         for item, amount in gifted.items():
             total_amount += amount * item_prices[item]
-        return await ctx.send("You have shared **{}** worth of items in **{}**").format(
+        return await ctx.send("You have shared **{}** worth of items in **{}**".format(
             self.comma_format(total_amount), ctx.guild.name
-        )
+        ))
 
     @dankinfo.command()
     async def giftedusers(self, ctx, user: Optional[discord.Member] = None):
