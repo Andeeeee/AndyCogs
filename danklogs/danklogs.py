@@ -259,7 +259,7 @@ class DankLogs(commands.Cog):
             user = ctx.author
 
         item_prices = await self.config.guild(ctx.guild).itemvalues()
-        received = await self.config.member(user).received()
+        received = await self.config.member(user).receiveditems()
 
         if not received:
             return await ctx.send("You haven't received any items")
