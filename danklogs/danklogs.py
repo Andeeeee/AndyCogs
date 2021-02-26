@@ -212,7 +212,7 @@ class DankLogs(commands.Cog):
         formatted_items = ""
 
         for item, price in item_values.items():
-            formatted_items += f"{item}: {price}"
+            formatted_items += f"{item}: {price}\n"
         e = discord.Embed(
             title="Item Values",
             color=await ctx.embed_color(),
