@@ -30,13 +30,49 @@ class DankLogs(commands.Cog):
         self.bot = bot
         self.config = Config.get_conf(self, 160805014090190130501014, True)
 
-        default_item_values = {
-            "alcohol": 10,
-        }
-
         default_guild = {
             "channel": None,
-            "toprole": None,
+            "itemvalues": {
+                "alcohol": 5000,
+                "banknote": 225000,
+                "blob": 900000000,
+                "bread": 30000,
+                "candy": 3000,
+                "cheese": 0,
+                "chillpill": 0,
+                "cookie": 0,
+                "cupidsbigtoe": 100000,
+                "cutters": 300000,
+                "dank": 200000,
+                "deer": 40000,
+                "dragon": 60000,
+                "fakeid": 700,
+                "fish": 250,
+                "fishingpole": 7500,
+                "huntingrifle": 7500,
+                "jacky": 5000000,
+                "landmine": 2500,
+                "laptop": 1000,
+                "legendaryfish": 25000,
+                "lifesaver": 4000,
+                "meme": 100000,
+                "normie": 80000,
+                "padlock": 1500,
+                "pepe": 95000,
+                "pepecoin": 900000,
+                "pepemedal": 8500000,
+                "pepetrophy": 45000000,
+                "phone": 750,
+                "pinkphallicobject": 5,
+                "pizza": 100000,
+                "rabbit": 350,
+                "rarefish": 2500,
+                "santashat": 150000,
+                "skunk": 250,
+                "spinner": 7000,
+                "tidepod": 15000,
+                "wishlist": 15000,
+            },
         }
 
         default_member = {
@@ -204,6 +240,44 @@ class DankLogs(commands.Cog):
                 color=await ctx.embed_color(),
             )
             await ctx.send(embed=e)
+
+    @dankinfo.command()
+    async def receivedamount(self, ctx, user: Optional[discord.Member] = None):
+        """View the price of the items you have received, the list is from a custom list and can be changed using `[p]danklogset itemprice <item> <price>`"""
+        total_amount = 0
+        if not user:
+            user = ctx.author
+
+        item_prices = await self.config.guild(ctx.guild).itemvalues()
+        received = await self.config.member(user).received()
+
+        if not received:
+            return await ctx.send("You haven't received any items")
+
+        for item, amount in received.items():
+            total_amount += amount * item_prices[item]
+        return await ctx.send(
+            "You have received **{}** worth of items in **{}**"
+        ).format(self.comma_format(total_amount), ctx.guild.name)
+
+    @dankinfo.command()
+    async def giftedamount(self, ctx, user: Optional[discord.Member] = None):
+        """View the price of the items you have given, the list is from a custom list and can be changed using `[p]danklogset itemprice <item> <price>`"""
+        total_amount = 0
+        if not user:
+            user = ctx.author
+
+        item_prices = await self.config.guild(ctx.guild).itemvalues()
+        gifted = await self.config.member(user).gifted()
+
+        if not gifted:
+            return await ctx.send("You haven't gifted out anything")
+
+        for item, amount in gifted.items():
+            total_amount += amount * item_prices[item]
+        return await ctx.send("You have shared **{}** worth of items in **{}**").format(
+            self.comma_format(total_amount), ctx.guild.name
+        )
 
     @dankinfo.command()
     async def giftedusers(self, ctx, user: Optional[discord.Member] = None):
