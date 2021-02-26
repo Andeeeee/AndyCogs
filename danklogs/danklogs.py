@@ -68,25 +68,7 @@ class DankLogs(commands.Cog):
                 return m
 
     def get_fuzzy_member(self, ctx, name):
-        result = []
-        name = name.lstrip("<@!").lstrip("<@").rstrip(">")
-        if name.isdigit():
-            m = ctx.guild.get_member(int(name))
-            if not m:
-                pass
-            else:
-                return m
-
-        for r in process.extract(
-            name,
-            {m: unidecode(m.name) for m in ctx.guild.members},
-            limit=None,
-            score_cutoff=75,
-        ):
-            result.append((r[2], r[1]))
-
-        sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
-        return sorted_result[0][0]
+        return discord.utils.get(ctx.guild.members, name=name)
 
     @commands.group(aliases=["dls"])
     @commands.mod_or_permissions(manage_guild=True)
