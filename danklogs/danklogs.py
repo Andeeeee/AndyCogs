@@ -46,6 +46,7 @@ class DankLogs(commands.Cog):
                 "dank": 200000,
                 "deer": 40000,
                 "dragon": 60000,
+                "exoticfish": 10000,
                 "fakeid": 700,
                 "fish": 250,
                 "fishingpole": 7500,
