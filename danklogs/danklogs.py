@@ -115,16 +115,13 @@ class DankLogs(commands.Cog):
             await self.config.user(user).storedname.set(user.name)
             return user 
         all_users = await self.config.all_users()
-        reversed_users = {v: k for k, v in all_users.items()}
-        try:
-            user = reversed_users[name]
-        except KeyError:
-            return 
-        else:
-            user = ctx.guild.get_member(user)
+
+        for user, data in all_users.items():
+            user = ctx.guild.get_member(int(user))
             if not user:
-                return None 
-            return user
+                continue 
+            if data["storedname"] == name:
+                return ctx.guild.get_member(int(user))
 
 
     @commands.group(aliases=["dls"])
