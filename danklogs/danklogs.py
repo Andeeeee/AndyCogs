@@ -90,8 +90,13 @@ class DankLogs(commands.Cog):
             "ignored": False,
         }
 
+        default_user = {
+            "storedname": None,
+        }
+
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
+        self.config.register_user(**default_user)
         self.config.register_channel(**default_channel)
 
     def comma_format(self, number: int):
@@ -104,8 +109,23 @@ class DankLogs(commands.Cog):
             else:
                 return m
 
-    def get_fuzzy_member(self, ctx, name):
-        return discord.utils.get(ctx.guild.members, name=name)
+    async def get_fuzzy_member(self, ctx, name):
+        user = discord.utils.get(ctx.guild.members, name=name)
+        if user:
+            await self.config.user(user).storedname.set(name)
+            return user 
+        all_users = await self.config.all_users()
+        reversed_users = {v: k for k, v in all_users.items()}
+        try:
+            user = reversed_users[name]
+        except KeyError:
+            return 
+        else:
+            user = ctx.guild.get_member(user)
+            if not user:
+                return None 
+            return user
+
 
     @commands.group(aliases=["dls"])
     @commands.mod_or_permissions(manage_guild=True)
