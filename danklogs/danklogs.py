@@ -1,5 +1,6 @@
 import asyncio
 import discord
+import contextlib
 import re
 
 from datetime import datetime
@@ -37,26 +38,31 @@ class DankLogs(commands.Cog):
                 "apple": 2500,
                 "banknote": 225000,
                 "blob": 900000000,
+                "boar": 500,
                 "bread": 30000,
                 "candy": 3000,
-                "cheese": 0,
-                "chillpill": 0,
-                "cookie": 0,
+                "cheese": 5000,
+                "chillpill": 20000,
+                "cookie": 10,
                 "cupidsbigtoe": 100000,
                 "cutters": 300000,
                 "dank": 200000,
                 "deer": 40000,
                 "dragon": 60000,
+                "duck": 150,
                 "exoticfish": 10000,
                 "fakeid": 700,
                 "fish": 250,
                 "fishingpole": 7500,
+                "gift": 750000,
+                "god": 3000000,
                 "huntingrifle": 7500,
                 "jacky": 5000000,
                 "landmine": 2500,
                 "laptop": 1000,
                 "legendaryfish": 25000,
                 "lifesaver": 4000,
+                "lotterywinner": 100000000,
                 "meme": 100000,
                 "normie": 80000,
                 "padlock": 1500,
@@ -70,7 +76,9 @@ class DankLogs(commands.Cog):
                 "rabbit": 350,
                 "rarefish": 2500,
                 "santashat": 150000,
+                "sand": 2000,
                 "skunk": 250,
+                "snowball": 10000,
                 "spinner": 7000,
                 "tidepod": 15000,
                 "wishlist": 15000,
@@ -296,9 +304,9 @@ class DankLogs(commands.Cog):
 
         if not received:
             return await ctx.send("You haven't received any items")
-
-        for item, amount in received.items():
-            total_amount += amount * item_prices[item]
+        with contextlib.suppress(KeyError):
+            for item, amount in received.items():
+                total_amount += amount * item_prices[item]
         return await ctx.send(
             "You have received **{}** worth of items in **{}**".format(
                 self.comma_format(total_amount), ctx.guild.name
@@ -317,9 +325,9 @@ class DankLogs(commands.Cog):
 
         if not gifted:
             return await ctx.send("You haven't gifted out anything")
-
-        for item, amount in gifted.items():
-            total_amount += amount * item_prices[item]
+        with contextlib.suppress(KeyError):
+            for item, amount in gifted.items():
+                total_amount += amount * item_prices[item]
         return await ctx.send(
             "You have shared **{}** worth of items in **{}**".format(
                 self.comma_format(total_amount), ctx.guild.name
