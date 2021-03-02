@@ -112,7 +112,7 @@ class DankLogs(commands.Cog):
     async def get_fuzzy_member(self, ctx, name):
         user = discord.utils.get(ctx.guild.members, name=name)
         if user:
-            await self.config.user(user).storedname.set(name)
+            await self.config.user(user).storedname.set(user.name)
             return user 
         all_users = await self.config.all_users()
         reversed_users = {v: k for k, v in all_users.items()}
@@ -501,7 +501,7 @@ class DankLogs(commands.Cog):
         match = re.match(gift_regex, filtered_content)
         amount = int(match.group("amount").replace(",", ""))
         member = match.group("user")
-        shared_user = self.get_fuzzy_member(message, member)
+        shared_user = await self.get_fuzzy_member(message, member)
         if not shared_user:
             return
 
