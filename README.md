@@ -20,10 +20,10 @@
 <h4 align="center">Utility Cogs for Red-DiscordBot</h4>
 
 # Installation
-`[p]load downloader`
-`[p]repo add AndyCogs https://github.com/Andeeeee/AndyCogs`
-`[p]cog install AndyCogs [cogname]`
-`[p]load [cogname]`
+`[p]load downloader`<br>
+`[p]repo add AndyCogs https://github.com/Andeeeee/AndyCogs`<br>
+`[p]cog install AndyCogs [cogname]`<br>
+`[p]load [cogname]`<br>
 
 # Cogs
 | Cog | Description |
