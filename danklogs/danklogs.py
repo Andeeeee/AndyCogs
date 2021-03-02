@@ -34,6 +34,7 @@ class DankLogs(commands.Cog):
             "channel": None,
             "itemvalues": {
                 "alcohol": 5000,
+                "apple": 2500
                 "banknote": 225000,
                 "blob": 900000000,
                 "bread": 30000,
