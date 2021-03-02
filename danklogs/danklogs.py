@@ -121,7 +121,7 @@ class DankLogs(commands.Cog):
             if not user:
                 continue 
             if data["storedname"] == name:
-                return ctx.guild.get_member(int(user))
+                return user
 
 
     @commands.group(aliases=["dls"])
