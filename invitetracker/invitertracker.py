@@ -298,7 +298,7 @@ class InviteTracker(commands.Cog):
                 )
         else:
             await self.config.member(member).inviter.set(inviter.id)
-            async with self.config.member(inviter).invites() as invites:
+            async with self.config.member_from_ids(guild.id, inviter.id).invites() as invites:
                 invites += 1
                 inviter_invites = invites
             if not channel:
