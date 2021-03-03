@@ -165,8 +165,8 @@ class DankLogs(commands.Cog):
         
         result = []
         for r in process.extract(
-            {m: self.decode_cancer_name(m.name) for m in ctx.guild.members},
             name,
+            {m: self.decode_cancer_name(m.name) for m in ctx.guild.members},
             limit=None,
             score_cutoff=75
         ):
