@@ -14,7 +14,7 @@ from typing import Optional
 from unidecode import unidecode
 
 gift_regex = re.compile(
-    r"You gave (?P<user>.+\w)?  ?(?P<amount>[0-9,]+) ?(?:(?P<item>[a-zA-Z0-9_]{2,32}))?"
+    r"You gave (?P<user>.+[a-zA-Z0-9_]{2,32})?  ?(?P<amount>[0-9,]+) ?(?:(?P<item>[a-zA-Z0-9_]{2,32}))?"
 )
 
 
@@ -139,8 +139,6 @@ class DankLogs(commands.Cog):
         old_name = self.strip_accs(old_name)
         new_name = re.sub("[^a-zA-Z0-9 \n.]", "", old_name)
         new_name = " ".join(new_name.split())
-        new_name = stringcase.lowercase(new_name)
-        new_name = stringcase.titlecase(new_name)
         
         return new_name
     
