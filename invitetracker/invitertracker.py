@@ -121,7 +121,7 @@ class InviteTracker(commands.Cog):
         if (
             member.guild.me.guild_permissions.manage_guild
             and member.guild.me.guild_permissions.view_audit_log
-        ) and not link:
+        ) and not inviter:
             valid_action = discord.AuditLogAction.invite_create
             async for log in member.guild.audit_logs(action=valid_action):
                 if log.target.code not in invites:
