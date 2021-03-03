@@ -134,7 +134,7 @@ class DankLogs(commands.Cog):
         return str(text)
     
     def decode_cancer_name(self, old_name):
-        new_name = self.strip_accs(old_name)
+        old_name = self.strip_accs(old_name)
         new_name = re.sub("[^a-zA-Z0-9 \n.]", "", old_name)
         new_name = " ".join(new_name.split())
         new_name = stringcase.lowercase(new_name)
