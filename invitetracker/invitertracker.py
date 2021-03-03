@@ -199,8 +199,18 @@ class InviteTracker(commands.Cog):
         e = discord.Embed(
             title=f"Invite Settings for {ctx.guild.name}", color=await ctx.embed_color()
         )
-        e.add_field(name="Join Channel", value=f"<#{data['joinchannel']}")
-        e.add_field(name="Leave Channel", value=f"<#{data['leavechannel']}")
+        e.add_field(
+            name="Join Channel",
+            value=f"<#{data['joinchannel']}>"
+            if data["joinchannel"] is not None
+            else "Not Set",
+        )
+        e.add_field(
+            name="Leave Channel",
+            value=f"<#{data['leavechannel']}>"
+            if data["leavechannel"] is not None
+            else "Not Set",
+        )
         e.add_field(name="Join Message", value=box(data["joinmessage"]), inline=False)
         e.add_field(name="Leave Message", value=box(data["leavemessage"]), inline=False)
         await ctx.send(embed=e)
