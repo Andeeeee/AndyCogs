@@ -250,7 +250,7 @@ class InviteTracker(commands.Cog):
         member_data = [
             (member, data["invites"])
             for member, data in all_members.items()
-            if data["count"] > 0 and ctx.guild.get_member(int(member)) is not None
+            if data["invites"] > 0 and ctx.guild.get_member(int(member)) is not None
         ]
         sorted_data = sorted(member_data, key=lambda k: k[1], reverse=top_to_bottom)[
             :amount
