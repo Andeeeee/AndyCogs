@@ -14,7 +14,7 @@ from typing import Optional
 from unidecode import unidecode
 
 gift_regex = re.compile(
-    r"You gave (?P<user>.+[a-zA-Z0-9_]{2,32})?  ?(?P<amount>[0-9,]+) ?(?:(?P<item>[a-zA-Z0-9_]{2,32}))?"
+    r"You gave (?P<user>.*?[a-zA-Z0-9_]{2,32})  ?(?P<amount>[0-9,]+) ?(?:(?P<item>[a-zA-Z0-9_]{2,32}))?"
 )
 
 
@@ -113,7 +113,7 @@ class DankLogs(commands.Cog):
     def comma_format(self, number: int):
         return "{:,}".format(int(number))
 
-    async def get_last_message(self, message):
+    async def get_last_message(self, message: discord.Message):
         async for m in message.channel.history(before=message, limit=5):
             if m.author.bot:
                 continue
