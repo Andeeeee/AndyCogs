@@ -2,6 +2,8 @@ import asyncio
 import discord
 import contextlib
 import re
+import stringcase 
+import unicodedata
 
 from datetime import datetime
 from rapidfuzz import process
@@ -119,6 +121,26 @@ class DankLogs(commands.Cog):
                 continue 
             else:
                 return m
+    
+    def strip_accs(text):
+        try:
+            text = unicodedata.normalize("NFKC", text)
+            text = unicodedata.normalize("NFD", text)
+            text = unidecode.unidecode(text)
+            text = text.encode("ascii", "ignore")
+            text = text.decode("utf-8")
+        except Exception as e:
+            pass 
+        return str(text)
+    
+    def decode_cancer_name(self, old_name):
+        new_name = self.strip_accs(old_name)
+        new_name = re.sub("[^a-zA-Z0-9 \n.]", "", old_name)
+        new_name = " ".join(new_name.split())
+        new_name = stringcase.lowercase(new_name)
+        new_name = stringcase.titlecase(new_name)
+        
+        return new_name
 
     async def get_fuzzy_member(self, ctx, name):
         user = discord.utils.get(ctx.guild.members, name=name)
@@ -518,7 +540,7 @@ class DankLogs(commands.Cog):
             .replace("⏣ ", "")
             .strip()
         )
-        filtered_content = "".join([unidecode(elem) for elem in filtered_content])
+        filtered_content = "".join([self.decode_cancer_name(elem) for elem in filtered_content])
 
         match = re.match(gift_regex, filtered_content)
         amount = int(match.group("amount").replace(",", ""))
