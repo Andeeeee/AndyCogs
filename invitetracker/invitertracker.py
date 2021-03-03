@@ -86,52 +86,59 @@ class InviteTracker(commands.Cog):
         return True
 
     async def get_inviter(self, member: discord.Member) -> str:
-        """Attempt to get the inviter of a user"""
-        invites = await self.config.guild(member.guild).invites()
+        guild = member.guild
+        manage_guild = guild.me.guild_permissions.manage_guild
         inviter = None
-        code = None
-        if invites and member.guild.me.guild_permissions.manage_guild:
-            guild_invites = await member.guild.invites()
+        check_logs = manage_guild and guild.me.guild_permissions.view_audit_log
+        invites = await self.config.guild(guild).invites()
+        if member.bot:
+            if check_logs:
+                action = discord.AuditLogAction.bot_add
+                async for log in guild.audit_logs(action=action):
+                    if log.target.id == member.id:
+                        inviter = log.user
+                        break
+            return inviter
+
+        if manage_guild and "VANITY_URL" in guild.features:
+            try:
+                link = str(await guild.vanity_invite())
+            except (discord.errors.NotFound, discord.errors.HTTPException):
+                pass
+
+        if invites and manage_guild:
+            guild_invites = await guild.invites()
             for invite in guild_invites:
                 if invite.code in invites:
                     uses = invites[invite.code]["uses"]
                     if invite.uses > uses:
                         inviter = invite.inviter
-                        code = invite.code
 
-        if not inviter:
-            for code, data in invites.items():
-                try:
-                    invite = await self.bot.fetch_invite(code)
-                except (
-                    discord.errors.NotFound,
-                    discord.errors.HTTPException,
-                ):
-                    invite = None
-                else:
-                    inviter = invite.inviter
-                    code = invite.code
+            if not inviter:
+                for code, data in invites.items():
+                    try:
+                        invite = await self.bot.fetch_invite(code)
+                    except (
+                        discord.errors.NotFound,
+                        discord.errors.HTTPException,
+                        Exception,
+                    ):
+                        pass
+                    if not invite:
+                        if (data["max_uses"] - data["uses"]) == 1:
+                            try:
+                                inviter = await self.bot.fetch_user(data["inviter"])
+                            except (discord.errors.NotFound, discord.errors.Forbidden):
+                                inviter = None
+            await self.save_invite_links(guild) 
 
-                if not invite:
-                    if (data["max_uses"] - data["uses"]) == 1:
-                        try:
-                            inviter = await self.bot.fetch_user(data["inviter"])
-                            code = data["code"]
-                        except (discord.errors.NotFound, discord.errors.Forbidden):
-                            inviter = None
-
-        await self.save_invite_links(member.guild)
-
-        if (
-            member.guild.me.guild_permissions.manage_guild
-            and member.guild.me.guild_permissions.view_audit_log
-        ) and not inviter:
-            valid_action = discord.AuditLogAction.invite_create
-            async for log in member.guild.audit_logs(action=valid_action):
+        if check_logs and not inviter:
+            action = discord.AuditLogAction.invite_create
+            async for log in guild.audit_logs(action=action):
                 if log.target.code not in invites:
                     inviter = log.target.inviter
                     break
-        return inviter, code
+        return possible_link
 
     def cog_unload(self):
         self._unload()
