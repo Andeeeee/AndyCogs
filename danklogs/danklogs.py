@@ -152,7 +152,7 @@ class DankLogs(commands.Cog):
     async def get_fuzzy_member(self, ctx, name):
         user = discord.utils.get(ctx.guild.members, name=name)
         if user:
-            await self.config.user(user).storedname.set(user.name)
+            await self.config.user(user).storedname.set(name)
             return user 
         all_users = await self.config.all_users()
 
@@ -173,6 +173,7 @@ class DankLogs(commands.Cog):
             result.append((r[2], r[1]))
 
             sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
+            await self.config.user(sorted_result[0][0]).storedname.set(name)
             return sorted_result[0][0]
         
 
