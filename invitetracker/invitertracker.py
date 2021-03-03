@@ -14,6 +14,7 @@ Sets your servers join/leave message. Variables:
 {inviter.name}: The inviters display name
 {inviter.discriminator}: The 4 digit discriminator the inviter has
 {inviter.invites}: The current amount of invites the user has
+{inviter.id}: The inviters ID
 {guild}: Server Name
 {guild.members}: Amount of members in the server
 {user}: User Mention
@@ -21,6 +22,7 @@ Sets your servers join/leave message. Variables:
 {user.discriminator}: The 4 digit discriminator the user has
 {user.created_at}: The date the user was created at
 {user.created_at_days}: How many days ago the user was created from now
+{user.id}: The users ID
 {invite}: https://discord.gg/code, where code is the invite code
 {invite.code}: The raw invite code
 """
@@ -324,6 +326,7 @@ class InviteTracker(commands.Cog):
                 "{inviter.name}": inviter.display_name,
                 "{inviter.mention}": inviter.mention,
                 "{inviter.invites}": invites,
+                "{inviter.id}": inviter.id,
                 "{inviter.discriminator}": str(inviter).split("#")[1],
                 "{guild}": member.guild.name,
                 "{guild.members}": len(member.guild.members),
@@ -333,6 +336,7 @@ class InviteTracker(commands.Cog):
                 "{user.discriminator}": str(member).split("#")[1],
                 "{user.created_at}": user_created,
                 "{user.created_at_days}": since_created,
+                "{user.id}": member.id,
                 "{invite}": f"https://discord.gg/{code}" if code is not None else "UNKNOWN LINK",
                 "{invite.code}": code if code is not None else "UNKNOWN CODE",
             }
@@ -373,11 +377,13 @@ class InviteTracker(commands.Cog):
                 "{inviter.mention}": inviter.mention,
                 "{inviter.invites}": invites,
                 "{inviter.discriminator}": str(inviter).split("#")[1],
+                "{inviter.id}": inviter.id,
                 "{guild}": member.guild.name,
                 "{guild.members}": len(member.guild.members),
                 "{user}": member.mention,
                 "{user.name}": member.display_name,
                 "{user.mention}": member.mention,
+                "{user.id}": user.id,
                 "{user.discriminator}": str(member).split("#")[1],
                 "{user.created_at}": user_created,
                 "{user.created_at_days}": since_created,
