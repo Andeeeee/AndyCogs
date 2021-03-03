@@ -332,7 +332,7 @@ class InviteTracker(commands.Cog):
             await channel.send(message)
 
     @commands.Cog.listener()
-    async def on_member_leave(self, member: discord.Member):
+    async def on_member_remove(self, member: discord.User):
         guild = member.guild
         data = await self.config.guild(guild).all()
         time = datetime.utcnow()
