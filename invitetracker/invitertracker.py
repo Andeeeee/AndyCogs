@@ -339,7 +339,7 @@ class InviteTracker(commands.Cog):
         since_created = (time - member.created_at).days
         user_created = member.created_at.strftime("%d %b %Y %H:%M")
 
-        inviter, code = await self.config.member(member).inviter()
+        inviter = await self.config.member(member).inviter()
         channel = self.bot.get_channel(data["leavechannel"])
         if not channel:
             await self.config.guild(guild).leavechannel.clear()
@@ -357,7 +357,7 @@ class InviteTracker(commands.Cog):
             if not channel:
                 return
             message = await self.config.guild(member.guild).leavemessage()
-            inviter= guild.get_member(inviter)
+            inviter = guild.get_member(inviter)
             replace_dict = {
                 "{inviter}": inviter.mention,
                 "{inviter.name}": inviter.display_name,
@@ -372,8 +372,6 @@ class InviteTracker(commands.Cog):
                 "{user.discriminator}": str(member).split("#")[1],
                 "{user.created_at}": user_created,
                 "{user.created_at_days}": since_created,
-                "{invite}": f"https://discord.gg/{code}" if code is not None else "UNKNOWN LINK",
-                "{invite.code}": code if code is not None else "UNKNOWN CODE"
             }
             for word, replacement in replace_dict.items():
                 message.replace(word, str(replacement))
