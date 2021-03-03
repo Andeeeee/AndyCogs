@@ -374,5 +374,5 @@ class InviteTracker(commands.Cog):
                 "{user.created_at_days}": since_created,
             }
             for word, replacement in replace_dict.items():
-                message.replace(word, str(replacement))
+                message = message.replace(word, str(replacement))
             await channel.send(message)
