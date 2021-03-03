@@ -140,6 +140,7 @@ class InviteTracker(commands.Cog):
             async for log in guild.audit_logs(action=action):
                 if log.target.code not in invites:
                     inviter = log.target.inviter
+                    code = log.target.code
                     break
         return inviter, code
 
