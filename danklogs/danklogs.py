@@ -144,7 +144,7 @@ class DankLogs(commands.Cog):
         
         return new_name
     
-    def is_cancer_name(text: str) -> bool:
+    def is_cancer_name(self, text: str) -> bool:
         for segment in text.split():
             for char in segment:
                 if not (char.isascii() and char.isalnum()):
