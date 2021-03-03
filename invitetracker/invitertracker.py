@@ -140,11 +140,11 @@ class InviteTracker(commands.Cog):
             self.invite_task.cancel()
 
     @commands.group()
-    async def inviteset(self, ctx):
+    async def invitetrackerset(self, ctx):
         """Set server settings for invite tracking"""
         pass 
 
-    @inviteset.command()
+    @invitetrackerset.command()
     @commands.admin_or_permissions(manage_guild=True)
     async def joinchannel(self, ctx, channel: Optional[discord.TextChannel] = None):
         if not channel:
@@ -154,7 +154,7 @@ class InviteTracker(commands.Cog):
             await self.config.guild(ctx.guild).joinchannel.set(channel.id)
             await ctx.send(f"Now logging member invite messages to {channel.mention}")
     
-    @inviteset.command(aliases=["joinmsg"], usage=INVITE_MESSAGE_USAGE)
+    @invitetrackerset.command(aliases=["joinmsg"], usage=INVITE_MESSAGE_USAGE)
     @commands.admin_or_permissions(manage_guild=True)
     async def joinmessage(self, ctx, *, message = None):
         if not message:
@@ -164,7 +164,7 @@ class InviteTracker(commands.Cog):
             await self.config.guild(ctx.guild).joinmessage.set(message)
             await ctx.send("The message has been set")
     
-    @inviteset.command()
+    @invitetrackerset.command()
     @commands.admin_or_permissions(manage_guild=True)
     async def leavechannel(self, ctx, channel: Optional[discord.TextChannel] = None):
         if not channel:
@@ -174,7 +174,7 @@ class InviteTracker(commands.Cog):
             await self.config.guild(ctx.guild).leavechannel.set(channel.id)
             await ctx.send(f"Now logging member invite messages to {channel.mention}")
     
-    @inviteset.command(aliases=["leavemsg"], usage=INVITE_MESSAGE_USAGE)
+    @invitetrackerset.command(aliases=["leavemsg"], usage=INVITE_MESSAGE_USAGE)
     @commands.admin_or_permissions(manage_guild=True)
     async def leavemessage(self, ctx, *, message = None):
         if not message:
@@ -184,7 +184,7 @@ class InviteTracker(commands.Cog):
             await self.config.guild(ctx.guild).leavemessage.set(message)
             await ctx.send("The message has been set")
     
-    @inviteset.command(aliases=["showsettings"])
+    @invitetrackerset.command(aliases=["showsettings"])
     async def settings(self, ctx):
         data = await self.config.guild(ctx.guild).all()
         e = discord.Embed(title=f"Invite Settings for {ctx.guild.name}", color = await ctx.embed_color())
