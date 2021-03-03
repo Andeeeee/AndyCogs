@@ -122,7 +122,7 @@ class DankLogs(commands.Cog):
             else:
                 return m
     
-    def strip_accs(text):
+    def strip_accs(self, text: str):
         try:
             text = unicodedata.normalize("NFKC", text)
             text = unicodedata.normalize("NFD", text)
