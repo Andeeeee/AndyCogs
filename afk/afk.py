@@ -132,7 +132,8 @@ class Afk(commands.Cog):
             pass
         else:
             await message.channel.send(
-                f"Welcome back {message.author.mention}, I've removed your afk."
+                f"Welcome back {message.author.mention}, I've removed your afk.",
+                delete_after=10
             )
             await self.config.member(message.author).afk.clear()
             try:
@@ -175,4 +176,4 @@ class Afk(commands.Cog):
         )
 
         for msg in final_message:
-            await message.channel.send(msg, allowed_mentions=allowed_mentions)
+            await message.channel.send(msg, allowed_mentions=allowed_mentions, delete_after=20)
