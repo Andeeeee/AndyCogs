@@ -348,7 +348,7 @@ class InviteTracker(commands.Cog):
             await self.config.member_from_ids(guild.id, inviter).invites.set(invites)
             if not channel:
                 return
-            message = await self.config.guild(member.guild).joinmessage()
+            message = await self.config.guild(member.guild).leavemessage()
             inviter = guild.get_member(inviter)
             replace_dict = {
                 "{inviter}": inviter.mention,
