@@ -231,15 +231,15 @@ class InviteTracker(commands.Cog):
         inviter = await self.config.member(user).inviter()
         if not inviter:
             return await ctx.send(
-                f"**{user}** either joined from a vanity invite or I couldn't track this"
+                f"**{user.display_name}** either joined from a vanity invite or I couldn't track this"
             )
         elif ctx.guild.get_member(inviter) is None:
             return await ctx.send(
-                f"**{user}**'s inviter seems to have left the server, the id is {inviter}"
+                f"**{user.display_name}**'s inviter seems to have left the server, the id is {inviter}"
             )
         else:
             inviter = ctx.guild.get_member(inviter)
-            await ctx.send(f"**{inviter.display_name}** invited **{user}**")
+            await ctx.send(f"**{inviter.display_name}** invited **{user.display_name}**")
 
     @invites.command()
     async def top(
