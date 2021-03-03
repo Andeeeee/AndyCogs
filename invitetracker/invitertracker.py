@@ -239,7 +239,7 @@ class InviteTracker(commands.Cog):
             )
         else:
             inviter = ctx.guild.get_member(inviter)
-            await ctx.send(f"**<@{inviter.display_name}>** invited **{user}**")
+            await ctx.send(f"**{inviter.display_name}> invited **{user}**")
 
     @invites.command()
     async def top(
@@ -259,7 +259,7 @@ class InviteTracker(commands.Cog):
         leaderboard = ""
 
         for i, data in enumerate(sorted_data, start=1):
-            leaderboard += f"{i}. <@{data[0]}>: {data[1]}"
+            leaderboard += f"{i}. <@{data[0]}>: {data[1]}\n"
 
         if len(leaderboard) >= 2048:
             pages = list(pagify(leaderboard))
