@@ -114,8 +114,9 @@ class DankLogs(commands.Cog):
     async def get_last_message(self, message):
         async for m in message.channel.history(before=message, limit=5):
             if m.author.bot:
-                pass
-            elif not m.content.lower().startswith("pls")
+                continue
+            elif not m.content.lower().startswith("pls"):
+                continue 
             else:
                 return m
 
