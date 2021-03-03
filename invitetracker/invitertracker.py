@@ -239,7 +239,7 @@ class InviteTracker(commands.Cog):
             )
         else:
             inviter = ctx.guild.get_member(inviter)
-            await ctx.send(f"**{inviter.display_name} invited **{user}**")
+            await ctx.send(f"**{inviter.display_name}** invited **{user}**")
 
     @invites.command()
     async def top(
