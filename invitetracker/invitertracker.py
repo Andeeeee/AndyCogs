@@ -21,6 +21,8 @@ Sets your servers join/leave message. Variables:
 {user.discriminator}: The 4 digit discriminator the user has
 {user.created_at}: The date the user was created at
 {user.created_at_days}: How many days ago the user was created from now
+{invite}: https://discord.gg/code, where code is the invite code
+{invite.code}: The raw invite code
 """
 
 
@@ -89,6 +91,7 @@ class InviteTracker(commands.Cog):
         """Attempt to get the inviter of a user"""
         invites = await self.config.guild(member.guild).invites()
         inviter = None
+        code = None
         if invites and member.guild.me.guild_permissions.manage_guild:
             guild_invites = await member.guild.invites()
             for invite in guild_invites:
@@ -96,6 +99,7 @@ class InviteTracker(commands.Cog):
                     uses = invites[invite.code]["uses"]
                     if invite.uses > uses:
                         inviter = invite.inviter
+                        code = invite.code
 
         if not inviter:
             for code, data in invites.items():
@@ -108,11 +112,13 @@ class InviteTracker(commands.Cog):
                     invite = None
                 else:
                     inviter = invite.inviter
+                    code = invite.code
 
                 if not invite:
                     if (data["max_uses"] - data["uses"]) == 1:
                         try:
                             inviter = await self.bot.fetch_user(data["inviter"])
+                            code = data["code"]
                         except (discord.errors.NotFound, discord.errors.Forbidden):
                             inviter = None
 
@@ -127,7 +133,7 @@ class InviteTracker(commands.Cog):
                 if log.target.code not in invites:
                     inviter = log.target.inviter
                     break
-        return inviter
+        return inviter, code
 
     def cog_unload(self):
         self._unload()
@@ -285,7 +291,7 @@ class InviteTracker(commands.Cog):
         since_created = (time - member.created_at).days
         user_created = member.created_at.strftime("%d %b %Y %H:%M")
 
-        inviter = await self.get_inviter(member)
+        inviter, code = await self.get_inviter(member)
         channel = self.bot.get_channel(data["joinchannel"])
         if not channel:
             await self.config.guild(member.guild).joinchannel.clear()
@@ -318,6 +324,8 @@ class InviteTracker(commands.Cog):
                 "{user.discriminator}": str(member).split("#")[1],
                 "{user.created_at}": user_created,
                 "{user.created_at_days}": since_created,
+                "{invite}": f"https://discord.gg/{code}" if code is not None else "UNKNOWN LINK",
+                "{invite.code}": code if code is not None else "UNKNOWN CODE",
             }
             for word, replacement in replace_dict.items():
                 message.replace(word, str(replacement))
@@ -349,7 +357,7 @@ class InviteTracker(commands.Cog):
             if not channel:
                 return
             message = await self.config.guild(member.guild).leavemessage()
-            inviter = guild.get_member(inviter)
+            inviter, code = guild.get_member(inviter)
             replace_dict = {
                 "{inviter}": inviter.mention,
                 "{inviter.name}": inviter.display_name,
@@ -364,6 +372,8 @@ class InviteTracker(commands.Cog):
                 "{user.discriminator}": str(member).split("#")[1],
                 "{user.created_at}": user_created,
                 "{user.created_at_days}": since_created,
+                "{invite}": f"https://discord.gg/{code}" if code is not None else "UNKNOWN LINK",
+                "{invite.code}": code if code is not None else "UNKNOWN CODE"
             }
             for word, replacement in replace_dict.items():
                 message.replace(word, str(replacement))
