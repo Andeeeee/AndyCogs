@@ -89,14 +89,6 @@ class InviteTracker(commands.Cog):
         """Attempt to get the inviter of a user"""
         invites = await self.config.guild(member.guild).invites()
         inviter = None
-        if (
-            member.guild.me.guild_permissions.manage_guild
-            and "VANITY_URL" in member.guild.features
-        ):
-            try:
-                link = str(await member.guild.vanity_invite())
-            except (discord.errors.NotFound, discord.errors.HTTPException):
-                pass
         if invites and member.guild.me.guild_permissions.manage_guild:
             guild_invites = await member.guild.invites()
             for invite in guild_invites:
