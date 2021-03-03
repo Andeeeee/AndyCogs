@@ -3,7 +3,7 @@
 </h1>
 
 <h1 align="center">
-  <a href="https://github.com/AndyButAnnoying/AndyCogs"><img src="https://cdn.discordapp.com/icons/321845546534830085/a_650fa1ce364722e61d08b2d7280dc18f.jpg" alt="AndyCogs"></a>
+  <a href="https://github.com/Andeeeee/AndysNeverToBeApprovedUntil3021Cogs"><img src="https://cdn.discordapp.com/icons/321845546534830085/a_650fa1ce364722e61d08b2d7280dc18f.jpg" alt="AndyCogs"></a>
 </h1>
 
 <p align="center">
@@ -21,7 +21,7 @@
 
 # Installation
 `[p]load downloader`<br>
-`[p]repo add AndyCogs https://github.com/Andeeeee/AndyCogs`<br>
+`[p]repo add AndyCogs https://github.com/Andeeeee/AndysNeverToBeApprovedUntil3021Cogs`<br>
 `[p]cog install AndyCogs [cogname]`<br>
 `[p]load [cogname]`<br>
 
