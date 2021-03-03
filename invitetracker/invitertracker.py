@@ -37,8 +37,8 @@ class InviteTracker(commands.Cog):
             "invites": {},
             "joinchannel": None,
             "leavechannel": None,
-            "leavemessage": "{user.name} left {guild.name}. They were invited by {inviter.name} who now has {inviter.invites} invites",
-            "joinmessage": "{user.name} joined {guild.name}! They were invited by {inviter.name} who now has {inviter.invites} invites",
+            "leavemessage": "{user.name} left {guild}. They were invited by {inviter.name} who now has {inviter.invites} invites",
+            "joinmessage": "{user.name} joined {guild}! They were invited by {inviter.name} who now has {inviter.invites} invites",
         }
 
         default_member = {
