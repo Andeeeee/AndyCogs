@@ -14,7 +14,7 @@ from typing import Optional
 from unidecode import unidecode
 
 gift_regex = re.compile(
-    r"You gave (?P<user>.+\w)?  ?\*\*(?P<amount>[0-9,]+)\*\* ?(?:(?P<item>[a-zA-Z0-9_]{2,32}))?"
+    r"You gave (?P<user>.+\w)?  ?(?P<amount>[0-9,]+) ?(?:(?P<item>[a-zA-Z0-9_]{2,32}))?"
 )
 
 
