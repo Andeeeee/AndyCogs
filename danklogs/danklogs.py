@@ -133,6 +133,20 @@ class DankLogs(commands.Cog):
                 continue 
             if data["storedname"] == name:
                 return user
+        
+        name = unidecode(name)
+        result = []
+        for r in process.extract(
+            {unidecode(m.name) for m in ctx.guild.members},
+            name,
+            limit=None,
+            score_cutoff=75
+        ):
+            result.append((r[2], r[1]))
+
+            sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
+            return sorted_result[0][0]
+        
 
 
     @commands.group(aliases=["dls"])
