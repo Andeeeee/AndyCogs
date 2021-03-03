@@ -96,7 +96,7 @@ class Giveaways(commands.Cog):
 
     # -------------------------------------Functions---------------------------------
     async def count_invites(self, member: discord.Member):
-        cog = self.bot.get_cog("Invites")
+        cog = self.bot.get_cog("InviteTracker")
         if not cog:
             return 0 
         invites = await cog.config.member(member).invites()
