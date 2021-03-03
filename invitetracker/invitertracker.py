@@ -88,6 +88,7 @@ class InviteTracker(commands.Cog):
     async def get_inviter(self, member: discord.Member) -> str:
         """Attempt to get the inviter of a user"""
         invites = await self.config.guild(member.guild).invites()
+        inviter = None
         if (
             member.guild.me.guild_permissions.manage_guild
             and "VANITY_URL" in member.guild.features
