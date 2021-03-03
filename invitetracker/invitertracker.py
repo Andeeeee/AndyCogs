@@ -339,7 +339,7 @@ class InviteTracker(commands.Cog):
         since_created = (time - member.created_at).days
         user_created = member.created_at.strftime("%d %b %Y %H:%M")
 
-        inviter = await self.config.member(member).inviter()
+        inviter, code = await self.config.member(member).inviter()
         channel = self.bot.get_channel(data["leavechannel"])
         if not channel:
             await self.config.guild(guild).leavechannel.clear()
@@ -357,7 +357,7 @@ class InviteTracker(commands.Cog):
             if not channel:
                 return
             message = await self.config.guild(member.guild).leavemessage()
-            inviter, code = guild.get_member(inviter)
+            inviter= guild.get_member(inviter)
             replace_dict = {
                 "{inviter}": inviter.mention,
                 "{inviter.name}": inviter.display_name,
