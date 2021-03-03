@@ -126,7 +126,7 @@ class DankLogs(commands.Cog):
         try:
             text = unicodedata.normalize("NFKC", text)
             text = unicodedata.normalize("NFD", text)
-            text = unidecode.unidecode(text)
+            text = unidecode(text)
             text = text.encode("ascii", "ignore")
             text = text.decode("utf-8")
         except Exception as e:
