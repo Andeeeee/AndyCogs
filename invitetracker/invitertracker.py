@@ -37,8 +37,8 @@ class InviteTracker(commands.Cog):
             "invites": {},
             "joinchannel": None,
             "leavechannel": None,
-            "leavemessage": "{member.name} left {guild.name}. They were invited by {inviter.name} who now has {inviter.invites} invites",
-            "joinmessage": "{member.name} joined {guild.name}! They were invited by {inviter.name} who now has {inviter.invites} invites",
+            "leavemessage": "{user.name} left {guild.name}. They were invited by {inviter.name} who now has {inviter.invites} invites",
+            "joinmessage": "{user.name} joined {guild.name}! They were invited by {inviter.name} who now has {inviter.invites} invites",
         }
 
         default_member = {
@@ -328,7 +328,7 @@ class InviteTracker(commands.Cog):
                 "{invite.code}": code if code is not None else "UNKNOWN CODE",
             }
             for word, replacement in replace_dict.items():
-                message.replace(word, str(replacement))
+                message = message.replace(word, str(replacement))
             await channel.send(message)
 
     @commands.Cog.listener()
