@@ -104,7 +104,7 @@ class InviteTracker(commands.Cog):
                     if invite.uses > uses:
                         inviter = invite.inviter
 
-        if not link:
+        if not inviter:
             for code, data in invites.items():
                 try:
                     invite = await self.bot.fetch_invite(code)
