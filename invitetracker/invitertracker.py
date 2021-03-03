@@ -89,6 +89,7 @@ class InviteTracker(commands.Cog):
         guild = member.guild
         manage_guild = guild.me.guild_permissions.manage_guild
         inviter = None
+        code = None
         check_logs = manage_guild and guild.me.guild_permissions.view_audit_log
         invites = await self.config.guild(guild).invites()
         if member.bot:
@@ -98,7 +99,7 @@ class InviteTracker(commands.Cog):
                     if log.target.id == member.id:
                         inviter = log.user
                         break
-            return inviter
+            return inviter, code
 
         if manage_guild and "VANITY_URL" in guild.features:
             try:
@@ -113,21 +114,23 @@ class InviteTracker(commands.Cog):
                     uses = invites[invite.code]["uses"]
                     if invite.uses > uses:
                         inviter = invite.inviter
+                        code = invite.code
 
             if not inviter:
-                for code, data in invites.items():
+                for c, data in invites.items():
                     try:
-                        invite = await self.bot.fetch_invite(code)
+                        invite = await self.bot.fetch_invite(c)
                     except (
                         discord.errors.NotFound,
                         discord.errors.HTTPException,
                         Exception,
                     ):
-                        pass
+                        continue
                     if not invite:
                         if (data["max_uses"] - data["uses"]) == 1:
                             try:
                                 inviter = await self.bot.fetch_user(data["inviter"])
+                                code = c
                             except (discord.errors.NotFound, discord.errors.Forbidden):
                                 inviter = None
             await self.save_invite_links(guild) 
@@ -138,7 +141,7 @@ class InviteTracker(commands.Cog):
                 if log.target.code not in invites:
                     inviter = log.target.inviter
                     break
-        return inviter
+        return inviter, code
 
     def cog_unload(self):
         self._unload()
