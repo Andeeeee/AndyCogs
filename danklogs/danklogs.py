@@ -144,11 +144,12 @@ class DankLogs(commands.Cog):
         
         return new_name
     
-    def is_cancer_name(self, text: str):
-        for char in text:
-            if not char.isalnum() and char.isascii():
-                return True 
-        return False 
+    def is_cancer_name(text: str) -> bool:
+        for segment in text.split():
+            for char in segment:
+                if not (char.isascii() and char.isalnum()):
+                    return True
+        return False
 
     async def get_fuzzy_member(self, ctx, name):
         user = discord.utils.get(ctx.guild.members, name=name)
