@@ -258,8 +258,8 @@ class InviteTracker(commands.Cog):
 
         leaderboard = ""
 
-        for i, member, invites in enumerate(sorted_data, start=1):
-            leaderboard += f"{i}. <@{member}>: {invites}"
+        for i, data in enumerate(sorted_data, start=1):
+            leaderboard += f"{i}. <@{data[0]}>: {data[1]}"
 
         if len(leaderboard) >= 2048:
             pages = list(pagify(leaderboard))
