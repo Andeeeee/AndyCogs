@@ -138,7 +138,7 @@ class InviteTracker(commands.Cog):
                 if log.target.code not in invites:
                     inviter = log.target.inviter
                     break
-        return possible_link
+        return inviter
 
     def cog_unload(self):
         self._unload()
