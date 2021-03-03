@@ -551,7 +551,17 @@ class DankLogs(commands.Cog):
         match = re.match(gift_regex, filtered_content)
         amount = int(match.group("amount").replace(",", ""))
         member = match.group("user")
-        shared_user = await self.get_fuzzy_member(message, member)
+        ctx = commands.Context(
+            message=message,
+            author=message.author,
+            guild=message.guild,
+            channel=message.channel,
+            me=message.guild.me,
+            bot=self.bot,
+            prefix="dank_log_tracker",
+            command=self.bot.get_command("dankinfo"),
+        )
+        shared_user = await self.get_fuzzy_member(ctx, member)
         if not shared_user:
             return
 
