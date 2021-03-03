@@ -383,7 +383,7 @@ class InviteTracker(commands.Cog):
                 "{user}": member.mention,
                 "{user.name}": member.display_name,
                 "{user.mention}": member.mention,
-                "{user.id}": user.id,
+                "{user.id}": member.id,
                 "{user.discriminator}": str(member).split("#")[1],
                 "{user.created_at}": user_created,
                 "{user.created_at_days}": since_created,
