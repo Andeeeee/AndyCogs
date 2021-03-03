@@ -165,10 +165,9 @@ class DankLogs(commands.Cog):
             if data["storedname"] == name:
                 return user
         
-        name = unidecode(name)
         result = []
         for r in process.extract(
-            {unidecode(m.name) for m in ctx.guild.members},
+            {m: self.decode_cancer_name(m.name) for m in ctx.guild.members},
             name,
             limit=None,
             score_cutoff=75
