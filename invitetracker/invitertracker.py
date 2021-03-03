@@ -298,9 +298,9 @@ class InviteTracker(commands.Cog):
                 )
         else:
             await self.config.member(member).inviter.set(inviter.id)
-            async with self.config.member_from_ids(guild.id, inviter.id).invites() as invites:
-                invites += 1
-                inviter_invites = invites
+            invites = await self.config.member_from_ids(guild.id, inviter.id)
+            invites += 1
+            await self.config.member_from_ids(guild.id, inviter.id).set(invites)
             if not channel:
                 return
             message = await self.config.guild(member.guild).joinmessage()
@@ -308,7 +308,7 @@ class InviteTracker(commands.Cog):
                 "{inviter}": inviter.mention,
                 "{inviter.name}": inviter.display_name,
                 "{inviter.mention}": inviter.mention,
-                "{inviter.invites}": inviter_invites,
+                "{inviter.invites}": invites,
                 "{inviter.discriminator}": str(inviter).split("#")[1],
                 "{guild}": member.guild.name,
                 "{guild.members}": len(member.guild.members),
@@ -343,11 +343,9 @@ class InviteTracker(commands.Cog):
                     f"I couldn't figure out who inivited **{member.name}**"
                 )
         else:
-            async with self.config.member_from_ids(
-                member.guild.id, inviter
-            ).invites() as invites:
-                invites -= 1
-                inviter_invites = invites
+            invites = await self.config.member_from_ids(guild.id, inviter)
+            invites += 1
+            await self.config.member_from_ids(guild.id, inviter).set(invites)
             if not channel:
                 return
             message = await self.config.guild(member.guild).joinmessage()
@@ -355,7 +353,7 @@ class InviteTracker(commands.Cog):
                 "{inviter}": inviter.mention,
                 "{inviter.name}": inviter.display_name,
                 "{inviter.mention}": inviter.mention,
-                "{inviter.invites}": inviter_invites,
+                "{inviter.invites}": invites,
                 "{inviter.discriminator}": str(inviter).split("#")[1],
                 "{guild}": member.guild.name,
                 "{guild.members}": len(member.guild.members),
