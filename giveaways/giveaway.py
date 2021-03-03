@@ -96,13 +96,10 @@ class Giveaways(commands.Cog):
 
     # -------------------------------------Functions---------------------------------
     async def count_invites(self, member: discord.Member):
-        guild = member.guild
-        invites = 0
-        if not guild.me.guild_permissions.manage_guild:
-            return 0
-        for invite in await guild.invites():
-            if invite.inviter == member:
-                invites += invite.uses
+        cog = self.bot.get_cog("Invites")
+        if not cog:
+            return 0 
+        invites = await cog.config.member(member).invites()
         return invites
 
     def convert_time(self, time: str):
