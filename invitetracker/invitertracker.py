@@ -55,8 +55,6 @@ class InviteTracker(commands.Cog):
         """Check every 5 minutes for updates to the invite links"""
         await self.bot.wait_until_ready()
         for guild_id, data in (await self.config.all_guilds()).items():
-            if not data["enabled"]:
-                return
             guild = self.bot.get_guild(int(guild_id))
             if not guild:
                 continue
@@ -376,3 +374,29 @@ class InviteTracker(commands.Cog):
             for word, replacement in replace_dict.items():
                 message = message.replace(word, str(replacement))
             await channel.send(message)
+    
+    @commands.Cog.listener()
+    async def on_invite_create(self, invite: discord.Invite) -> None:
+        guild = invite.guild
+        invites = await self.config.guild(guild).invites()
+        if invite.code not in invites:
+            created_at = getattr(invite, "created_at", datetime.datetime.utcnow())
+            inviter = getattr(invite, "inviter", discord.Object(id=0))
+            channel = getattr(invite, "channel", discord.Object(id=0))
+            invites[invite.code] = {
+                "uses": getattr(invite, "uses", 0),
+                "max_age": getattr(invite, "max_age", None),
+                "created_at": created_at.timestamp(),
+                "max_uses": getattr(invite, "max_uses", None),
+                "temporary": getattr(invite, "temporary", False),
+                "inviter": getattr(inviter, "id", "Unknown"),
+                "channel": channel.id,
+            }
+            await self.config.guild(guild).invites.set(invites)
+        
+    @commands.Cog.listener()
+    async def on_invite_delete(self, invite: discord.Invite) -> None:
+        guild = invite.guild
+        invites = await self.config.guild(guild).invites()
+        del invites[invite.code]
+        await self.config.guild(guild).invites.set(invites)
