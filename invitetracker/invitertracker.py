@@ -298,9 +298,9 @@ class InviteTracker(commands.Cog):
                 )
         else:
             await self.config.member(member).inviter.set(inviter.id)
-            invites = await self.config.member_from_ids(guild.id, inviter.id)
+            invites = await self.config.member_from_ids(guild.id, inviter.id).invites()
             invites += 1
-            await self.config.member_from_ids(guild.id, inviter.id).set(invites)
+            await self.config.member_from_ids(guild.id, inviter.id).invites.set(invites)
             if not channel:
                 return
             message = await self.config.guild(member.guild).joinmessage()
@@ -343,9 +343,9 @@ class InviteTracker(commands.Cog):
                     f"I couldn't figure out who inivited **{member.name}**"
                 )
         else:
-            invites = await self.config.member_from_ids(guild.id, inviter)
+            invites = await self.config.member_from_ids(guild.id, inviter).invites()
             invites += 1
-            await self.config.member_from_ids(guild.id, inviter).set(invites)
+            await self.config.member_from_ids(guild.id, inviter).invites.set(invites)
             if not channel:
                 return
             message = await self.config.guild(member.guild).joinmessage()
