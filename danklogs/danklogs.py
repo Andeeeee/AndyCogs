@@ -1,3 +1,27 @@
+"""
+MIT License
+
+Copyright (c) 2021 Andy
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
 import asyncio
 import discord
 import contextlib
@@ -95,19 +119,15 @@ class DankLogs(commands.Cog):
             "giftedusers": {},
             "sharedusers": {},
             "logs": [],
+            "storedname": None
         }
 
         default_channel = {
             "ignored": False,
         }
 
-        default_user = {
-            "storedname": None,
-        }
-
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
-        self.config.register_user(**default_user)
         self.config.register_channel(**default_channel)
 
     def comma_format(self, number: int):
@@ -152,9 +172,9 @@ class DankLogs(commands.Cog):
     async def get_fuzzy_member(self, ctx, name):
         user = discord.utils.get(ctx.guild.members, name=name)
         if user:
-            await self.config.user(user).storedname.set(name)
+            await self.config.member(user).storedname.set(name)
             return user 
-        all_users = await self.config.all_users()
+        all_users = await self.config.all_members(ctx.guild)
 
         for user, data in all_users.items():
             user = ctx.guild.get_member(int(user))
@@ -173,7 +193,7 @@ class DankLogs(commands.Cog):
             result.append((r[2], r[1]))
 
             sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
-            await self.config.user(sorted_result[0][0]).storedname.set(name)
+            await self.config.member(sorted_result[0][0]).storedname.set(name)
             return sorted_result[0][0]
         
 
