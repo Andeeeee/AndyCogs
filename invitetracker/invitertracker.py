@@ -41,6 +41,7 @@ class InviteTracker(commands.Cog):
             "leavechannel": None,
             "leavemessage": "{user.name} left {guild}. They were invited by {inviter.name} who now has {inviter.invites} invites",
             "joinmessage": "{user.name} joined {guild}! They were invited by {inviter.name} who now has {inviter.invites} invites",
+            "roles": {},
         }
 
         default_member = {
@@ -48,13 +49,12 @@ class InviteTracker(commands.Cog):
             "inviter": None,
         }
 
-        self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
+        self.config.register_guild(**default_guild)
 
         self.invite_task = asyncio.create_task(self.invite_loop())
 
     async def invite_loop(self):
-        """Check every 5 minutes for updates to the invite links"""
         await self.bot.wait_until_ready()
         for guild_id, data in (await self.config.all_guilds()).items():
             guild = self.bot.get_guild(int(guild_id))
@@ -63,8 +63,28 @@ class InviteTracker(commands.Cog):
             await self.save_invite_links(guild)
         await asyncio.sleep(300)
 
+    async def add_invite_roles(self, guild: discord.Guild, member: discord.Member):
+        invite_roles = await self.config.guild(guild).roles()
+        member_roles = member.roles
+        invites = await self.config.member(member).invites()
+
+        for r, amount in invite_roles.items():
+            role = guild.get_role(int(r))
+            if not role:
+                all_invite_roles = await self.config.guild(guild).roles()
+                all_invite_roles.pop(r)
+                await self.config.guild(guild).roles.set(all_invite_roles)
+                continue
+
+            if amount > invites:
+                if role in member.roles:
+                    await member.remove_roles(role)
+
+            else:
+                if role not in member.roles:
+                    await member.add_roles(role)
+
     async def save_invite_links(self, guild: discord.Guild) -> bool:
-        """Saves invite links to config"""
         invites = {}
         if not guild.me.guild_permissions.manage_guild:
             return False
@@ -135,7 +155,7 @@ class InviteTracker(commands.Cog):
                                 code = c
                             except (discord.errors.NotFound, discord.errors.Forbidden):
                                 inviter = None
-            await self.save_invite_links(guild) 
+            await self.save_invite_links(guild)
 
         if check_logs and not inviter:
             action = discord.AuditLogAction.invite_create
@@ -250,7 +270,9 @@ class InviteTracker(commands.Cog):
             )
         else:
             inviter = ctx.guild.get_member(inviter)
-            await ctx.send(f"**{inviter.display_name}** invited **{user.display_name}**")
+            await ctx.send(
+                f"**{inviter.display_name}** invited **{user.display_name}**"
+            )
 
     @invites.command()
     async def top(
@@ -293,6 +315,56 @@ class InviteTracker(commands.Cog):
             )
             e.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
             await ctx.send(embed=e)
+    
+    @commands.group()
+    async def inviterole(self, ctx: commands.Context):
+        """Add or remove invite roles"""
+        pass
+
+    @inviterole.command(name="set")
+    @commands.admin_or_permissions(manage_guild=True)
+    async def _set(self, ctx: commands.Context, role: discord.Role, invites: int):
+        """
+        Set the number of invites for an invite role. You cannot remove invite roles with this. 
+        To remove invite roles, see `[p]inviterole delete`
+        """
+
+        invite_roles = await self.config.guild(ctx.guild).roles()
+        invite_roles[str(role.id)] = invites 
+        await self.config.guild(ctx.guild).roles.set(invite_roles)
+
+        await ctx.send(f"Done. The role `{role.name}` will now be added at **{invites}** invites.")
+    
+    @inviterole.command(name="delete", aliases=["del", "remove"])
+    @commands.admin_or_permissions(manage_guild=True)
+    async def _delete(self, ctx: commands.Context, role: discord.Role):
+        """Remove an invite role so it will not be added or removed"""
+        invite_roles = await self.config.guild(ctx.guild).roles()
+
+        if str(role.id) not in invite_roles:
+            return await ctx.send("This role is not being added or removed")
+        
+        invite_roles.pop(str(role.id))
+        await ctx.send("Done. I will no longer add or remove this role automatically for invites")
+    
+    @inviterole.command()
+    async def show(self, ctx: commands.Context):
+        """View the invite roles"""
+        invite_roles = await self.config.guild(ctx.guild).roles()
+        roles = ["The following list if formatted with `<role>: <invites>`"]
+
+        for role_id, invites_needed in invite_roles:
+            roles.append(f"<@{role_id}>: {invites_needed}")
+        
+        e = discord.Embed(
+            title = "Invite Roles",
+            color = await ctx.embed_color(),
+            description = "\n".join(roles),
+        )
+        e.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
+
+        await ctx.send(embed=e)
+        
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
@@ -337,12 +409,15 @@ class InviteTracker(commands.Cog):
                 "{user.created_at}": user_created,
                 "{user.created_at_days}": since_created,
                 "{user.id}": member.id,
-                "{invite}": f"https://discord.gg/{code}" if code is not None else "UNKNOWN LINK",
+                "{invite}": f"https://discord.gg/{code}"
+                if code is not None
+                else "UNKNOWN LINK",
                 "{invite.code}": code if code is not None else "UNKNOWN CODE",
             }
             for word, replacement in replace_dict.items():
                 message = message.replace(word, str(replacement))
             await channel.send(message)
+            await self.add_invite_roles(guild, member)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.User):
@@ -391,7 +466,8 @@ class InviteTracker(commands.Cog):
             for word, replacement in replace_dict.items():
                 message = message.replace(word, str(replacement))
             await channel.send(message)
-    
+            await self.add_invite_roles(guild, member)
+
     @commands.Cog.listener()
     async def on_invite_create(self, invite: discord.Invite) -> None:
         guild = invite.guild
@@ -410,7 +486,7 @@ class InviteTracker(commands.Cog):
                 "channel": channel.id,
             }
             await self.config.guild(guild).invites.set(invites)
-        
+
     @commands.Cog.listener()
     async def on_invite_delete(self, invite: discord.Invite) -> None:
         guild = invite.guild
