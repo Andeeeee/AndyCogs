@@ -353,7 +353,7 @@ class InviteTracker(commands.Cog):
         invite_roles = await self.config.guild(ctx.guild).roles()
         roles = ["The following list if formatted with `<role>: <invites>`"]
 
-        for role_id, invites_needed in invite_roles:
+        for role_id, invites_needed in invite_roles.items():
             roles.append(f"<@{role_id}>: {invites_needed}")
         
         e = discord.Embed(
