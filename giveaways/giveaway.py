@@ -85,9 +85,6 @@ class Giveaways(commands.Cog):
 
         self.message_cache = {}
         self.giveaway_cache = {}
-        self.mee6_cache = {}
-        self.amari_cache = {}
-        self.weekly_amari_cache = {}
 
         self.config.register_guild(**default_guild)
         self.config.register_member(**default_member)
@@ -190,17 +187,8 @@ class Giveaways(commands.Cog):
                 )
 
         if requirements["mee6"]:
-            if str(user.guild.id) not in self.mee6_cache:
-                self.mee6_cache[str(user.guild.id)] = {}
-            if self.mee6_cache[str(user.guild.id)].get(str(user.id), None) is None:
-                user_level = await mee6_api.get_user_rank(user.guild.id, user.id)
-                self.mee6_cache[str(user.guild.id)][str(user.id)] = user_level
-            else:
-                user_level = self.mee6_cache[str(user.guild.id)].get(str(user.id))
-            choice = randint(1, 6)
-            if choice == 3:
-                user_level = await mee6_api.get_user_rank(user.guild.id, user.id)
-                self.mee6_cache[str(user.guild.id)][str(user.id)] = user_level
+            user_level = await mee6_api.get_user_rank(user.guild.id, user.id)
+
             if user_level < requirements["mee6"]:
                 return (
                     False,
@@ -208,21 +196,7 @@ class Giveaways(commands.Cog):
                 )
 
         if requirements["amari"]:
-            if str(user.guild.id) not in self.amari_cache:
-                self.amari_cache[str(user.guild.id)] = {}
-            if self.amari_cache[str(user.guild.id)].get(str(user.id), None) is None:
-                user_level = await amari_api.get_amari_rank(user.guild.id, user)
-                if not user_level:
-                    return False
-                self.amari_cache[str(user.guild.id)][str(user.id)] = user_level
-            else:
-                user_level = self.amari_cache[str(user.guild.id)].get(str(user.id))
-            choice = randint(1, 6)
-            if choice == 3:
-                user_level = await amari_api.get_amari_rank(user.guild.id, user)
-                if not user_level:
-                    return False
-                self.amari_cache[str(user.guild.id)][str(user.id)] = user_level
+            user_level = await amari_api.get_amari_rank(user.guild.id, user)
             if user_level < requirements["amari"]:
                 return (
                     False,
@@ -230,27 +204,7 @@ class Giveaways(commands.Cog):
                 )
 
         if requirements["weeklyamari"]:
-            if str(user.guild.id) not in self.weekly_amari_cache:
-                self.weekly_amari_cache[str(user.guild.id)] = {}
-            if (
-                self.weekly_amari_cache[str(user.guild.id)].get(str(user.id), None)
-                is None
-            ):
-                user_level = await amari_api.get_weekly_rank(user.guild.id, user)
-                if not user_level:
-                    return False
-                self.weekly_amari_cache[str(user.guild.id)][str(user.id)] = user_level
-            else:
-                user_level = self.weekly_amari_cache[str(user.guild.id)].get(
-                    str(user.id)
-                )
-
-            choice = randint(1, 6)
-            if choice == 3:
-                user_level = await amari_api.get_weekly_rank(user.guild.id, user)
-                if not user_level:
-                    return False
-                self.weekly_amari_cache[str(user.guild.id)][str(user.id)] = user_level
+            user_level = await amari_api.get_weekly_rank(user.guild.id, user)
 
             if user_level < requirements["weeklyamari"]:
                 return (
