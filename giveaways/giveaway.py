@@ -1506,19 +1506,9 @@ class Giveaways(commands.Cog):
         async with ctx.typing():
             giveaway_list = []
             bypassrole = await self.config.guild(ctx.guild).bypassrole()
-            counter = 0
             gaws = await self.config.guild(ctx.guild).giveaways()
-            startmessage = await ctx.send("0 giveaways gathered")
             for messageid, info in gaws.items():
                 messageid = str(messageid)
-                try:
-                    if counter % 20 == 0:
-                        await startmessage.edit(
-                            content=f"{counter} messages out of {len(gaws.values())} messages gathered"
-                        )
-                except ZeroDivisionError:
-                    pass
-                counter += 1
                 if not info["Ongoing"]:
                     continue
                 if not can_join:
@@ -1552,8 +1542,6 @@ class Giveaways(commands.Cog):
                     if can_join_var == True:
                         header += " :white_check_mark: You can join this giveaway\n"
                         giveaway_list.append(header)
-
-        await startmessage.delete()
 
         formatted_giveaways = "\n".join(giveaway_list)
         if len(formatted_giveaways) > 2048:
