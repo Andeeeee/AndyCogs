@@ -1462,7 +1462,7 @@ class Giveaways(commands.Cog):
                             continue
                         if not message:
                             try:
-                                message = await channel.fetch_message(int(messageid))
+                                message = channel.get_partial_message(int(messageid))
                             except discord.NotFound:
                                 continue
                         self.message_cache[messageid] = message
