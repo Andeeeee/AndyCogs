@@ -603,7 +603,7 @@ class DankLogs(commands.Cog):
                 f"At {formatted_now}, {self.comma_format(amount)} was shared to {shared_user} (ID of {shared_user.id})"
             )
             shared_user_data["logs"].append(
-                f"At {formatted_now}, {self.comma_format(amount)} was received from {message.author} (ID of {message.author.id})"
+                f"At {formatted_now}, {self.comma_format(amount)} was received from {last_message.author} (ID of {last_message.author.id})"
             )
             await self.config.member(shared_user).set(shared_user_data)
             await self.config.member(last_message.author).set(user_data)
