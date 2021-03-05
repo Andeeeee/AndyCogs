@@ -148,7 +148,10 @@ class Giveaways(commands.Cog):
                     )
 
     async def can_join(self, user: discord.Member, info):
-        data = await self.config.guild(user.guild).all()
+        try:
+            data = await self.config.guild(user.guild).all()
+        except AttributeError:
+            return False
         secretblacklist = await self.config.secretblacklist()
         if user.id in secretblacklist:
             return False
