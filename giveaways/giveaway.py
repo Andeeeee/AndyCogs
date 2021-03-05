@@ -687,7 +687,7 @@ class Giveaways(commands.Cog):
             return
         if embed:
             e = discord.Embed(description=final_message, color = await ctx.embed_color())
-            await ctx.send(embed=e, content=role.mention)
+            await ctx.send(embed=e, content=role.mention, allowed_mentions=allowed_mentions)
         else:
             await ctx.send(final_message, allowed_mentions=allowed_mentions)
 
