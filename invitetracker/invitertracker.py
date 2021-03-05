@@ -354,7 +354,7 @@ class InviteTracker(commands.Cog):
         roles = ["The following list if formatted with `<role>: <invites>`"]
 
         for role_id, invites_needed in invite_roles.items():
-            roles.append(f"<@{role_id}>: {invites_needed}")
+            roles.append(f"<@&{role_id}>: {invites_needed}")
         
         e = discord.Embed(
             title = "Invite Roles",
