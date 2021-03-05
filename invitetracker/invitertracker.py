@@ -343,8 +343,9 @@ class InviteTracker(commands.Cog):
 
         if str(role.id) not in invite_roles:
             return await ctx.send("This role is not being added or removed")
-        
         invite_roles.pop(str(role.id))
+        await self.config.guild(ctx.guild).roles.set(invite_roles)
+
         await ctx.send("Done. I will no longer add or remove this role automatically for invites")
     
     @inviterole.command()
