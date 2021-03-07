@@ -83,6 +83,19 @@ class LotteryReminder(commands.Cog):
         count = await self.config.user(user).entered()
 
         await ctx.send(f"I have tracked **{count}** lottery entries for **{user}**")
+    
+    @danklottery.command(aliases=["nextlottery"])
+    async def next(self, ctx: commands.Context):
+        next = await self.config.user(ctx.author).nextlottery()
+
+        if not next:
+            return await ctx.send("I don't have your next lottery tracked")
+      
+        e = discord.Embed(
+            description="The timestamp is when your next lottery will be at",
+            timestamp=datetime.datetime.fromtimestamp(next)
+        )
+        await ctx.send(embed=e)
 
     @commands.Cog.listener()
     async def on_message_without_command(self, message: discord.Message):
