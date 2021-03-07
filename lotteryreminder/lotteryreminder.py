@@ -86,6 +86,7 @@ class LotteryReminder(commands.Cog):
     
     @danklottery.command(aliases=["nextlottery"])
     async def next(self, ctx: commands.Context):
+        """View when your next lottery happens"""
         next = await self.config.user(ctx.author).nextlottery()
 
         if not next:
@@ -148,9 +149,4 @@ class LotteryReminder(commands.Cog):
         except (discord.errors.Forbidden, discord.NotFound, discord.HTTPException):
             pass
 
-        await self.config.user(user).nextlottery.set(
-            datetime.datetime.utcnow().timestamp() + 3600
-        )
-        await self.reminder_timer(
-            self, user, datetime.datetime.utcnow().timestamp() + 3600
-        )
+        await self.config.user(user).nextlottery.clear()
