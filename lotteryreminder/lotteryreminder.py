@@ -12,6 +12,7 @@ class LotteryReminder(commands.Cog):
 
     def __init__(self, bot: Red):
         self.config = Config.get_conf(self, 160805014090190130501014, True)
+        self.bot = bot
 
         default_user = {
             "enabled": False,
@@ -111,7 +112,7 @@ class LotteryReminder(commands.Cog):
         ):
             return
 
-        def dank_check(self, message: discord.Message):
+        def dank_check(message: discord.Message):
             if not message.author.id == 270904126974590976:
                 return
             if not message.embeds:
@@ -119,7 +120,7 @@ class LotteryReminder(commands.Cog):
 
             try:
                 embed = message.embeds[0]
-            except IndexError:
+            except (IndexError, TypeError):
                 return
 
             return "You bought a lottery ticket" in embed.title
