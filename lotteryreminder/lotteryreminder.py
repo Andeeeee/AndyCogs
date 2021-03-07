@@ -19,6 +19,8 @@ class LotteryReminder(commands.Cog):
             "entered": 0,
         }
 
+        self.config.register_user(**default_user)
+
         self.tasks = []
         self.worker_task = bot.loop.create_task(self.reminder_worker())
 
@@ -78,7 +80,7 @@ class LotteryReminder(commands.Cog):
         if not user:
             user = ctx.author
 
-        count = await self.config.member(user).entered()
+        count = await self.config.user(user).entered()
 
         await ctx.send(f"I have tracked **{count}** lottery entries for **{user}**")
 
