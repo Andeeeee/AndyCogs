@@ -123,7 +123,7 @@ class LotteryReminder(commands.Cog):
             except (IndexError, TypeError):
                 return
 
-            return "You bought a lottery ticket" in embed.title
+            return "You bought a lottery ticket" in str(embed.title)
 
         try:
             message = await self.bot.wait_for("message", check=dank_check, timeout=60)
