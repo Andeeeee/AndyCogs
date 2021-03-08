@@ -84,7 +84,7 @@ class LotteryReminder(commands.Cog):
         count = await self.config.user(user).entered()
 
         await ctx.send(f"I have tracked **{count}** lottery entries for **{user}**")
-    
+
     @danklottery.command(aliases=["nextlottery"])
     async def next(self, ctx: commands.Context):
         """View when your next lottery happens"""
@@ -92,10 +92,10 @@ class LotteryReminder(commands.Cog):
 
         if not next:
             return await ctx.send("I don't have your next lottery tracked")
-      
+
         e = discord.Embed(
             description="The timestamp is when your next lottery will be at",
-            timestamp=datetime.datetime.fromtimestamp(next)
+            timestamp=datetime.datetime.fromtimestamp(next),
         )
         await ctx.send(embed=e)
 
@@ -124,7 +124,7 @@ class LotteryReminder(commands.Cog):
                 embed = m.embeds[0]
             except (IndexError, TypeError):
                 return False
-            
+
             return "You bought a lottery ticket" in str(embed.title)
 
         try:
@@ -139,7 +139,12 @@ class LotteryReminder(commands.Cog):
         await self.config.user(message.author).entered.set(prev + 1)
 
         await self.reminder_timer(
-            message.author, datetime.datetime.utcnow().timestamp() + 3600
+            message.author,
+            (
+                datetime.datetime.fromtimestamp(
+                    datetime.datetime.utcnow().timestamp() + 3600
+                )
+            ).total_seconds(),
         )
 
     async def reminder_timer(self, user: discord.Member, remaining: int):
