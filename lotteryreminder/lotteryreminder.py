@@ -101,46 +101,46 @@ class LotteryReminder(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_without_command(self, message: discord.Message):
-        try:
-            if message.author.bot:
-                return
-            user_data = await self.config.user(message.author).all()
+        if message.author.bot:
+            return
+        user_data = await self.config.user(message.author).all()
 
-            if (
-                not user_data["enabled"]
-                or user_data["nextlottery"] is not None
-                or not message.content.lower().startswith("pls lottery")
-            ):
-                return
+        if (
+            not user_data["enabled"]
+            or user_data["nextlottery"] is not None
+            or not message.content.lower().startswith("pls lottery")
+        ):
+            return
 
-            def dank_check(message: discord.Message):
-                if not message.author.id == 270904126974590976:
-                    return False
-                if not message.embeds:
-                    return False
-
-                try:
-                    embed = message.embeds[0]
-                except (IndexError, TypeError):
-                    return False
+        def dank_check(m: discord.Message):
+            if not m.author.id == 270904126974590976:
+                return False
+            if not m.channel == message.channel:
+                return False
+            if not m.embeds:
+                return False
 
             try:
-                message = await self.bot.wait_for("message", check=dank_check, timeout=60)
-            except asyncio.TimeoutError:
-                return
+                embed = m.embeds[0]
+            except (IndexError, TypeError):
+                return False
+            
+            return "You bought a lottery ticket" in str(embed.title)
 
-            await self.config.user(message.author).nextlottery.set(
-                datetime.datetime.utcnow().timestamp() + 3600
-            )
-            prev = await self.config.user(message.author).entered()
-            await self.config.user(message.author).entered.set(prev + 1)
+        try:
+            m = await self.bot.wait_for("message", check=dank_check, timeout=60)
+        except asyncio.TimeoutError:
+            return
 
-            await self.reminder_timer(
-                message.author, datetime.datetime.utcnow().timestamp() + 3600
-            )
-        except Exception as e:
-            debug_channel = self.bot.get_channel(779170774934093844)
-            await debug_channel.send(e)
+        await self.config.user(message.author).nextlottery.set(
+            datetime.datetime.utcnow().timestamp() + 3600
+        )
+        prev = await self.config.user(message.author).entered()
+        await self.config.user(message.author).entered.set(prev + 1)
+
+        await self.reminder_timer(
+            message.author, datetime.datetime.utcnow().timestamp() + 3600
+        )
 
     async def reminder_timer(self, user: discord.Member, remaining: int):
         await asyncio.sleep(remaining)
