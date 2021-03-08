@@ -33,7 +33,7 @@ class LotteryReminder(commands.Cog):
                 return
             now = datetime.datetime.utcnow()
 
-            if data["nextlottery"] - now <= 0:
+            if (datetime.datetime.fromtimestamp(data["nextlottery"]) - now).total_seconds() <= 0:
                 self.tasks.append(
                     asyncio.create_task(
                         self.send_reminder(self, self.bot.get_user(user_id))
@@ -45,7 +45,7 @@ class LotteryReminder(commands.Cog):
                 ).total_seconds()
                 self.tasks.append(
                     asyncio.create_task(
-                        self.reminder_timer(self.bot.get_user(user_id), remaining)
+                        self.reminder_timer(self.bot.get_user(user_id), round(remaining))
                     )
                 )
 
