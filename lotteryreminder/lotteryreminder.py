@@ -107,10 +107,19 @@ class LotteryReminder(commands.Cog):
 
         if (
             not user_data["enabled"]
-            or user_data["nextlottery"] is not None
             or not message.content.lower().startswith("pls lottery")
         ):
             return
+        
+        if user_data["nextlottery"] is not None:
+            now = datetime.datetime.utcnow()
+            next = user_data["nextlottery"]
+
+            if not datetime.fromtimestamp(now) - next <= 0:
+                return 
+            else:
+                await self.config.user(message.author).nextlottery.clear()
+
 
         def dank_check(m: discord.Message):
             if not m.author.id == 270904126974590976:
