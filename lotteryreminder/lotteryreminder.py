@@ -114,21 +114,21 @@ class LotteryReminder(commands.Cog):
 
         def dank_check(message: discord.Message):
             if not message.author.id == 270904126974590976:
-                return
+                return False
             if not message.embeds:
-                return
+                return False
 
             try:
                 embed = message.embeds[0]
             except (IndexError, TypeError):
-                return
+                return False
 
             return "You bought a lottery ticket" in str(embed.title)
 
         try:
             message = await self.bot.wait_for("message", check=dank_check, timeout=60)
         except asyncio.TimeoutError:
-            return
+            return 
 
         await self.config.user(message.author).nextlottery.set(
             datetime.datetime.utcnow().timestamp() + 3600
