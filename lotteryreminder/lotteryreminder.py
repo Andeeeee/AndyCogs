@@ -115,7 +115,7 @@ class LotteryReminder(commands.Cog):
             now = datetime.datetime.utcnow()
             next = user_data["nextlottery"]
 
-            if not datetime.fromtimestamp(now) - next <= 0:
+            if not round((now - datetime.datetime.fromtimestamp(next)).total_seconds()) <= 0:
                 return 
             else:
                 await self.config.user(message.author).nextlottery.clear()
