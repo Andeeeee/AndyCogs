@@ -88,14 +88,14 @@ class LotteryReminder(commands.Cog):
     @danklottery.command(aliases=["nextlottery"])
     async def next(self, ctx: commands.Context):
         """View when your next lottery happens"""
-        next = await self.config.user(ctx.author).nextlottery()
+        _next = await self.config.user(ctx.author).nextlottery()
 
-        if not next:
+        if not _next:
             return await ctx.send("I don't have your next lottery tracked")
 
         e = discord.Embed(
             description="The timestamp is when your next lottery will be at",
-            timestamp=datetime.datetime.fromtimestamp(next),
+            timestamp=datetime.datetime.fromtimestamp(_next),
         )
         await ctx.send(embed=e)
 
@@ -113,9 +113,9 @@ class LotteryReminder(commands.Cog):
         
         if user_data["nextlottery"] is not None:
             now = datetime.datetime.utcnow()
-            next = user_data["nextlottery"]
+            next_lotto = user_data["nextlottery"]
 
-            if not (now - datetime.datetime.fromtimestamp(next)).total_seconds() <= 0:
+            if not (now - datetime.datetime.fromtimestamp(next_lotto)).total_seconds() <= 0:
                 return 
             else:
                 await self.config.user(message.author).nextlottery.clear()
