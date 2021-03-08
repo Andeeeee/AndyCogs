@@ -33,7 +33,9 @@ class LotteryReminder(commands.Cog):
                 return
             now = datetime.datetime.utcnow()
 
-            if (datetime.datetime.fromtimestamp(data["nextlottery"]) - now).total_seconds() <= 0:
+            if (
+                datetime.datetime.fromtimestamp(data["nextlottery"]) - now
+            ).total_seconds() <= 0:
                 self.tasks.append(
                     asyncio.create_task(
                         self.send_reminder(self, self.bot.get_user(user_id))
@@ -45,7 +47,9 @@ class LotteryReminder(commands.Cog):
                 ).total_seconds()
                 self.tasks.append(
                     asyncio.create_task(
-                        self.reminder_timer(self.bot.get_user(user_id), round(remaining))
+                        self.reminder_timer(
+                            self.bot.get_user(user_id), round(remaining)
+                        )
                     )
                 )
 
@@ -105,21 +109,19 @@ class LotteryReminder(commands.Cog):
             return
         user_data = await self.config.user(message.author).all()
 
-        if (
-            not user_data["enabled"]
-            or not message.content.lower().startswith("pls lottery")
+        if not user_data["enabled"] or not message.content.lower().startswith(
+            "pls lottery"
         ):
             return
-        
+
         if user_data["nextlottery"] is not None:
             now = datetime.datetime.utcnow()
             _next = user_data["nextlottery"]
 
             if not (datetime.datetime.fromtimestamp(_next) - now).total_seconds() <= 0:
-                return 
+                return
             else:
                 await self.config.user(message.author).nextlottery.clear()
-
 
         def dank_check(m: discord.Message):
             if not m.author.id == 270904126974590976:
@@ -142,7 +144,7 @@ class LotteryReminder(commands.Cog):
             return
 
         await self.config.user(message.author).nextlottery.set(
-            datetime.datetime.utcnow().timestamp() + 3600
+            message.created_at.timestamp() + 3600
         )
         prev = await self.config.user(message.author).entered()
         await self.config.user(message.author).entered.set(prev + 1)
@@ -150,9 +152,7 @@ class LotteryReminder(commands.Cog):
         await self.reminder_timer(
             message.author,
             (
-                datetime.datetime.fromtimestamp(
-                    datetime.datetime.utcnow().timestamp() + 3600
-                )
+                datetime.datetime.fromtimestamp(message.created_at.timestamp() + 3600)
             ).total_seconds(),
         )
 
