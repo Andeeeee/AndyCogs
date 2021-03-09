@@ -36,7 +36,7 @@ class Amari:
                 break
         check = re.compile(
             r"<tr><td>(\d+)<\/td><td>({})<\/td><td>(\d+)<\/td><td>(\d+)<\/td><\/tr>".format(
-                username.replace(r"\", r"\\")
+                username.replace("\\", "\\\\")
             )
         )
         if not tag:
@@ -62,7 +62,7 @@ class Amari:
                 break
         check = re.compile(
             r"<tr><td>(\d+)<\/td><td>({})<\/td><td>(\d+)<\/td><td>(\d+)<\/td><\/tr>".format(
-                username
+                username.replace("\\", "\\\\")
             )
         )
         if not tag:
