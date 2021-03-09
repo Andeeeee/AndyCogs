@@ -151,9 +151,7 @@ class LotteryReminder(commands.Cog):
 
         await self.reminder_timer(
             message.author,
-            (
-                datetime.datetime.fromtimestamp(message.created_at.timestamp() + 3600)
-            ).total_seconds(),
+            3600
         )
 
     async def reminder_timer(self, user: discord.Member, remaining: int):
