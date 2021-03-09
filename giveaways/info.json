@@ -8,7 +8,7 @@
         "Andy"
     ],
     "required_cogs": {},
-    "requirements": ["mee6_py_api"],
+    "requirements": ["mee6-py-api"],
     "tags": [
         "utility", "fun"
     ],
