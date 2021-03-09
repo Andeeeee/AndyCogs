@@ -147,21 +147,21 @@ class DankSales(commands.Cog):
                 content += f"**{match.group('item')}** is on sale at **{match.group('percent')}%** off"
                 allowed_mentions = discord.AllowedMentions(roles=True)
                 try:
-                    message = await channel.send(
+                    m = await channel.send(
                         content=content, embed=e, allowed_mentions=allowed_mentions
                     )
                 except (discord.errors.Forbidden, discord.NotFound, discord.HTTPException):
                     pass
                 else:
                     try:
-                        await message.publish()
+                        await m.publish()
                     except (discord.Forbidden, discord.HTTPException):
                         pass 
 
         try:
-            nextsale = datetime.utcnow().timestamp() + int(match.group("time")) * 60
+            nextsale = message.created_at.timestamp() + int(match.group("time")) * 60
         except IndexError:
-            nextsale = datetime.utcnow().timestamp() + 3600
+            nextsale = message.created_at.timestamp() + 3600
             
         await self.config.nextsale.set(nextsale)
         await self.config.lastitem.set(match.group("item"))
