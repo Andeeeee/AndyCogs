@@ -75,7 +75,7 @@ class DankSales(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_without_command(self, message: discord.Message):
-        if not message.author.id == 270904126974590976 or message.webhook_id is None:
+        if not message.author.id == 270904126974590976 and message.webhook_id is None:
             return "not dank"
         if not message.embeds:
             return "no embeds"
