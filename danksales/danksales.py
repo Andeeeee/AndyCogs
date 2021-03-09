@@ -74,7 +74,7 @@ class DankSales(commands.Cog):
         await ctx.send("Updated the rate")
 
     @commands.Cog.listener()
-    async def on_message_without_command(self, message: discord.Message):
+    async def on_message(self, message: discord.Message):
         if not message.author.id == 270904126974590976 and message.webhook_id is None:
             return "not dank"
         if not message.embeds:
@@ -89,7 +89,7 @@ class DankSales(commands.Cog):
         nextsale = await self.config.nextsale()
         if not nextsale:
             pass
-        elif (datetime.utcnow() - datetime.fromtimestamp(nextsale)).total_seconds() <= 0:
+        elif (datetime.utcnow() - datetime.fromtimestamp(nextsale)).total_seconds() <= 60:
             return "next sale isn't there"
 
         replace_list = [
