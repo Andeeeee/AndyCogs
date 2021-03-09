@@ -34,6 +34,9 @@ class PirateSpeak(commands.Cog):
 
         self.config.register_user(**default_user)
     
+    def initialize(self) -> None:
+        setattr(commands.Context, "send", send)
+    
     @commands.group()
     async def piratespeak(self, ctx: commands.Context):
         """Manage options for piratespeak"""

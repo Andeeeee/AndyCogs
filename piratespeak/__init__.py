@@ -1,4 +1,6 @@
 from .piratespeak import PirateSpeak
 
 def setup(bot):
-    bot.add_cog(PirateSpeak(bot))
+    cog = PirateSpeak(bot)
+    bot.add_cog(cog)
+    await cog.initialize()
