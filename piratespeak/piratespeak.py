@@ -20,9 +20,12 @@ async def send(self, content=None, **kwargs):
     if await cog.config.user(self.author).enabled():
         if not content:
             pass 
-        else:
-            for old, new in REPLACEMENTS.items():
-                content = content.replace(old, new)
+        else: 
+            try:
+                for old, new in REPLACEMENTS.items():
+                    content = content.replace(old, new)
+            except AttributeError:
+                pass 
     return await real_send(self, content, **kwargs)
 
 class PirateSpeak(commands.Cog):
