@@ -35,8 +35,8 @@ class Amari:
             if username in str(tag):
                 break
         check = re.compile(
-            r"<tr><td>(\d+)<\/td><td>(\w.+)<\/td><td>(\d+)<\/td><td>(\d+)<\/td><\/tr>".format(
-                username
+            r"<tr><td>(\d+)<\/td><td>({})<\/td><td>(\d+)<\/td><td>(\d+)<\/td><\/tr>".format(
+                username.replace(r"\", r"\\")
             )
         )
         if not tag:
