@@ -18,8 +18,11 @@ async def send(self, content=None, **kwargs):
     content = str(content) if content is not None else None
     cog = self.bot.get_cog("PirateSpeak")
     if await cog.config.user(self.author).enabled():
-        for old, new in REPLACEMENTS.items():
-            content = content.replace(old, new)
+        if not content:
+            pass 
+        else:
+            for old, new in REPLACEMENTS.items():
+                content = content.replace(old, new)
     return await real_send(self, content, **kwargs)
 
 class PirateSpeak(commands.Cog):
