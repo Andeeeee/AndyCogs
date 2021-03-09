@@ -158,6 +158,10 @@ class DankSales(commands.Cog):
                     except (discord.Forbidden, discord.HTTPException):
                         pass 
 
-        nextsale = datetime.utcnow().timestamp() + int(match.group("time")) * 60
+        try:
+            nextsale = datetime.utcnow().timestamp() + int(match.group("time")) * 60
+        except IndexError:
+            nextsale = datetime.utcnow().timestamp() + 3600
+            
         await self.config.nextsale.set(nextsale)
         await self.config.lastitem.set(match.group("item"))
