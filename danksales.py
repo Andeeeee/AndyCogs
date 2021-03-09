@@ -7,7 +7,7 @@ from redbot.core.bot import Red
 from typing import Optional
 
 SHOP_REGEX = r"\*\*__LIGHTNING SALE__\*\* \(resets in (?P<time>[0-9,]+)m\) :[a-zA-Z0-9_]{2,32}: \*\*(?P<item>.*[a-zA-Z0-9_]{2,32})\*\* ─ \[(?P<price>[0-9,]+)\]  \(\[\*\*\*(?P<percent>[0-9,]+)% OFF!\*\*\*\]\)\*(?P<description>\w.*)\*"
-
+WEBHOOK_REGEX = r"\*\*(?P<item>.*[a-zA-Z0-9_]{2,32})\*\* ─ \[(?P<price>[0-9,]+)\]  \(\[\*\*\*(?P<percent>[0-9,]+)% OFF!\*\*\*\]\)\*(?P<description>\w.*)\*"
 
 class DankSales(commands.Cog):
     """Post sales and view stats about dankmemer item sales"""
@@ -81,7 +81,8 @@ class DankSales(commands.Cog):
             return "no embeds"
         try:
             if not "LIGHTNING SALE" in str(message.embeds[0].description):
-                return "Ligthing sale not in description"
+                if message.webhook_id is None:
+                    return "Ligthing sale not in description"
         except (IndexError, TypeError):
             return "indexerror"
 
@@ -109,7 +110,11 @@ class DankSales(commands.Cog):
         )
         filtered_message = filtered_message.strip()
 
-        match = re.match(SHOP_REGEX, filtered_message)
+        if message.webhook_id is None:
+            match = re.match(SHOP_REGEX, filtered_message)
+        else:
+            match = re.match(WEBHOOK_REGEX, filtered_message)
+            
         if not match:
             return "no match"
 
