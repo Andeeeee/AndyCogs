@@ -90,8 +90,7 @@ class DankSales(commands.Cog):
         if not nextsale:
             pass
         elif (datetime.utcnow() - datetime.fromtimestamp(nextsale)).total_seconds() <= 60:
-            if not message.webhook_id:
-                return "next sale isn't there"
+            return "not time"
 
         replace_list = [
             "⏣ ",
