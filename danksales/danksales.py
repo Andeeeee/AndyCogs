@@ -89,7 +89,7 @@ class DankSales(commands.Cog):
         nextsale = await self.config.nextsale()
         if not nextsale:
             pass
-        elif (datetime.utcnow() - datetime.fromtimestamp(nextsale)).total_seconds() <= 60:
+        elif (datetime.utcnow() - datetime.fromtimestamp(nextsale)).total_seconds() <= -60:
             return "not time"
 
         replace_list = [
