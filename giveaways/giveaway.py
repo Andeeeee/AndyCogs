@@ -536,7 +536,10 @@ class Giveaways(commands.Cog):
                 for r in bypassrole:
                     roles.append("<@&{0}>".format(r))
                 e.add_field(name="Bypassrole", value=humanize_list(roles), inline=False)
-
+            
+            e.set_footer(text="Ended at | ")
+            e.timestamp = datetime.utcnow()
+            
             await channel.send(
                 f"There were no valid entries for the **{info['title']}** giveaway \n{message.jump_url}"
             )
@@ -615,7 +618,8 @@ class Giveaways(commands.Cog):
                 e.add_field(
                     name="Bypass Role(s)", value=humanize_list(roles), inline=False
                 )
-
+            e.set_footer(text="Ended at | ")
+            e.timestamp = datetime.utcnow()
             await message.edit(
                 content=data["endHeader"].replace("{giveawayEmoji}", data["emoji"]),
                 embed=e,
