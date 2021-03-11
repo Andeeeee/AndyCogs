@@ -403,7 +403,7 @@ class Giveaways(commands.Cog):
             await message.add_reaction(emoji)
             self.message_cache[str(messageid)] = message
             if remaining.total_seconds() <= 60:
-                await asyncio.sleep(remaining - 2)
+                await asyncio.sleep(remaining.total_seconds() - 2)
             else:
                 await asyncio.sleep(round(remaining.total_seconds() / 4))
 
