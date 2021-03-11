@@ -24,6 +24,8 @@ class NoExitParser(argparse.ArgumentParser):
 
 
 async def is_manager(ctx):
+    if not ctx.guild:
+        return False 
     if (
         ctx.channel.permissions_for(ctx.author).administrator
         or ctx.channel.permissions_for(ctx.author).manage_guild
@@ -400,8 +402,10 @@ class Giveaways(commands.Cog):
             emoji = data["emoji"]
             await message.add_reaction(emoji)
             self.message_cache[str(messageid)] = message
-
-            await asyncio.sleep(round(remaining.total_seconds() / 6))
+            if remaining.total_seconds() <= 60:
+                await asyncio.sleep(remaining - 2)
+            else:
+                await asyncio.sleep(round(remaining.total_seconds() / 4))
 
     async def end_giveaway(self, messageid: int, info, reroll: int = -1):
         channel = self.bot.get_channel(info["channel"])
