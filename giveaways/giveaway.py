@@ -1909,6 +1909,7 @@ class Giveaways(commands.Cog):
                     f"Looks like we won't clear **{member.name}**'s data."
                 )
             await self.config.member(member).clear()
+            await self.add_amount(member, 0)
             await ctx.send(f"I've removed **{member.name}**'s data")
 
     @giveawaystore.group(name="donate")
@@ -1930,9 +1931,7 @@ class Giveaways(commands.Cog):
         if not str(amt).isdigit():
             return await ctx.send("This isn't a number.")
 
-        previous_amount = await self.config.member(member).donated()
-        new_amount = int(amt) + previous_amount
-        await self.config.member(member).donated.set(new_amount)
+        await self.add_amount(member, int(amt))
         await ctx.send("Done.")
 
     @donate.command(name="remove")
@@ -1954,6 +1953,7 @@ class Giveaways(commands.Cog):
         if new_amount < 0:
             return await ctx.send("You can't go below 0")
         await self.config.member(member).donated.set(new_amount)
+        await self.add_amount(member, 0)
         await ctx.send("Done.")
 
     @giveawaystore.group(name="note")
