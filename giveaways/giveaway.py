@@ -379,7 +379,7 @@ class Giveaways(commands.Cog):
 
             reqs = await self.gen_req_message(message.guild, info["requirements"])
             if reqs:
-                e.add_field(name="Requirements", inline=False)
+                e.add_field(name="Requirements", value=reqs, inline=False)
 
             e.timestamp = datetime.fromtimestamp(info["endtime"])
             e.set_footer(text="Winners: {0} | Ends at".format(info["winners"]))
@@ -492,7 +492,7 @@ class Giveaways(commands.Cog):
                 e.add_field(name="Requirements", value=reqs, inline=False)
             
 
-            e.set_footer(text="Ended at | ")
+            e.set_footer(text="Ended at ")
             e.timestamp = datetime.utcnow()
 
             await channel.send(
@@ -527,7 +527,7 @@ class Giveaways(commands.Cog):
                 else:
                     e.add_field(name="Donor", value=donor.mention, inline=False)
 
-            e.set_footer(text="Ended at | ")
+            e.set_footer(text="Ended at ")
             e.timestamp = datetime.utcnow()
             await message.edit(
                 content=data["endHeader"].replace("{giveawayEmoji}", data["emoji"]),
