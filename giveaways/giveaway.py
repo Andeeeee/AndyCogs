@@ -657,7 +657,7 @@ class Giveaways(commands.Cog):
                     continue
                 roles.append(role.mention)
             roles = humanize_list(roles)
-            reqs += f"{roles}\n"
+            reqs += f"Roles: {roles}\n"
 
         if requirements["mee6"]:
             reqs += f"Minimum MEE6 Level: {requirements['mee6']}\n"
