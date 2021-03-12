@@ -1105,7 +1105,7 @@ class Giveaways(commands.Cog):
         """Manage donator roles for the server"""
         pass 
 
-    @donator.command(aliases=["edit"])
+    @donator.command(name="add", aliases=["edit"])
     async def _add(self, ctx: commands.Context, role: discord.Role, amount: int):
         """Edit or Add a donator role"""
         roles = await self.config.guild(ctx.guild).donatorroles()
