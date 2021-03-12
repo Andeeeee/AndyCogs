@@ -97,6 +97,7 @@ class Giveaways(commands.Cog):
             "winmessage": "You won the giveaway for [{prize}]({url}) in {guild}!",
             "hostmessage": "Your giveaway for [{prize}]({url}) in {guild} has ended. The winners were {winners}",
             "emoji": "🎉",
+            "donatorroles": {}
         }
 
         default_member = {
@@ -474,6 +475,8 @@ class Giveaways(commands.Cog):
                 continue
             if user.bot:
                 continue
+            if isinstance(user, discord.User):
+                continue 
             can_join = await self.can_join(user, info)
             if can_join == True:
                 multi = await self.calculate_multi(user)
@@ -734,10 +737,36 @@ class Giveaways(commands.Cog):
         previous = await self.config.member(user).donated()
         previous += amt
         await self.config.member(user).donated.set(previous)
+        await self.update_donator_roles(user)
+    
+    async def update_donator_roles(self, member: discord.Member) -> None:
+        roles = await self.config.guild(member.guild).donatorroles()
+        donated = await self.config.member(member).donated()
+        
+        for role_id, amount_required in roles.items():
+            role = member.guild.get_role(int(role_id))
+            if not role:
+                continue 
+            if donated < amount_required:
+                if role not in member.roles:
+                    continue 
+                try:
+                    await member.remove_roles(role)
+                except (discord.errors.Forbidden, discord.HTTPException):
+                    pass 
+            else:
+                if role in member.roles:
+                    continue
+                try:
+                    await member.add_roles(role)
+                except discord.errors.Forbidden:
+                    pass 
+
 
     # -------------------------------------gset---------------------------------
 
     @commands.group(name="giveawayset", aliases=["gset"])
+    @commands.admin_or_permissions(administrator=True)
     @commands.guild_only()
     async def giveawayset(self, ctx):
         """Set your server settings for giveaways"""
@@ -1070,6 +1099,31 @@ class Giveaways(commands.Cog):
         else:
             await self.config.guild(ctx.guild).emoji.set(str(emoji))
             await ctx.send(f"Your emoji is now {str(emoji)}")
+    
+    @giveawayset.group(aliases=["donor", "donatorroles", "donatorrole"])
+    async def donator(self, ctx: commands.Context):
+        """Manage donator roles for the server"""
+        pass 
+
+    @donator.command(aliases=["edit"])
+    async def _add(self, ctx: commands.Context, role: discord.Role, amount: int):
+        """Edit or Add a donator role"""
+        roles = await self.config.guild(ctx.guild).donatorroles()
+        roles[str(role.id)] = amount 
+        await self.config.guild(ctx.guild).donatorroles.set(roles)
+        await ctx.send("Updated")
+    
+    @donator.command()
+    async def remove(self, ctx: commands.Context, role: discord.Role):
+        """Remove a donator role"""
+        roles = await self.config.guild(ctx.guild).donatorroles()
+        try:
+            del roles[str(role.id)]
+        except KeyError:
+            return await ctx.send("This role isn't a donator role")
+
+        await self.config.guild(ctx.guild).donatorroles.set(roles)
+        await ctx.send(f"Removed `{role.name}` as a donator role")
 
     # -------------------------------------giveaways---------------------------------
     @commands.group(name="giveaway", aliases=["g"])
