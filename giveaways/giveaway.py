@@ -49,9 +49,12 @@ class NoExitParser(argparse.ArgumentParser):
         raise BadArgument(message)
 
 
-async def is_manager(ctx):
+async def is_manager(ctx: commands.Context):
     if not ctx.guild:
         return False
+    if ctx.channel.is_news():
+        await ctx.send("Giveaways cannot be started in announcement channels")
+        return False 
     if (
         ctx.channel.permissions_for(ctx.author).administrator
         or ctx.channel.permissions_for(ctx.author).manage_guild
@@ -64,11 +67,12 @@ async def is_manager(ctx):
 
     role = await cog.config.guild(ctx.guild).manager()
 
-    if ctx.guild is None:
-        return False
     for r in role:
         if r in [role.id for role in ctx.author.roles]:
             return True
+    
+    await ctx.send("You do not have the manager role or manage server permissions")
+    return False 
 
 
 class Giveaways(commands.Cog):
@@ -398,7 +402,7 @@ class Giveaways(commands.Cog):
             await message.add_reaction(emoji)
             self.message_cache[str(messageid)] = message
             if remaining.total_seconds() <= 60:
-                await asyncio.sleep(remaining.total_seconds() - 2)
+                await asyncio.sleep(remaining.total_seconds())
             else:
                 await asyncio.sleep(round(remaining.total_seconds() / 4))
 
