@@ -376,44 +376,10 @@ class Giveaways(commands.Cog):
                 )
 
             requirements = info["requirements"]
-            if requirements["roles"]:
-                roles = []
-                for r in requirements["roles"]:
-                    roles.append(f"<@&{r}>")
-                e.add_field(name="Roles", value=humanize_list(roles), inline=False)
 
-            if bypassrole:
-                roles = []
-                for r in bypassrole:
-                    roles.append("<@&{0}>".format(r))
-                e.add_field(name="Bypassrole", value=humanize_list(roles), inline=False)
-
-            if requirements["mee6"]:
-                e.add_field(name="Minimum MEE6 Level", value=requirements["mee6"])
-            if requirements["amari"]:
-                e.add_field(name="Minimum Amari Level", value=requirements["amari"])
-            if requirements["weeklyamari"]:
-                e.add_field(
-                    name="Minimum Weekly Amari", value=requirements["weeklyamari"]
-                )
-            if requirements["joindays"]:
-                e.add_field(name="Minimum Join Days", value=requirements["joindays"])
-            if requirements["server"]:
-                server = self.bot.get_guild(requirements["server"])
-                if not server:
-                    pass
-                else:
-                    invite = await self.create_invite(server)
-                    e.add_field(
-                        name="Must be a member of the following server",
-                        value=f"**[{server.name}]({invite})**",
-                    )
-            if requirements["invites"]:
-                e.add_field(
-                    name="Minimum number of invites", value=requirements["invites"]
-                )
-            if requirements["shared"]:
-                e.add_field(name="Minimum Shared Coins", value=requirements["shared"])
+            reqs = await self.gen_req_message(message.guild, info["requirements"])
+            if reqs:
+                e.add_field(name="Requirements", inline=False)
 
             e.timestamp = datetime.fromtimestamp(info["endtime"])
             e.set_footer(text="Winners: {0} | Ends at".format(info["winners"]))
@@ -517,56 +483,14 @@ class Giveaways(commands.Cog):
             e = discord.Embed(
                 title=info["title"], description=f"Host: <@{host}> \n Winners: None"
             )
-            requirements = info["requirements"]
-            if requirements["roles"]:
-                roles = []
-                for r in requirements["roles"]:
-                    role = message.guild.get_role(r)
-                    if not role:
-                        continue
-                    roles.append(role.mention)
-                e.add_field(name="Roles", value=humanize_list(roles), inline=False)
 
-            if requirements["mee6"]:
-                e.add_field(name="Minimum MEE6 Level", value=requirements["mee6"])
+            reqs = await self.gen_req_message(message.guild, info["requirements"])
 
-            if requirements["amari"]:
-                e.add_field(name="Minimum Amari Level", value=requirements["amari"])
-            if requirements["weeklyamari"]:
-                e.add_field(
-                    name="Minimum Weekly Amari", value=requirements["weeklyamari"]
-                )
-            if requirements["joindays"]:
-                e.add_field(name="Minimum Join Days", value=requirements["joindays"])
-            if requirements["server"]:
-                server = self.bot.get_guild(requirements["server"])
-                if not server:
-                    pass
-                else:
-                    invite = await self.create_invite(server)
-                    e.add_field(
-                        name="Must be a member of the following server",
-                        value=f"**[{server.name}]({invite})**",
-                    )
-            if requirements["invites"]:
-                e.add_field(
-                    name="Minimum number of invites", value=requirements["invites"]
-                )
-            if requirements["shared"]:
-                e.add_field(name="Minimum Shared Coins", value=requirements["shared"])
-
-            if info["donor"]:
-                donor = message.guild.get_member(info["donor"])
-            if not info["donor"]:
-                pass
+            if not reqs:
+                pass 
             else:
-                e.add_field(name="Donor", value=donor.mention, inline=False)
-
-            if bypassrole:
-                roles = []
-                for r in bypassrole:
-                    roles.append("<@&{0}>".format(r))
-                e.add_field(name="Bypassrole", value=humanize_list(roles), inline=False)
+                e.add_field(name="Requirements", value=reqs, inline=False)
+            
 
             e.set_footer(text="Ended at | ")
             e.timestamp = datetime.utcnow()
@@ -580,7 +504,6 @@ class Giveaways(commands.Cog):
             )
 
         else:
-            requirements = info["requirements"]
             winners = humanize_list(final_list)
             host = (
                 info["host"]
@@ -593,44 +516,9 @@ class Giveaways(commands.Cog):
                 description=f"Winner(s): {winners}\nHost: <@{host}>",
             )
 
-            if requirements["roles"]:
-                roles = []
-                for r in requirements["roles"]:
-                    role = message.guild.get_role(r)
-                    if not role:
-                        continue
-                    roles.append(role.mention)
-                e.add_field(
-                    name="Requirement", value=humanize_list(roles), inline=False
-                )
-
-            if requirements["mee6"]:
-                e.add_field(name="Minimum MEE6 Level", value=requirements["mee6"])
-
-            if requirements["amari"]:
-                e.add_field(name="Minimum Amari Level", value=requirements["amari"])
-            if requirements["weeklyamari"]:
-                e.add_field(
-                    name="Minimum Weekly Amari", value=requirements["weeklyamari"]
-                )
-            if requirements["joindays"]:
-                e.add_field(name="Minimum Join Days", value=requirements["joindays"])
-            if requirements["server"]:
-                server = self.bot.get_guild(requirements["server"])
-                if not server:
-                    pass
-                else:
-                    invite = await self.create_invite(server)
-                    e.add_field(
-                        name="Must be a member of the following server",
-                        value=f"**[{server.name}]({invite})**",
-                    )
-            if requirements["invites"]:
-                e.add_field(
-                    name="Minimum number of invites", value=requirements["invites"]
-                )
-            if requirements["shared"]:
-                e.add_field(name="Minimum Shared Coins", value=requirements["shared"])
+            reqs = await self.gen_req_message(message.guild, info["requirements"])
+            if reqs:
+                e.add_field(name="Requirements", value=reqs, inline=False)
 
             if info["donor"]:
                 donor = message.guild.get_member(info["donor"])
@@ -639,16 +527,6 @@ class Giveaways(commands.Cog):
                 else:
                     e.add_field(name="Donor", value=donor.mention, inline=False)
 
-            if bypassrole:
-                roles = []
-                for r in bypassrole:
-                    r = message.guild.get_role(int(r))
-                    if not r:
-                        continue
-                    roles.append(r.mention)
-                e.add_field(
-                    name="Bypass Role(s)", value=humanize_list(roles), inline=False
-                )
             e.set_footer(text="Ended at | ")
             e.timestamp = datetime.utcnow()
             await message.edit(
@@ -768,6 +646,57 @@ class Giveaways(commands.Cog):
                     await member.add_roles(role)
                 except discord.errors.Forbidden:
                     pass
+    
+    async def gen_req_message(self, guild: discord.Guild, requirements: dict) -> str:
+        reqs = ""
+        if requirements["roles"]:
+            roles = []
+            for r in requirements["roles"]:
+                role = guild.get_role(r)
+                if not role:
+                    continue
+                roles.append(role.mention)
+            roles = humanize_list(roles)
+            reqs += f"{roles}\n"
+
+        if requirements["mee6"]:
+            reqs += f"Minimum MEE6 Level: {requirements['mee6']}\n"
+
+        if requirements["amari"]:
+            reqs += f"Minimum Amari Level: {requirements['amari']}\n"
+
+        if requirements["weeklyamari"]:
+            reqs += f"Minimum Weekly Amari: {requirements['weeklyamari']}\n"
+
+        if requirements["joindays"]:
+            reqs += f"Minimum days in server: {requirements['joindays']}\n"
+
+        if requirements["server"]:
+            server = self.bot.get_guild(requirements["server"])
+            if not server:
+                pass
+            else:
+                invite = await self.create_invite(server)
+                reqs += "Must join **[{server.name}]({invite})**\n"
+                
+        if requirements["invites"]:
+            reqs += f"Minimum number of invites: {requirements['invites']}"
+
+        if requirements["shared"]:
+            reqs += f"Minimum shared dankmemer coins in server: {requirements['shared']}\n"
+
+        bypassroles = await self.config.guild(guild).bypassrole()
+        
+        if bypassroles:
+            roles = []
+            for r in bypassroles:
+                r = guild.get_role(int(r))
+                if not r:
+                    continue
+                roles.append(r.mention)
+            reqs += f"Bypass Role(s): {humanize_list(roles)}"
+        
+        return reqs if reqs else None
 
     # -------------------------------------gset---------------------------------
 
@@ -1385,6 +1314,7 @@ class Giveaways(commands.Cog):
                         f"I cannot fetch this invite, please make sure it is valid and I am in this server"
                     )
                 requirements["server"] = fetched_server.id
+            
 
         e = discord.Embed(
             title=title,
