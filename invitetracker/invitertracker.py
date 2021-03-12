@@ -78,11 +78,17 @@ class InviteTracker(commands.Cog):
 
             if amount > invites:
                 if role in member.roles:
-                    await member.remove_roles(role)
+                    try:
+                        await member.remove_roles(role)
+                    except discord.errors.Forbidden:
+                        continue
 
             else:
                 if role not in member.roles:
-                    await member.add_roles(role)
+                    try:
+                        await member.add_roles(role)
+                    except discord.errors.Forbidden:
+                        pass 
 
     async def save_invite_links(self, guild: discord.Guild) -> bool:
         invites = {}
