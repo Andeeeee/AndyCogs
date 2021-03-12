@@ -51,7 +51,7 @@ class NoExitParser(argparse.ArgumentParser):
 
 async def is_manager(ctx):
     if not ctx.guild:
-        return False 
+        return False
     if (
         ctx.channel.permissions_for(ctx.author).administrator
         or ctx.channel.permissions_for(ctx.author).manage_guild
@@ -97,7 +97,7 @@ class Giveaways(commands.Cog):
             "winmessage": "You won the giveaway for [{prize}]({url}) in {guild}!",
             "hostmessage": "Your giveaway for [{prize}]({url}) in {guild} has ended. The winners were {winners}",
             "emoji": "🎉",
-            "donatorroles": {}
+            "donatorroles": {},
         }
 
         default_member = {
@@ -124,7 +124,7 @@ class Giveaways(commands.Cog):
     async def count_invites(self, member: discord.Member):
         cog = self.bot.get_cog("InviteTracker")
         if not cog:
-            return 0 
+            return 0
         invites = await cog.config.member(member).invites()
         return invites
 
@@ -345,7 +345,9 @@ class Giveaways(commands.Cog):
                     messageid
                 )
                 self.giveaway_cache[str(messageid)] = False
-                self.tasks.append(asyncio.create_task(self.end_giveaway(int(messageid), info)))
+                self.tasks.append(
+                    asyncio.create_task(self.end_giveaway(int(messageid), info))
+                )
                 return
 
             remaining = datetime.fromtimestamp(info["endtime"]) - datetime.utcnow()
@@ -476,7 +478,7 @@ class Giveaways(commands.Cog):
             if user.bot:
                 continue
             if isinstance(user, discord.User):
-                continue 
+                continue
             can_join = await self.can_join(user, info)
             if can_join == True:
                 multi = await self.calculate_multi(user)
@@ -565,10 +567,10 @@ class Giveaways(commands.Cog):
                 for r in bypassrole:
                     roles.append("<@&{0}>".format(r))
                 e.add_field(name="Bypassrole", value=humanize_list(roles), inline=False)
-            
+
             e.set_footer(text="Ended at | ")
             e.timestamp = datetime.utcnow()
-            
+
             await channel.send(
                 f"There were no valid entries for the **{info['title']}** giveaway \n{message.jump_url}"
             )
@@ -723,8 +725,10 @@ class Giveaways(commands.Cog):
         if final_message == "" or len(final_message) == 0:
             return
         if embed:
-            e = discord.Embed(description=final_message, color = await ctx.embed_color())
-            await ctx.send(embed=e, content=role.mention, allowed_mentions=allowed_mentions)
+            e = discord.Embed(description=final_message, color=await ctx.embed_color())
+            await ctx.send(
+                embed=e, content=role.mention, allowed_mentions=allowed_mentions
+            )
         else:
             await ctx.send(final_message, allowed_mentions=allowed_mentions)
 
@@ -738,30 +742,32 @@ class Giveaways(commands.Cog):
         previous += amt
         await self.config.member(user).donated.set(previous)
         await self.update_donator_roles(user)
-    
+
     async def update_donator_roles(self, member: discord.Member) -> None:
         roles = await self.config.guild(member.guild).donatorroles()
         donated = await self.config.member(member).donated()
-        
+
         for role_id, amount_required in roles.items():
             role = member.guild.get_role(int(role_id))
             if not role:
-                continue 
+                all_roles = await self.config.guild(member.guild).donatorroles()
+                all_roles.pop(role_id)
+                await self.config.guild(member.guild).roles.set(all_roles)
+                continue
             if donated < amount_required:
                 if role not in member.roles:
-                    continue 
+                    continue
                 try:
                     await member.remove_roles(role)
                 except (discord.errors.Forbidden, discord.HTTPException):
-                    pass 
+                    pass
             else:
                 if role in member.roles:
                     continue
                 try:
                     await member.add_roles(role)
                 except discord.errors.Forbidden:
-                    pass 
-
+                    pass
 
     # -------------------------------------gset---------------------------------
 
@@ -1099,20 +1105,20 @@ class Giveaways(commands.Cog):
         else:
             await self.config.guild(ctx.guild).emoji.set(str(emoji))
             await ctx.send(f"Your emoji is now {str(emoji)}")
-    
+
     @giveawayset.group(aliases=["donor", "donatorroles", "donatorrole"])
     async def donator(self, ctx: commands.Context):
         """Manage donator roles for the server"""
-        pass 
+        pass
 
     @donator.command(name="add", aliases=["edit"])
     async def _add(self, ctx: commands.Context, role: discord.Role, amount: int):
         """Edit or Add a donator role"""
         roles = await self.config.guild(ctx.guild).donatorroles()
-        roles[str(role.id)] = amount 
+        roles[str(role.id)] = amount
         await self.config.guild(ctx.guild).donatorroles.set(roles)
         await ctx.send("Updated")
-    
+
     @donator.command()
     async def remove(self, ctx: commands.Context, role: discord.Role):
         """Remove a donator role"""
@@ -1124,6 +1130,20 @@ class Giveaways(commands.Cog):
 
         await self.config.guild(ctx.guild).donatorroles.set(roles)
         await ctx.send(f"Removed `{role.name}` as a donator role")
+
+    @donator.command(name="settings", aliases=["show", "showsettings"])
+    async def _settings(self, ctx: commands.Context):
+        roles = await self.config.guild(ctx.guild).donatorroles()
+        message = "Format: <role> - <amount needed>\n"
+
+        for role_id, amount_needed in roles.items():
+            message += f"<@&{role_id}> - {amount_needed}"
+
+        e = discord.Embed(
+            title="Donator Roles", description=message, color=await ctx.embed_color()
+        )
+        e.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
+        await ctx.send(embed=e)
 
     # -------------------------------------giveaways---------------------------------
     @commands.group(name="giveaway", aliases=["g"])
