@@ -26,7 +26,7 @@ import asyncio
 import discord
 import contextlib
 import re
-import stringcase 
+import stringcase
 import unicodedata
 
 from datetime import datetime
@@ -119,7 +119,7 @@ class DankLogs(commands.Cog):
             "giftedusers": {},
             "sharedusers": {},
             "logs": [],
-            "storedname": None
+            "storedname": None,
         }
 
         default_channel = {
@@ -138,10 +138,10 @@ class DankLogs(commands.Cog):
             if m.author.bot:
                 continue
             elif not m.content.lower().startswith("pls"):
-                continue 
+                continue
             else:
                 return m
-    
+
     def strip_accs(self, text: str):
         try:
             text = unicodedata.normalize("NFKC", text)
@@ -150,18 +150,18 @@ class DankLogs(commands.Cog):
             text = text.encode("ascii", "ignore")
             text = text.decode("utf-8")
         except Exception as e:
-            pass 
+            pass
         return str(text)
-    
+
     def decode_cancer_name(self, old_name):
         if not self.is_cancer_name(old_name):
             return old_name
         old_name = self.strip_accs(old_name)
         new_name = re.sub("[^a-zA-Z0-9 \n.]", "", old_name)
         new_name = " ".join(new_name.split())
-        
+
         return new_name
-    
+
     def is_cancer_name(self, text: str) -> bool:
         for segment in text.split():
             for char in segment:
@@ -173,30 +173,28 @@ class DankLogs(commands.Cog):
         user = discord.utils.get(ctx.guild.members, name=name)
         if user:
             await self.config.member(user).storedname.set(name)
-            return user 
+            return user
         all_users = await self.config.all_members(ctx.guild)
 
         for user, data in all_users.items():
             user = ctx.guild.get_member(int(user))
             if not user:
-                continue 
+                continue
             if data["storedname"] == name:
                 return user
-        
+
         result = []
         for r in process.extract(
             name,
             {m: self.decode_cancer_name(m.name) for m in ctx.guild.members},
             limit=None,
-            score_cutoff=75
+            score_cutoff=75,
         ):
             result.append((r[2], r[1]))
 
             sorted_result = sorted(result, key=lambda r: r[1], reverse=True)
             await self.config.member(sorted_result[0][0]).storedname.set(name)
             return sorted_result[0][0]
-        
-
 
     @commands.group(aliases=["dls"])
     @commands.mod_or_permissions(manage_guild=True)
@@ -570,6 +568,8 @@ class DankLogs(commands.Cog):
         filtered_content = self.decode_cancer_name(filtered_content)
 
         match = re.match(gift_regex, filtered_content)
+        if not match:
+            return 
         amount = int(match.group("amount").replace(",", ""))
         member = match.group("user")
         ctx = commands.Context(
