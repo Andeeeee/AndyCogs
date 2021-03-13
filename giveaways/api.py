@@ -59,6 +59,7 @@ class Amari:
             text = await response.text()
         obj = BeautifulSoup(text, "html.parser")
         rank_list = obj.body.main.findAll("div")[2].div.find("table").findAll("tr")
+        tag = None
         for tag in rank_list:
             if username in str(tag):
                 break
