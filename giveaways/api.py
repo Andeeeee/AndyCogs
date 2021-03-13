@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import re
 import discord
 
+
 class mee6_api:
     def __init__(self):
         self.api_guild_cache = {}
@@ -35,8 +36,10 @@ class Amari:
             if username in str(tag):
                 break
         check = re.compile(
-            r"<tr><td>(\d+)<\/td><td>({})<\/td><td>(\d+)<\/td><td>(\d+)<\/td><\/tr>".format(
-                username.replace("\\", "\\\\").replace("|", "\\|").replace("(", "\(").replace(")", "\)")
+            re.escape(
+                r"<tr><td>(\d+)<\/td><td>({})<\/td><td>(\d+)<\/td><td>(\d+)<\/td><\/tr>".format(
+                    username
+                )
             )
         )
         if not tag:
@@ -61,8 +64,10 @@ class Amari:
             if username in str(tag):
                 break
         check = re.compile(
-            r"<tr><td>(\d+)<\/td><td>({})<\/td><td>(\d+)<\/td><td>(\d+)<\/td><\/tr>".format(
-                username.replace("\\", "\\\\").replace("|", "\\|").replace("(", "\(").replace(")", "\)")
+            re.escape(
+                r"<tr><td>(\d+)<\/td><td>({})<\/td><td>(\d+)<\/td><td>(\d+)<\/td><\/tr>".format(
+                    username
+                )
             )
         )
         if not tag:
