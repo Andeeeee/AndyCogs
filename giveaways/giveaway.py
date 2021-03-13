@@ -53,8 +53,7 @@ async def is_manager(ctx: commands.Context):
     if not ctx.guild:
         return False
     if ctx.channel.is_news():
-        await ctx.send("Giveaways cannot be started in announcement channels")
-        return False 
+        return False
     if (
         ctx.channel.permissions_for(ctx.author).administrator
         or ctx.channel.permissions_for(ctx.author).manage_guild
@@ -70,9 +69,8 @@ async def is_manager(ctx: commands.Context):
     for r in role:
         if r in [role.id for role in ctx.author.roles]:
             return True
-    
-    await ctx.send("You do not have the manager role or manage server permissions")
-    return False 
+
+    return False
 
 
 class Giveaways(commands.Cog):
@@ -491,10 +489,9 @@ class Giveaways(commands.Cog):
             reqs = await self.gen_req_message(message.guild, info["requirements"])
 
             if not reqs:
-                pass 
+                pass
             else:
                 e.add_field(name="Requirements", value=reqs, inline=False)
-            
 
             e.set_footer(text="Ended at ")
             e.timestamp = datetime.utcnow()
@@ -650,7 +647,7 @@ class Giveaways(commands.Cog):
                     await member.add_roles(role)
                 except discord.errors.Forbidden:
                     pass
-    
+
     async def gen_req_message(self, guild: discord.Guild, requirements: dict) -> str:
         reqs = ""
         if requirements["roles"]:
@@ -682,15 +679,17 @@ class Giveaways(commands.Cog):
             else:
                 invite = await self.create_invite(server)
                 reqs += "Must join **[{server.name}]({invite})**\n"
-                
+
         if requirements["invites"]:
             reqs += f"Minimum number of invites: {requirements['invites']}"
 
         if requirements["shared"]:
-            reqs += f"Minimum shared dankmemer coins in server: {requirements['shared']}\n"
+            reqs += (
+                f"Minimum shared dankmemer coins in server: {requirements['shared']}\n"
+            )
 
         bypassroles = await self.config.guild(guild).bypassrole()
-        
+
         if bypassroles:
             roles = []
             for r in bypassroles:
@@ -699,7 +698,7 @@ class Giveaways(commands.Cog):
                     continue
                 roles.append(r.mention)
             reqs += f"Bypass Role(s): {humanize_list(roles)}"
-        
+
         return reqs if reqs else None
 
     # -------------------------------------gset---------------------------------
@@ -1318,7 +1317,6 @@ class Giveaways(commands.Cog):
                         f"I cannot fetch this invite, please make sure it is valid and I am in this server"
                     )
                 requirements["server"] = fetched_server.id
-            
 
         e = discord.Embed(
             title=title,
