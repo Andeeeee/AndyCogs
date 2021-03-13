@@ -36,12 +36,11 @@ class Amari:
             if username in str(tag):
                 break
         check = re.compile(
-            re.escape(
                 r"<tr><td>(\d+)<\/td><td>({})<\/td><td>(\d+)<\/td><td>(\d+)<\/td><\/tr>".format(
-                    username
+                    re.escape(username)
                 )
             )
-        )
+        
         if not tag:
             return None
         match = re.match(check, str(tag))
@@ -64,12 +63,10 @@ class Amari:
             if username in str(tag):
                 break
         check = re.compile(
-            re.escape(
                 r"<tr><td>(\d+)<\/td><td>({})<\/td><td>(\d+)<\/td><td>(\d+)<\/td><\/tr>".format(
-                    username
+                    re.escape(username)
                 )
             )
-        )
         if not tag:
             return
         match = re.match(check, str(tag))
