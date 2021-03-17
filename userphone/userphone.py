@@ -118,7 +118,7 @@ class UserPhone(commands.Cog):
                 if ctx.channel == data["other_channel"]:
                     await ctx.send("Connection Closed")
                     other_channel = self.bot.get_channel(channel_id)
-                    del self._connections[ctx.channel.id]
+                    del self._connections[channel_id]
                     try:
                         await other_channel.send("Connection Closed by other party")
                     except (discord.NotFound, discord.errors.Forbidden, discord.HTTPException, AttributeError):
