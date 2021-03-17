@@ -167,8 +167,8 @@ class UserPhone(commands.Cog):
 
         for channel_id, data in self._connections.items():
             if channel_id == message.channel.id:
-                other_channel = data["channel"]
-            elif data["other_channel"].id == message.author.id:
+                other_channel = data["other_channel"]
+            elif data["other_channel"].id == message.channel.id:
                 other_channel = self.bot.get_channel(channel_id)
         
         if not other_channel:
