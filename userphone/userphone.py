@@ -123,7 +123,7 @@ class UserPhone(commands.Cog):
                         await other_channel.send("Connection Closed by other party")
                     except (discord.NotFound, discord.errors.Forbidden, discord.HTTPException, AttributeError):
                         return 
-                    continue
+                    return 
                 if data["nsfw"] != nsfw:
                     continue
 
