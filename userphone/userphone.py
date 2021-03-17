@@ -57,7 +57,7 @@ class UserPhone(commands.Cog):
     
     @commands.group()
     @commands.is_owner()
-    async def userphoneset():
+    async def userphoneset(self, ctx: commands.Context):
         """Set global settings for userphone, such as reportchannel."""
         pass 
     
