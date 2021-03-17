@@ -127,6 +127,15 @@ class UserPhone(commands.Cog):
                     continue 
                 elif data["nsfw"] != nsfw:
                     continue
+                elif ctx.channel.id == data["other_channel"].id:
+                    await ctx.send("Connection Closed")
+                    other_channel = bot.get_channel(channel_id)
+                    try:
+                        await other_channel.send("Connection Closed by other party")
+                    except (discord.NotFound, discord.errors.Forbidden, discord.HTTPException, AttributeError):
+                        return 
+                    continue
+
                 data["other_channel"] = ctx.channel 
                 await ctx.send("Connection created!")
 
