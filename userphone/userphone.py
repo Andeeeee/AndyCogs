@@ -55,7 +55,7 @@ class UserPhone(commands.Cog):
 
         self._connections = {}
     
-    @commands.command()
+    @commands.group()
     @commands.is_owner()
     async def userphoneset():
         """Set global settings for userphone, such as reportchannel."""
