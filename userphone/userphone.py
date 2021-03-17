@@ -71,7 +71,7 @@ class UserPhone(commands.Cog):
             await self.config.reportchannel.set(channel.id)
             await ctx.send(f"Now sending reports to {channel.mention}")
     
-    @userphoneset.group()
+    @userphoneset.group(name="rules")
     async def rules(self, ctx: commands.Context):
         """Set the rules for userphone that users can view using `[p]userphone rules`"""
         pass 
