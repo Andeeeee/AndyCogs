@@ -70,22 +70,17 @@ class UserPhone(commands.Cog):
         else:
             await self.config.reportchannel.set(channel.id)
             await ctx.send(f"Now sending reports to {channel.mention}")
-    
-    @userphoneset.group(name="rules")
-    async def rules(self, ctx: commands.Context):
-        """Set the rules for userphone that users can view using `[p]userphone rules`"""
-        pass 
 
-    @rules.command()
-    async def add(self, ctx: commands.Context, *, rule: str):
+    @userphoneset.command(name="add-rule")
+    async def add_rule(self, ctx: commands.Context, *, rule: str):
         """Add a rule to the userphone rule list"""
         rules = await self.config.rules()
         rules.append(rule)
         await self.config.rules.set(rules)
         await ctx.send("Added on to the rules list")
     
-    @rules.command()
-    async def remove(self, ctx: commands.Context, *, num: int):
+    @userphoneset.command(name="remove_rule")
+    async def remove_rule(self, ctx: commands.Context, *, num: int):
         """Remove a rule from the list of rules. Should be its position in the list. Starts from one"""
         rules = await self.config.rules()
 
