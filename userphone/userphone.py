@@ -115,19 +115,7 @@ class UserPhone(commands.Cog):
                 return 
         else:
             for channel_id, data in self._connections.items():
-                if channel_id == ctx.channel.id:
-                    await ctx.send("Connection Closed")
-                    other_channel = self._connections[ctx.channel.id]["other_channel"]
-                    try:
-                        await other_channel.send("Connection Closed by other party")
-                    except (discord.NotFound, discord.errors.Forbidden, discord.HTTPException, AttributeError):
-                        return 
-                    continue 
-                elif data["other_channel"] is not None:
-                    continue 
-                elif data["nsfw"] != nsfw:
-                    continue
-                elif ctx.channel == data["other_channel"]:
+                if ctx.channel == data["other_channel"]:
                     await ctx.send("Connection Closed")
                     other_channel = self.bot.get_channel(channel_id)
                     del self._connections[ctx.channel.id]
@@ -135,6 +123,8 @@ class UserPhone(commands.Cog):
                         await other_channel.send("Connection Closed by other party")
                     except (discord.NotFound, discord.errors.Forbidden, discord.HTTPException, AttributeError):
                         return 
+                    continue
+                if data["nsfw"] != nsfw:
                     continue
 
                 data["other_channel"] = ctx.channel 
