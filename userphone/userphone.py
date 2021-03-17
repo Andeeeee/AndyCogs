@@ -97,7 +97,6 @@ class UserPhone(commands.Cog):
     
     @commands.group(invoke_without_command=True)
     @commands.cooldown(1, 6, BucketType.user)
-    @commands.max_concurrency(1, BucketType.channel)
     @commands.guild_only()
     @commands.check(not_blacklisted)
     async def userphone(self, ctx: commands.Context, nsfw: bool = False):
@@ -117,9 +116,17 @@ class UserPhone(commands.Cog):
         else:
             for channel_id, data in self._connections.items():
                 if channel_id == ctx.channel.id:
+                    await ctx.send("Connection Closed")
+                    other_channel = self._connections[ctx.channel.id]["other_channel"]
+                    try:
+                        await other_channel.send("Connection Closed by other party")
+                    except (discord.NotFound, discord.errors.Forbidden, discord.HTTPException, AttributeError):
+                        return 
                     continue 
                 elif data["other_channel"] is not None:
                     continue 
+                elif data["nsfw"] != nsfw:
+                    continue
                 data["other_channel"] = ctx.channel 
                 await ctx.send("Connection created!")
 
