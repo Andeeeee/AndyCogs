@@ -110,7 +110,7 @@ class UserPhone(commands.Cog):
             del self._connections[ctx.channel.id]
             await ctx.send("Connection Closed")
         else:
-            for channel_id, data in self._connections:
+            for channel_id, data in self._connections.items():
                 if channel_id == ctx.channel.id:
                     continue 
                 elif data["other_channel"] is not None:
@@ -165,7 +165,7 @@ class UserPhone(commands.Cog):
             return 
         other_channel = None
 
-        for channel_id, data in self._connections:
+        for channel_id, data in self._connections.items():
             if channel_id == message.channel.id:
                 other_channel = data["channel"]
             elif data["other_channel"].id == message.author.id:
