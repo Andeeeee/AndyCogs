@@ -107,8 +107,13 @@ class UserPhone(commands.Cog):
             self._connections[ctx.channel.id] = data
             await ctx.send("Connection Created!")
         elif ctx.channel.id in self._connections:
+            other_channel = self._connections[ctx.channel.id]["other_channel"]
             del self._connections[ctx.channel.id]
             await ctx.send("Connection Closed")
+            try:
+                await other_channel.send("Connection Closed by other party")
+            except (discord.NotFound, discord.errors.Forbidden, discord.HTTPException, AttributeError):
+                return 
         else:
             for channel_id, data in self._connections.items():
                 if channel_id == ctx.channel.id:
@@ -132,7 +137,7 @@ class UserPhone(commands.Cog):
     
     @userphone.command()
     @commands.cooldown(1, 30, BucketType.user)
-    async def report(self, ctx: commands.Context, user: Union[discord.Member, discord.User, int], *, reason: str):
+    async def report(self, ctx: commands.Context, user: Union[discord.Member, discord.User, int], nsfw: Optional[bool] = False, *, reason: str):
         """Report a user to the bot owner(s)"""
         if isinstance(user, int):
             try:
@@ -150,7 +155,7 @@ class UserPhone(commands.Cog):
             await ctx.send("I couldn't find the reportchannel")
         
         e = discord.Embed(title = "Userphone Report", color = await ctx.embed_color())
-        e.add_field(name="Context and Info", value=f"Report sent by: {ctx.author} ({ctx.author.id})\nReported from the guild: {ctx.guild.name} ({ctx.guild.id})")
+        e.add_field(name="Context and Info", value=f"Report sent by: {ctx.author} ({ctx.author.id})\nReported from the guild: {ctx.guild.name} ({ctx.guild.id})\nNSFW: {nsfw}")
         e.add_field(name="Reported User", value=f"{user} ({user.id})")
         e.add_field(name="Reason", value=reason)
 
@@ -158,6 +163,47 @@ class UserPhone(commands.Cog):
             await channel.send(embed=e)
         except discord.errors.Forbidden:
             await ctx.send("I dont have permissions to send messages in the reportchannel")
+    
+    @userphone.group()
+    @commands.is_owner()
+    async def blacklist(self, ctx: commands.Context):
+        """Manage blacklist settings"""
+        pass 
+
+    @blacklist.command(name="add")
+    async def _add(self, ctx: commands.Context, user: Union[discord.Member, discord.User, int]):
+        """Adds a user to the blacklist"""
+        if isinstance(user, int):
+            try:
+                user = await self.bot.fetch_user(user)
+            except discord.NotFound:
+                return await ctx.send("This user doesn't exist wyd")
+        
+        if await self.bot.is_owner(user):
+            return await ctx.send("You can't blacklist owners :rage:")
+
+        blacklisted = await self.config.blacklist()
+        if user.id in blacklisted:
+            return await ctx.send("You can't blacklist a blacklisted user :thinking:")
+        blacklisted.append(user.id)
+        await self.config.blacklist.set(blacklisted)
+    
+    @blacklist.command(name="remove")
+    async def _remove(self, ctx: commands.Context, user: Union[discord.Member, discord.User, int]):
+        """Removes a user from the blacklist"""
+        if isinstance(user, int):
+            try:
+                user = await self.bot.fetch_user(user)
+            except discord.NotFound:
+                return await ctx.send("This isn't a user wyd")
+        
+        blacklisted = await self.config.blacklist()
+        try:
+            blacklisted.remove(user.id)
+        except ValueError:
+            return await ctx.send("This user isn't blacklisted :thinking:")
+        await self.config.blacklist.set(blacklisted)
+    
     
     @commands.Cog.listener()
     async def on_message_without_command(self, message: discord.Message):
