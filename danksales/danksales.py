@@ -117,6 +117,9 @@ class DankSales(commands.Cog):
         
         if all_data["lastitem"] == match.group("item") and all_data["lastpercent"] == match.group("percent"):
             return 
+        
+        await self.config.lastitem.set(match.group("item"))
+        await self.config.lastpercent.set(match.group("percent"))
 
         all_guilds = await self.config.all_guilds()
         for guild_id, data in all_guilds.items():
@@ -161,6 +164,3 @@ class DankSales(commands.Cog):
                         await m.publish()
                     except (discord.Forbidden, discord.HTTPException):
                         pass
-
-        await self.config.lastitem.set(match.group("item"))
-        await self.config.lastpercent.set(match.group("percent"))
