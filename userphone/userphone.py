@@ -150,7 +150,7 @@ class UserPhone(commands.Cog):
                     _data = {"other_channel": None, "participants": []}
                     self._connections[ctx.channel.id] = _data
                     await ctx.send(":telephone: **Calling on userphone...**")
-                    continue
+                    return 
 
                 data["other_channel"] = ctx.channel
                 channel = self.bot.get_channel(channel_id)
