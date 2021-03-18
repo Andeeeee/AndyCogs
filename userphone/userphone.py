@@ -51,7 +51,6 @@ class UserPhone(commands.Cog):
             "reportchannel": None,
             "rules": [
                 "No Invite Links",
-                "NSFW connections must be marked by passing `True` to the nsfw paramater while running the userphone command",
                 "No False Reports",
                 "Abide by Discord ToS",
             ],
@@ -108,7 +107,7 @@ class UserPhone(commands.Cog):
     @commands.cooldown(1, 6, BucketType.user)
     @commands.guild_only()
     @commands.check(not_blacklisted)
-    async def userphone(self, ctx: commands.Context, nsfw: bool = False):
+    async def userphone(self, ctx: commands.Context):
         """Start a userphone connection!"""
         if not self._connections:
             data = {"other_channel": None, "nsfw": nsfw, "participants": []}
@@ -131,8 +130,6 @@ class UserPhone(commands.Cog):
                 return
         else:
             for channel_id, data in self._connections.items():
-                if data["other_channel"] is not None:
-                    continue 
                 if ctx.channel == data["other_channel"]:
                     if not ctx.author.id in data["participants"]:
                         return await ctx.send("You haven't participated in this conversation, you can't hang up!")
@@ -149,7 +146,7 @@ class UserPhone(commands.Cog):
                     ):
                         pass
                     return 
-                if data["nsfw"] != nsfw:
+                if data["other_channel"] is not None:
                     continue
 
                 data["other_channel"] = ctx.channel
