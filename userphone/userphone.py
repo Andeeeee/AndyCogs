@@ -147,6 +147,9 @@ class UserPhone(commands.Cog):
                         pass
                     return 
                 if data["other_channel"] is not None:
+                    _data = {"other_channel": None, "participants": []}
+                    self._connections[ctx.channel.id] = _data
+                    await ctx.send(":telephone: **Calling on userphone...**")
                     continue
 
                 data["other_channel"] = ctx.channel
