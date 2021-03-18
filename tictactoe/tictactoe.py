@@ -65,7 +65,7 @@ class TicTacToe(commands.Cog):
             ):
                 check = True
             elif (board[3] == "X" and board[4] == "X" and board[5] == "X") or (
-                board["4"] == "O" and board["5"] == "O" and board["6"] == "O"
+                board[3] == "O" and board[4] == "O" and board[5] == "O"
             ):
                 check = True
             elif (board[0] == "X" and board[1] == "X" and board[2] == "X") or (
