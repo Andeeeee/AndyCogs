@@ -115,6 +115,8 @@ class UserPhone(commands.Cog):
             self._connections[ctx.channel.id] = data
             await ctx.send(":telephone: **Calling on userphone...**")
         elif ctx.channel.id in self._connections:
+            if not ctx.author.id in self._connections[ctx.channel.id]["participants"]:
+                return await ctx.send("You haven't participated in this conversation, you can't hang up!")
             other_channel = self._connections[ctx.channel.id]["other_channel"]
             del self._connections[ctx.channel.id]
             await ctx.send(":telephone: **You hung up the userphone.**")
@@ -130,6 +132,8 @@ class UserPhone(commands.Cog):
         else:
             for channel_id, data in self._connections.items():
                 if ctx.channel == data["other_channel"]:
+                    if not ctx.author.id in data["participants"]:
+                        return await ctx.send("You haven't participated in this conversation, you can't hang up!")
                     await ctx.send(":telephone: **You hung up the userphone.**")
                     other_channel = self.bot.get_channel(channel_id)
                     del self._connections[channel_id]
@@ -267,8 +271,10 @@ class UserPhone(commands.Cog):
         for channel_id, data in self._connections.items():
             if channel_id == message.channel.id:
                 other_channel = data["other_channel"]
+                break 
             elif data["other_channel"].id == message.channel.id:
                 other_channel = self.bot.get_channel(channel_id)
+                break
 
         if not other_channel:
             return
@@ -280,4 +286,6 @@ class UserPhone(commands.Cog):
             discord.NotFound,
             AttributeError,
         ):
-            return 
+            pass 
+        else:
+            self._connections[channel_id]["participants"].append(message.author.id)
