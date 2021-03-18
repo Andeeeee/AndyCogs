@@ -49,9 +49,6 @@ class TicTacToe(commands.Cog):
 
         node = "X"
 
-        def player_check(m: discord.Message):
-            return m.author == letters[node] and m.content.lower() in keys.keys()
-
         def check_winner():
             check = False
             if (board[6] == "X" and board[7] == "X" and board[8] == "X") or (
@@ -131,6 +128,8 @@ class TicTacToe(commands.Cog):
             await channel.send(
                 f"{letters[node].mention}: Please pick a move. Your choices are in the following format\na1 a2 a3\nb1 b2 b3\nc1 c2 c3"
             )
+            def player_check(m: discord.Message):
+                return m.author == letters[node] and m.content.lower() in keys.keys()
             try:
                 choice = await self.bot.wait_for(
                     "message", check=player_check, timeout=60
