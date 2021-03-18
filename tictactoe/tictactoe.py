@@ -94,26 +94,29 @@ class TicTacToe(commands.Cog):
             result = ""
 
             for place in row1:
+                place = str(place)
                 result += (
                     place.replace("X", ":x:")
                     .replace("O", ":o:")
-                    .replace(None, ":black_large_square:")
+                    .replace("None", ":black_large_square:")
                 )
                 result += "\n"
 
             for place in row2:
+                place = str(place)
                 result += (
                     place.replace("X", ":x:")
                     .replace("O", ":o:")
-                    .replace(None, ":black_large_square:")
+                    .replace("None", ":black_large_square:")
                 )
                 result += "\n"
 
             for place in row3:
+                place = str(place)
                 result += (
                     place.replace("X", ":x:")
                     .replace("O", ":o:")
-                    .replace(None, ":black_large_square:")
+                    .replace("None", ":black_large_square:")
                 )
                 result += "\n"
 
