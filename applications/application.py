@@ -536,6 +536,7 @@ class Applications(commands.Cog):
         await member.send(
             f"Your application was denied **{ctx.guild.name}** with the reason {msg.content}"
         )
+        await ctx.send("Denied this application")
 
     @commands.command(name="fetchapp", aliases=["getapp", "review"])
     @commands.guild_only()
