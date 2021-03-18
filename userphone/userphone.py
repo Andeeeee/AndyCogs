@@ -128,7 +128,6 @@ class UserPhone(commands.Cog):
             ):
                 return
         else:
-            await ctx.send(":telephone: **Calling on userphone...**")
             for channel_id, data in self._connections.items():
                 if ctx.channel == data["other_channel"]:
                     await ctx.send(":telephone: **You hung up the userphone.**")
@@ -151,6 +150,7 @@ class UserPhone(commands.Cog):
                 channel = self.bot.get_channel(channel_id)
                 if not channel:
                     continue 
+                await ctx.send(":telephone: **Calling on userphone...**")
                 await ctx.send(":telephone: **The other party has picked up the userphone!**")
                 await channel.send(":telephone: **The other party has picked up the userphone!**")
 
