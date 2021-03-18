@@ -15,13 +15,13 @@ class TicTacToe(commands.Cog):
 
     @commands.guild_only()
     @commands.max_concurrency(1, commands.BucketType.channel)
-    @commands.command()
-    async def ttt(self, ctx, user: Optional[discord.Member] = None):
+    @commands.command(aliases=["tictactoe"])
+    async def ttt(self, ctx, user: discord.Member):
         """ Tic Tac Toe """
         if user == ctx.author:
             return await ctx.send("Can't play yourself wyd")
 
-        winner = await self.ttt_new(ctx.author, user, ctx.channel)
+        winner = await self.start_game(ctx.author, user, ctx.channel)
 
         await ctx.send(f"{winner.name} won the game!")
 
