@@ -147,10 +147,7 @@ class UserPhone(commands.Cog):
                         pass
                     return 
                 if data["other_channel"] is not None:
-                    _data = {"other_channel": None, "participants": []}
-                    self._connections[ctx.channel.id] = _data
-                    await ctx.send(":telephone: **Calling on userphone...**")
-                    return 
+                    continue
 
                 data["other_channel"] = ctx.channel
                 channel = self.bot.get_channel(channel_id)
@@ -159,6 +156,10 @@ class UserPhone(commands.Cog):
                 await ctx.send(":telephone: **Calling on userphone...**")
                 await ctx.send(":telephone: **The other party has picked up the userphone!**")
                 await channel.send(":telephone: **The other party has picked up the userphone!**")
+            
+            data = {"other_channel": None, "participants": []}
+            self._connections[ctx.channel.id] = data
+            await ctx.send(":telephone: **Calling on userphone...**")
 
     @userphone.command()
     async def rules(self, ctx: commands.Context):
