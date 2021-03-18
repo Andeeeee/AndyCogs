@@ -237,6 +237,7 @@ class UserPhone(commands.Cog):
             return await ctx.send("You can't blacklist a blacklisted user :thinking:")
         blacklisted.append(user.id)
         await self.config.blacklist.set(blacklisted)
+        await ctx.send(f"Added **{user.name}** to the blacklist")
 
     @blacklist.command(name="remove")
     async def _remove(
@@ -255,6 +256,7 @@ class UserPhone(commands.Cog):
         except ValueError:
             return await ctx.send("This user isn't blacklisted :thinking:")
         await self.config.blacklist.set(blacklisted)
+        await ctx.send(f"Removed **{user.name}** to the blacklist")
 
     @commands.Cog.listener()
     async def on_message_without_command(self, message: discord.Message):
@@ -271,7 +273,7 @@ class UserPhone(commands.Cog):
         if not other_channel:
             return
         try:
-            await other_channel.send(f"{message.author}: {message.content}")
+            await other_channel.send(f"{message.author}: {message.content}", allowed_mentions=discord.AllowedMentions(users=False, everyone=False, roles=False))
         except (
             discord.errors.Forbidden,
             discord.HTTPException,
