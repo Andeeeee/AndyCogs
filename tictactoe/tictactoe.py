@@ -22,7 +22,8 @@ class TicTacToe(commands.Cog):
             return await ctx.send("Can't play yourself wyd")
 
         winner = await self.start_game(ctx.author, user, ctx.channel)
-
+        if not winner:
+            return 
         await ctx.send(f"{winner.name} won the game!")
 
     async def start_game(
@@ -40,6 +41,7 @@ class TicTacToe(commands.Cog):
             "c1": 6,
             "c2": 7,
             "c3": 8,
+            "end": None,
         }
 
         letters = {"O": random.choice([player, opp])}
@@ -100,7 +102,7 @@ class TicTacToe(commands.Cog):
                     .replace("O", ":o:")
                     .replace("None", ":black_large_square:")
                 )
-                result += "\n"
+            result += "\n"
 
             for place in row2:
                 place = str(place)
@@ -109,7 +111,7 @@ class TicTacToe(commands.Cog):
                     .replace("O", ":o:")
                     .replace("None", ":black_large_square:")
                 )
-                result += "\n"
+            result += "\n"
 
             for place in row3:
                 place = str(place)
@@ -118,7 +120,7 @@ class TicTacToe(commands.Cog):
                     .replace("O", ":o:")
                     .replace("None", ":black_large_square:")
                 )
-                result += "\n"
+            result += "\n"
 
             e = discord.Embed(
                 title="Tic Tac Toe", color=discord.Color.green(), description=result
@@ -136,6 +138,9 @@ class TicTacToe(commands.Cog):
             except asyncio.TimeoutError:
                 await channel.send("The game has ended due to invalid choices.")
                 return "X" if node == "O" else "O"
+            
+            if choice.content.lower() == "end":
+                return player if letters[node] == opp else opp
 
             if board[keys[choice.content.lower()]] is not None:
                 await channel.send("This spot has been taken god ur dumb")
@@ -148,3 +153,4 @@ class TicTacToe(commands.Cog):
             await display_board()
 
         await channel.send("The game has tied")
+        return None
