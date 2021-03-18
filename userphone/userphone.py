@@ -142,8 +142,8 @@ class UserPhone(commands.Cog):
                         discord.HTTPException,
                         AttributeError,
                     ):
-                        return
-                    return
+                        del self._connections[channel_id]
+                    continue
                 if data["nsfw"] != nsfw:
                     continue
 
