@@ -110,7 +110,7 @@ class UserPhone(commands.Cog):
     async def userphone(self, ctx: commands.Context):
         """Start a userphone connection!"""
         if not self._connections:
-            data = {"other_channel": None, "nsfw": nsfw, "participants": []}
+            data = {"other_channel": None, "participants": []}
             self._connections[ctx.channel.id] = data
             await ctx.send(":telephone: **Calling on userphone...**")
         elif ctx.channel.id in self._connections:
@@ -180,7 +180,6 @@ class UserPhone(commands.Cog):
         self,
         ctx: commands.Context,
         user: Union[discord.Member, discord.User, int],
-        nsfw: Optional[bool] = False,
         *,
         reason: str,
     ):
@@ -203,7 +202,7 @@ class UserPhone(commands.Cog):
         e = discord.Embed(title="Userphone Report", color=await ctx.embed_color())
         e.add_field(
             name="Context and Info",
-            value=f"Report sent by: {ctx.author} ({ctx.author.id})\nReported from the guild: {ctx.guild.name} ({ctx.guild.id})\nNSFW: {nsfw}",
+            value=f"Report sent by: {ctx.author} ({ctx.author.id})\nReported from the guild: {ctx.guild.name} ({ctx.guild.id})",
         )
         e.add_field(name="Reported User", value=f"{user} ({user.id})")
         e.add_field(name="Reason", value=reason)
