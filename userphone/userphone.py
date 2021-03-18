@@ -278,4 +278,4 @@ class UserPhone(commands.Cog):
             discord.NotFound,
             AttributeError,
         ):
-            continue
+            return 
