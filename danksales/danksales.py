@@ -9,6 +9,7 @@ from typing import Optional
 SHOP_REGEX = r"\*\*__LIGHTNING SALE__\*\* \(resets in (?P<time>[0-9,]+)m\) :[a-zA-Z0-9_]{2,32}: \*\*(?P<item>.*[a-zA-Z0-9_]{2,32})\*\* ─ \[(?P<price>[0-9,]+)\]  \(\[\*\*\*(?P<percent>[0-9,]+)% OFF!\*\*\*\]\)\*(?P<description>\w.*)\*"
 WEBHOOK_REGEX = r"\*\*(?P<item>.*[a-zA-Z0-9_]{2,32})\*\* ─ \[(?P<price>[0-9,]+)\]  \(\[\*\*\*(?P<percent>[0-9,]+)% OFF!\*\*\*\]\)\*(?P<description>\w.*)\*"
 
+
 class DankSales(commands.Cog):
     """Post sales and view stats about dankmemer item sales"""
 
@@ -23,8 +24,8 @@ class DankSales(commands.Cog):
         }
 
         default_global = {
-            "nextsale": None,
             "lastitem": None,
+            "lastpercent": None,
         }
 
         self.config.register_guild(**default_guild)
@@ -86,11 +87,7 @@ class DankSales(commands.Cog):
         except (IndexError, TypeError):
             return "indexerror"
 
-        nextsale = await self.config.nextsale()
-        if not nextsale:
-            pass
-        elif (datetime.utcnow() - datetime.fromtimestamp(nextsale)).total_seconds() <= -60:
-            return "not time"
+        all_data = await self.config.all()
 
         replace_list = [
             "⏣ ",
@@ -114,9 +111,12 @@ class DankSales(commands.Cog):
             match = re.match(SHOP_REGEX, filtered_message)
         else:
             match = re.match(WEBHOOK_REGEX, filtered_message)
-            
+
         if not match:
             return "no match"
+        
+        if all_data["lastitem"] == match.group("item") and all_data["lastpercent"] == match.group("percent"):
+            return 
 
         all_guilds = await self.config.all_guilds()
         for guild_id, data in all_guilds.items():
@@ -136,7 +136,7 @@ class DankSales(commands.Cog):
                     else:
                         guild = self.bot.get_guild(int(guild_id))
                         if not guild:
-                            pass 
+                            pass
                         else:
                             role = guild.get_role(data["pingrole"])
                             if not role:
@@ -150,18 +150,17 @@ class DankSales(commands.Cog):
                     m = await channel.send(
                         content=content, embed=e, allowed_mentions=allowed_mentions
                     )
-                except (discord.errors.Forbidden, discord.NotFound, discord.HTTPException):
+                except (
+                    discord.errors.Forbidden,
+                    discord.NotFound,
+                    discord.HTTPException,
+                ):
                     pass
                 else:
                     try:
                         await m.publish()
                     except (discord.Forbidden, discord.HTTPException):
-                        pass 
+                        pass
 
-        try:
-            nextsale = message.created_at.timestamp() + int(match.group("time")) * 60
-        except IndexError:
-            nextsale = message.created_at.timestamp() + 3600
-            
-        await self.config.nextsale.set(nextsale)
         await self.config.lastitem.set(match.group("item"))
+        await self.config.lastoercent.set(match.group("percent"))
