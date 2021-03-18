@@ -111,7 +111,7 @@ class UserPhone(commands.Cog):
     async def userphone(self, ctx: commands.Context, nsfw: bool = False):
         """Start a userphone connection!"""
         if not self._connections:
-            data = {"other_channel": None, "nsfw": nsfw}
+            data = {"other_channel": None, "nsfw": nsfw, "participants": []}
             self._connections[ctx.channel.id] = data
             await ctx.send(":telephone: **Calling on userphone...**")
         elif ctx.channel.id in self._connections:
