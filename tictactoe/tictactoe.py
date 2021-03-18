@@ -150,7 +150,7 @@ class TicTacToe(commands.Cog):
 
             if check_winner():
                 return letters[node]
+            node = "X" if node == "O" else "O"
             await display_board()
 
         await channel.send("The game has tied")
-        return None
