@@ -131,6 +131,8 @@ class UserPhone(commands.Cog):
                 return
         else:
             for channel_id, data in self._connections.items():
+                if data["other_channel"] is not None:
+                    continue 
                 if ctx.channel == data["other_channel"]:
                     if not ctx.author.id in data["participants"]:
                         return await ctx.send("You haven't participated in this conversation, you can't hang up!")
@@ -279,7 +281,7 @@ class UserPhone(commands.Cog):
         if not other_channel:
             return
         try:
-            await other_channel.send(f"{message.author}: {message.content}", allowed_mentions=discord.AllowedMentions(users=False, everyone=False, roles=False))
+            await other_channel.send(f"**{message.author}:** {message.content}", allowed_mentions=discord.AllowedMentions(users=False, everyone=False, roles=False))
         except (
             discord.errors.Forbidden,
             discord.HTTPException,
