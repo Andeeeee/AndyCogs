@@ -163,4 +163,4 @@ class DankSales(commands.Cog):
                         pass
 
         await self.config.lastitem.set(match.group("item"))
-        await self.config.lastoercent.set(match.group("percent"))
+        await self.config.lastpercent.set(match.group("percent"))
