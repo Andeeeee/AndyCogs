@@ -142,7 +142,7 @@ class UserPhone(commands.Cog):
                         discord.HTTPException,
                         AttributeError,
                     ):
-                        del self._connections[channel_id]
+                        continue
                     continue
                 if data["nsfw"] != nsfw:
                     continue
@@ -278,4 +278,4 @@ class UserPhone(commands.Cog):
             discord.NotFound,
             AttributeError,
         ):
-            del self._connections[channel_id]
+            continue
