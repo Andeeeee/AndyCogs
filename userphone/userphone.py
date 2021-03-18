@@ -156,6 +156,7 @@ class UserPhone(commands.Cog):
                 await ctx.send(":telephone: **Calling on userphone...**")
                 await ctx.send(":telephone: **The other party has picked up the userphone!**")
                 await channel.send(":telephone: **The other party has picked up the userphone!**")
+                return 
             
             data = {"other_channel": None, "participants": []}
             self._connections[ctx.channel.id] = data
