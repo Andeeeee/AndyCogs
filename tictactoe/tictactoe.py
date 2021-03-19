@@ -136,7 +136,7 @@ class TicTacToe(commands.Cog):
                 )
             except asyncio.TimeoutError:
                 await channel.send("The game has ended due to invalid choices.")
-                return "X" if node == "O" else "O"
+                return player if letters[node] == opp else opp
             
             if choice.content.lower() == "end":
                 return player if letters[node] == opp else opp
