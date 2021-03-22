@@ -102,13 +102,16 @@ class Tea(commands.Cog):
                 pass 
             else:
                 for user_id in to_remove:
-                    del data["players"][user_id]
+                    try:
+                        data["players"].remove(user_id)
+                    except IndexError:
+                        pass 
             player_objects = [ctx.guild.get_member(player_id) for player_id in data["players"]]
             players = list(filter(None, player_objects))
             to_remove = []
-            word = random_word()
-            segment = word[:round(len(word)/2)]
             for player in players:
+                word = random_word()
+                segment = word[:round(len(word)/2)]
                 def player_check(m: discord.Message):
                     return m.author == player and m.channel == ctx.channel
 
