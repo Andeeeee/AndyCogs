@@ -93,7 +93,7 @@ class Tea(commands.Cog):
         players = list(filter(None, player_objects))
         to_remove = []
 
-        player_lives = {p: 0 for p in data["players"]}
+        player_lives = {p: lives for p in data["players"]}
 
         if len(players) <= 1:
             del self._sessions[ctx.channel.id]
