@@ -60,11 +60,14 @@ class Tea(commands.Cog):
         parser = ParserButBetter()
         parser.add_argument("--timeout", nargs="*", default=10)
         try:
-            args = parser.parse_args(flags)
+            args = vars(parser.parse_args(flags))
         except commands.BadArgument:
             timeout = 10 
         else:
-            timeout = args["timeout"]
+            try:
+                timeout = args["timeout"]
+            except KeyError:
+                timeout = 10
 
         sessions = self._sessions
 
