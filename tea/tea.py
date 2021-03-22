@@ -95,6 +95,7 @@ class Tea(commands.Cog):
         player_lives = {p: 0 for p in data["players"]}
 
         if len(players) <= 1:
+            del self._sessions[ctx.channel.id]
             return await ctx.send("Not enough people were gathered to join the game. Try again next time")
         
         while True:
@@ -157,8 +158,8 @@ class Tea(commands.Cog):
         if message.channel.id not in sessions or sessions[message.channel.id]["waiting"] == False:
             return 
         
-        if user.id in sessions["players"]:
-            return 
+        if user.id in sessions[message.channel.id]["players"]:
+            return
         sessions["players"].append(user.id)
         self._sessions = sessions
 
