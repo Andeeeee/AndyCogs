@@ -122,7 +122,7 @@ class Tea(commands.Cog):
                 def player_check(m: discord.Message):
                     return m.author == player and m.channel == ctx.channel
 
-                await ctx.send(f"{player.mention}: Please enter a word containing {segment}")
+                await ctx.send(f"{player.mention}: Please enter a word containing **{segment}**")
                 try:
                     resp = await self.bot.wait_for("message", check=player_check, timeout=timeout)
                 except asyncio.TimeoutError:
