@@ -111,6 +111,8 @@ class Tea(commands.Cog):
             if len(players) == 1:
                 winner = players[0]
                 return await ctx.send(f"{winner.mention} won the game!")
+            elif len(players) == 0:
+                return await ctx.send("The game tied")
             to_remove = []
             for player in players:
                 word = random_word()
@@ -131,7 +133,7 @@ class Tea(commands.Cog):
                     valid_players = [user for user in players if player_lives[player.id] > 0]
                     if len(valid_players) == 1:
                         winner = valid_players[0]
-                        await ctx.send(f"{winner.mention} won the game!")
+                        return await ctx.send(f"{winner.mention} won the game!")
                     continue 
                 else:
                     if segment not in resp.content.lower() or segment == resp.content.lower():
@@ -144,7 +146,7 @@ class Tea(commands.Cog):
                         valid_players = [user for user in players if player_lives[player.id] > 0]
                         if len(valid_players) == 1:
                             winner = valid_players[0]
-                            await ctx.send(f"{winner.mention} won the game!")
+                            return await ctx.send(f"{winner.mention} won the game!")
                         continue 
                     else:
                         await ctx.send("Thats correct!")
