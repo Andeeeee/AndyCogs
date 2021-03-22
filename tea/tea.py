@@ -75,7 +75,6 @@ class Tea(commands.Cog):
         data = {}
         data["waiting"] = True 
         data["players"] = [ctx.author.id]
-        data["message"] = message 
         sessions[ctx.channel.id] = data
         self._sessions = sessions
         await message.add_reaction("🍵")
@@ -160,7 +159,7 @@ class Tea(commands.Cog):
         
         if user.id in sessions[message.channel.id]["players"]:
             return
-        sessions["players"].append(user.id)
+        sessions[message.channel.id]["players"].append(user.id)
         self._sessions = sessions
 
         
