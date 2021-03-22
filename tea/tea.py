@@ -116,7 +116,9 @@ class Tea(commands.Cog):
             to_remove = []
             for player in players:
                 word = random_word()
-                segment = word[:round(len(word)/2)]
+                segment = word[:round(len(word)/4)]
+                if len(segment) <= 1:
+                    segment = word[:round(len(word)/2)]
                 def player_check(m: discord.Message):
                     return m.author == player and m.channel == ctx.channel
 
