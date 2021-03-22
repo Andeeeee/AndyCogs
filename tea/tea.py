@@ -33,6 +33,8 @@ from redbot.core.commands import BucketType
 from typing import Optional, Union
 from .words import random_word, WORDS
 
+WORDS = WORDS.split("\n")
+
 class ParserButBetter(argparse.ArgumentParser):
     def error(self, message):
         raise commands.BadArgument(message)
@@ -77,7 +79,7 @@ class Tea(commands.Cog):
         data["players"] = [ctx.author.id]
         sessions[ctx.channel.id] = data
         self._sessions = sessions
-        await message.add_reaction("🍵")
+        await message.add_reaction("☕")
         await asyncio.sleep(60)
         sessions = self._sessions
         sessions[ctx.channel.id]["waiting"] = False 
@@ -157,7 +159,7 @@ class Tea(commands.Cog):
     async def on_reaction_add(self, reaction: discord.Reaction, user: Union[discord.Member, discord.User]):
         if isinstance(user, discord.User) or user.bot:
             return 
-        if str(reaction.emoji) != "🍵":
+        if str(reaction.emoji) != "☕":
             return 
 
         sessions = self._sessions
