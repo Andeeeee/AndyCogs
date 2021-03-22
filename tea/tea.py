@@ -108,6 +108,9 @@ class Tea(commands.Cog):
                         pass 
             player_objects = [ctx.guild.get_member(player_id) for player_id in data["players"]]
             players = list(filter(None, player_objects))
+            if len(players) == 1:
+                winner = players[0]
+                return await ctx.send(f"{winner.mention} won the game!")
             to_remove = []
             for player in players:
                 word = random_word()
@@ -123,7 +126,7 @@ class Tea(commands.Cog):
                     message = ""
                     if player_lives[player.id] <= 0:
                         to_remove.append(player.id)
-                        message = "You ran out of lives, so you have been eliminated from the game"
+                        message = " You ran out of lives, so you have been eliminated from the game"
                     await ctx.send(f"You ran out of time!{message}")
                     valid_players = [user for user in players if player_lives[player.id] > 0]
                     if len(valid_players) == 1:
@@ -131,7 +134,7 @@ class Tea(commands.Cog):
                         await ctx.send(f"{winner.mention} won the game!")
                     continue 
                 else:
-                    if segment not in resp.content.lower():
+                    if segment not in resp.content.lower() or segment == resp.content.lower():
                         player_lives[player.id] -= 1
                         message = ""
                         if player_lives[player.id] <= 0:
