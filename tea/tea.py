@@ -74,11 +74,11 @@ class Tea(commands.Cog):
         message = await ctx.send("React with :tea: to enter!")
         data = {}
         data["waiting"] = True 
-        data["players"] = []
+        data["players"] = [ctx.author.id]
         data["message"] = message 
         sessions[ctx.channel.id] = data
         self._sessions = sessions
-        await message.add_reaction(":tea:")
+        await message.add_reaction("🍵")
         await asyncio.sleep(60)
         sessions = self._sessions
         sessions[ctx.channel.id]["waiting"] = False 
