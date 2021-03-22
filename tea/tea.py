@@ -60,7 +60,7 @@ class Tea(commands.Cog):
         parser = ParserButBetter()
         parser.add_argument("--timeout", nargs="*", default=10)
         try:
-            args = parser.parser_args(flags)
+            args = parser.parse_args(flags)
         except commands.BadArgument:
             timeout = 10 
         else:
