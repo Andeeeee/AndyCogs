@@ -34,6 +34,7 @@ from typing import Optional, Union
 from .words import random_word, WORDS
 
 WORDS = WORDS.split("\n")
+WORDS = [word.lower() for word in WORDS]
 
 class ParserButBetter(argparse.ArgumentParser):
     def error(self, message):
@@ -50,6 +51,7 @@ class Tea(commands.Cog):
         )
 
         self._sessions = {}
+        self.words = WORDS #debugging
     
     @commands.command()
     @commands.max_concurrency(1, commands.BucketType.channel)
