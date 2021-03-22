@@ -121,7 +121,7 @@ class Tea(commands.Cog):
             for player in players:
                 word = random_word()
                 segment = word[:round(len(word)/4)]
-                if len(segment) <= 1:
+                if len(segment) <= 2:
                     segment = word[:round(len(word)/2)]
                 def player_check(m: discord.Message):
                     return m.author == player and m.channel == ctx.channel
