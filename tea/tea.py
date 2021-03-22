@@ -147,7 +147,7 @@ class Tea(commands.Cog):
     async def on_reaction_add(self, reaction: discord.Reaction, user: Union[discord.Member, discord.User]):
         if isinstance(user, discord.User) or user.bot:
             return 
-        if reaction.emoji != "🍵":
+        if str(reaction.emoji) != "🍵":
             return 
 
         sessions = self._sessions
