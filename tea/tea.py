@@ -63,8 +63,8 @@ class Tea(commands.Cog):
         parser.add_argument("--timeout", nargs="?", default=10, type=int)
         try:
             args = vars(parser.parse_args(flags))
-        except commands.BadArgument:
-            timeout = 10 
+        except commands.BadArgument as e:
+            return await ctx.send(str(e))
         else:
             try:
                 timeout = args["timeout"]
