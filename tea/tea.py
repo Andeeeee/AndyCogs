@@ -31,7 +31,7 @@ from redbot.core import commands, Config
 from redbot.core.bot import Red
 from redbot.core.commands import BucketType
 from typing import Optional, Union
-from .words import random_word
+from .words import random_word, WORDS
 
 class ParserButBetter(argparse.ArgumentParser):
     def error(self, message):
@@ -58,7 +58,7 @@ class Tea(commands.Cog):
             return await ctx.send("Sorry, you need to have at least 1 life to start with")
         
         parser = ParserButBetter()
-        parser.add_argument("--timeout", nargs="*", default=10)
+        parser.add_argument("--timeout", nargs="?", default=10)
         try:
             args = vars(parser.parse_args(flags))
         except commands.BadArgument:
@@ -136,7 +136,7 @@ class Tea(commands.Cog):
                         return await ctx.send(f"{winner.mention} won the game!")
                     continue 
                 else:
-                    if segment not in resp.content.lower() or segment == resp.content.lower():
+                    if segment not in resp.content.lower() or resp.content.lower() not in WORDS:
                         player_lives[player.id] -= 1
                         message = ""
                         if player_lives[player.id] <= 0:
