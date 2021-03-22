@@ -60,7 +60,7 @@ class Tea(commands.Cog):
             return await ctx.send("Sorry, you need to have at least 1 life to start with")
         
         parser = ParserButBetter()
-        parser.add_argument("--timeout", nargs="?", default=10)
+        parser.add_argument("--timeout", nargs="?", default=10, type=int)
         try:
             args = vars(parser.parse_args(flags))
         except commands.BadArgument:
@@ -73,7 +73,7 @@ class Tea(commands.Cog):
 
         sessions = self._sessions
 
-        message = await ctx.send("React with :tea: to enter!")
+        message = await ctx.send("React with :coffee: to enter!")
         data = {}
         data["waiting"] = True 
         data["players"] = [ctx.author.id]
