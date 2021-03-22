@@ -154,7 +154,7 @@ class Tea(commands.Cog):
 
         message: discord.Message = reaction.message 
 
-        if message.channel.id not in sessions or sessions["waiting"] == False:
+        if message.channel.id not in sessions or sessions[message.channel.id]["waiting"] == False:
             return 
         
         if user.id in sessions["players"]:
