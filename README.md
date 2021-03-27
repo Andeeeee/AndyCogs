@@ -21,7 +21,7 @@
 
 # Installation
 `[p]load downloader`<br>
-`[p]repo add AndyCogs https://github.com/Andeeeee/AndysCogs`<br>
+`[p]repo add AndyCogs https://github.com/Andeeeee/AndyCogs`<br>
 `[p]cog install AndyCogs [cogname]`<br>
 `[p]load [cogname]`<br>
 
