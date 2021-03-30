@@ -26,15 +26,13 @@ import asyncio
 import argparse
 import discord
 
-from datetime import datetime, timedelta
-from discord.ext import tasks
-from discord.utils import sleep_until
+from datetime import datetime
 from mee6_py_api import API
 from redbot.core import commands, Config
 from redbot.core.bot import Red
 from typing import Optional, Union
 from random import choice, randint
-from .converters import FuzzyRole, IntOrLink
+from .converters import FuzzyRole, IntOrLink, TimeConverter
 from redbot.core.commands import BadArgument
 from redbot.core.utils.chat_formatting import pagify, humanize_list
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
@@ -129,19 +127,6 @@ class Giveaways(commands.Cog):
             return 0
         invites = await cog.config.member(member).invites()
         return invites
-
-    def convert_time(self, time: str):
-        conversions = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
-
-        conversion = time[-1]
-
-        if conversion not in conversions:
-            try:
-                return int(time)
-            except ValueError:
-                return 5
-
-        return int(time[:-1]) * conversions[time[-1]]
 
     def comma_format(self, number: int):
         return "{:,}".format(number)
@@ -1236,11 +1221,12 @@ class Giveaways(commands.Cog):
     async def g_start(
         self,
         ctx,
-        time: str,
+        channel: Optional[discord.TextChannel] = None,
+        time: TimeConverter = 3,
         winners: str = "1",
         requirements: Optional[FuzzyRole] = None,
         *,
-        title="Giveaway!",
+        title = "Giveaway!",
     ):
         """Start a giveaway in your server. Flags and Arguments are explained with .giveaway help"""
         title = title.split("--")
@@ -1255,8 +1241,11 @@ class Giveaways(commands.Cog):
         winners = int(winners)
         if winners < 0:
             return await ctx.send("Can've have less than 1 winner")
+        
+        if channel:
+            ctx.channel = channel
 
-        parser = NoExitParser(description="argparse", add_help=False)
+        parser = NoExitParser()
 
         parser.add_argument("--ping", action="store_true", default=False)
         parser.add_argument("--msg", nargs="*", type=str, default=None)
@@ -1264,6 +1253,7 @@ class Giveaways(commands.Cog):
         parser.add_argument("--amt", nargs="?", type=int, default=0)
         parser.add_argument("--note", nargs="*", type=str, default=None)
         parser.add_argument("--embed", action="store_true", default=False)
+        parser.add_argument("--pin", action="store_true", default=False)
 
         try:
             flags = vars(parser.parse_known_args(flags.split())[0])
@@ -1327,8 +1317,7 @@ class Giveaways(commands.Cog):
 
         e.set_footer(text="Ending at")
 
-        time = self.convert_time(time)
-        if time > 4233600 or time < 3:
+        if time > 4233600 or time < 2:
             return await ctx.send(
                 "The time cannot be more than 7 weeks and less than 3 seconds"
             )
@@ -1349,7 +1338,7 @@ class Giveaways(commands.Cog):
         gaws[msg]["requirements"] = requirements
         gaws[msg]["winners"] = winners
         gaws[msg]["title"] = title
-        gaws[msg]["endtime"] = datetime.utcnow().timestamp() + float(time)
+        gaws[msg]["endtime"] = datetime.utcnow().timestamp() + int(time)
         gaws[msg]["channel"] = ctx.channel.id
         gaws[msg]["donor"] = flags["donor"]
 
@@ -1391,6 +1380,16 @@ class Giveaways(commands.Cog):
             prev = await self.config.member(ctx.author).hosted()
             prev += 1
             await self.config.member(ctx.author).hosted.set(prev)
+        
+        if flags["pin"]:
+            try:
+                await gaw_msg.pin(reason="Pinned using --pin flag in giveaways")
+            except discord.errors.Forbidden:
+                await ctx.send("I don't have permissions to pin the message", delete_after=5)
+            except discord.NotFound:
+                pass 
+            except discord.HTTPException:
+                await ctx.send("I can't pin this message becuase the channel has 50 pinned messages already")
 
         self.message_cache[str(msg)] = gaw_msg
         self.giveaway_cache[str(msg)] = True
@@ -1570,7 +1569,7 @@ class Giveaways(commands.Cog):
                         header += " :white_check_mark: You can join this giveaway\n"
                         giveaway_list.append(header)
                         continue
-                    header += " :octagonal_sign: You cannot join this giveaway\n"
+                    header += f" :octagonal_sign: {can_join_var[1].replace('[JUMP URL HERE]', 'this')}\n"
 
                     giveaway_list.append(header)
                 else:
@@ -1696,6 +1695,7 @@ class Giveaways(commands.Cog):
         gaws[giveaway]["Ongoing"] = False
         await self.config.guild(ctx.guild).giveaways.set(gaws)
         await ctx.send("Cancelled the giveaway for **{0}**".format(data["title"]))
+
 
     # -------------------------------------gprofile---------------------------------
 
