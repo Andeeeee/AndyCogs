@@ -461,7 +461,8 @@ class InviteTracker(commands.Cog):
                     inviter = await self.bot.get_or_fetch_member(inviter)
                 except (discord.NotFound, discord.errors.Forbidden):
                     return 
-            setattr(inviter, "display_name", getattr(inviter, "display_name", inviter.name))
+            if isinstance(inviter, discord.User):
+                inviter.display_name = inviter.name
             replace_dict = {
                 "{inviter}": inviter.mention,
                 "{inviter.name}": inviter.display_name,
