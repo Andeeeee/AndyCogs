@@ -275,6 +275,8 @@ class UserPhone(commands.Cog):
             if channel_id == message.channel.id:
                 other_channel = data["other_channel"]
                 break 
+            elif data["other_channel"] is None:
+                continue 
             elif data["other_channel"].id == message.channel.id:
                 other_channel = self.bot.get_channel(channel_id)
                 break
