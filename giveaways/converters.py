@@ -211,3 +211,17 @@ class IntOrLink(Converter):
                 raise BadArgument("Message not found")
 
         return message.id
+
+class TimeConverter(Converter):
+    async def convert(self, ctx: commands.Context, time: str):
+        conversions = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
+
+        conversion = time[-1]
+
+        if conversion not in conversions:
+            try:
+                return int(time)
+            except ValueError:
+                raise commands.BadArgument(f"{time} is not a valid time")
+
+        return round(int(time[:-1]) * conversions[time[-1]])
