@@ -1569,7 +1569,7 @@ class Giveaways(commands.Cog):
                         header += " :white_check_mark: You can join this giveaway\n"
                         giveaway_list.append(header)
                         continue
-                    header += f" :octagonal_sign: {can_join_var[1].replace('[JUMP URL HERE]', 'this')}\n"
+                    header += f" :octagonal_sign: {can_join_var[1].replace('[JUMP_URL_HERE]', 'this')}\n"
 
                     giveaway_list.append(header)
                 else:
