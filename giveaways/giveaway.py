@@ -723,7 +723,7 @@ class Giveaways(commands.Cog):
 
     @giveawayset.command(name="pingrole")
     @commands.admin_or_permissions(administrator=True)
-    async def cmd_pingrole(self, ctx, role: discord.Role):
+    async def cmd_pingrole(self, ctx, role: Optional[discord.Role] = None):
         """Set the role to ping if a ping is used"""
         if not role:
             return await ctx.send("This isn't a role")
