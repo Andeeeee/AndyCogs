@@ -301,7 +301,7 @@ class DankLogs(commands.Cog):
         formatted_items = ""
 
         for item, price in item_values.items():
-            formatted_items += f"{item}: {price}\n"
+            formatted_items += f"{item}: {self.comma_format(price)}\n"
         e = discord.Embed(
             title="Item Values",
             color=await ctx.embed_color(),
@@ -569,7 +569,7 @@ class DankLogs(commands.Cog):
 
         match = re.match(gift_regex, filtered_content)
         if not match:
-            return 
+            return
         amount = int(match.group("amount").replace(",", ""))
         member = match.group("user")
         ctx = commands.Context(
