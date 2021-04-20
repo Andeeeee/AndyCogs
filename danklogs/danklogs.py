@@ -46,7 +46,7 @@ class DankLogs(commands.Cog):
     """Track things for dankmemer"""
 
     __author__ = "Andy"
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
 
     def format_help_for_context(self, ctx):
         pre_processed = super().format_help_for_context(ctx)
@@ -69,6 +69,7 @@ class DankLogs(commands.Cog):
                 "candy": 3000,
                 "cheese": 5000,
                 "chillpill": 20000,
+                "coinbomb": 12000,
                 "cookie": 10,
                 "cupidsbigtoe": 100000,
                 "cutters": 300000,
@@ -80,8 +81,10 @@ class DankLogs(commands.Cog):
                 "fakeid": 700,
                 "fish": 250,
                 "fishingpole": 7500,
+                "fool": 75000,
                 "gift": 750000,
                 "god": 3000000,
+                "horseshoe": 35000,
                 "huntingrifle": 7500,
                 "jacky": 5000000,
                 "landmine": 2500,
