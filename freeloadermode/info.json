@@ -2,7 +2,7 @@
     "name": "freeloadermode",
     "short": "ban people who leave the server in x amount of time",
     "description": "ban people who leave the server in x amount of time",
-    "end_user_data_statement": "stores nothing basically",
+    "end_user_data_statement": "stores nothing",
     "install_msg": "Thanks for installing! Join my support server at <https://discord.gg/nVcZQt7mqk> or make a PR on my repo",   
     "author": [
         "Andy"
