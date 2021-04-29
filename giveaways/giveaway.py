@@ -570,6 +570,8 @@ class Giveaways(commands.Cog):
 
     async def send_final_message(self, ctx, ping, msg, embed):
         allowed_mentions = discord.AllowedMentions(roles=True, everyone=False)
+        role = None 
+        role.mention = ""
         final_message = ""
         if ping:
             pingrole = await self.config.guild(ctx.guild).pingrole()
@@ -598,6 +600,7 @@ class Giveaways(commands.Cog):
                 await ctx.send(
                     embed=e, allowed_mentions=allowed_mentions
                 )
+                
         else:
             await ctx.send(final_message, allowed_mentions=allowed_mentions)
 
