@@ -570,8 +570,6 @@ class Giveaways(commands.Cog):
 
     async def send_final_message(self, ctx, ping, msg, embed):
         allowed_mentions = discord.AllowedMentions(roles=True, everyone=False)
-        role = None 
-        role.mention = ""
         final_message = ""
         if ping:
             pingrole = await self.config.guild(ctx.guild).pingrole()
@@ -593,14 +591,16 @@ class Giveaways(commands.Cog):
         if embed:
             e = discord.Embed(description=final_message, color=await ctx.embed_color())
             try:
+                role 
+            except (NameError, UnboundLocalError):
                 await ctx.send(
-                embed=e, content=role.mention, allowed_mentions=allowed_mentions
-                )
-            except Exception as e:
+                embed=e, allowed_mentions=allowed_mentions
+            )
+            else:
                 await ctx.send(
-                    embed=e, allowed_mentions=allowed_mentions
+                    embed=e, content=role.mention, allowed_mentions=allowed_mentions
                 )
-                
+            
         else:
             await ctx.send(final_message, allowed_mentions=allowed_mentions)
 
@@ -1225,7 +1225,6 @@ class Giveaways(commands.Cog):
         await menu(ctx, embeds, DEFAULT_CONTROLS)
 
     @giveaway.command(name="start")
-    @commands.check(is_manager)
     async def g_start(
         self,
         ctx,
@@ -1237,6 +1236,8 @@ class Giveaways(commands.Cog):
         title = "Giveaway!",
     ):
         """Start a giveaway in your server. Flags and Arguments are explained with .giveaway help"""
+        if not is_manager(ctx):
+            return await ctx.send("You do not have proper permissions to do this. You need to be either admin or have the giveaway role. This cannot be run outside announcement channels either.")
         title = title.split("--")
         title = title[0]
         flags = ctx.message.content
@@ -1405,9 +1406,10 @@ class Giveaways(commands.Cog):
         self.tasks.append(asyncio.create_task(self.start_giveaway(int(msg), gaws[msg])))
 
     @giveaway.command(name="end")
-    @commands.check(is_manager)
     async def end(self, ctx, messageid: Optional[IntOrLink] = None):
         """End a giveaway"""
+        if not is_manager(ctx):
+            return await ctx.send("You do not have proper permissions to do this. You need to be either admin or have the giveaway role. This cannot be run outside announcement channels either.")
         if not messageid:
             if hasattr(ctx.message, "reference") and ctx.message.reference != None:
                 msg = ctx.message.reference.resolved
@@ -1433,11 +1435,12 @@ class Giveaways(commands.Cog):
             await self.end_giveaway(messageid, gaws[str(messageid)])
 
     @giveaway.command(name="reroll")
-    @commands.check(is_manager)
     async def reroll(
         self, ctx, messageid: Optional[IntOrLink], winners: Optional[int] = 1
     ):
         """Reroll a giveaway"""
+        if not is_manager(ctx):
+            return await ctx.send("You do not have proper permissions to do this. You need to be either admin or have the giveaway role. This cannot be run outside announcement channels either.")
         if not messageid:
             if hasattr(ctx.message, "reference") and ctx.message.reference != None:
                 msg = ctx.message.reference.resolved
@@ -1464,9 +1467,10 @@ class Giveaways(commands.Cog):
             await self.end_giveaway(messageid, gaws[str(messageid)], winners)
 
     @giveaway.command(name="ping")
-    @commands.check(is_manager)
     async def g_ping(self, ctx, *, message: str = None):
         """Ping the pingrole for your server with an optional message, it wont send anything if there isn't a pingrole"""
+        if not is_manager(ctx):
+            return await ctx.send("You do not have proper permissions to do this. You need to be either admin or have the giveaway role. This cannot be run outside announcement channels either.")
         m = discord.AllowedMentions(roles=True, everyone=False)
         await ctx.message.delete()
         pingrole = await self.config.guild(ctx.guild).pingrole()
@@ -1616,9 +1620,10 @@ class Giveaways(commands.Cog):
             await ctx.send(embed=e)
 
     @giveaway.command(name="cancel")
-    @commands.check(is_manager)
     async def cancel(self, ctx, giveaway: Optional[IntOrLink] = None):
         """Cancel a giveaway"""
+        if not is_manager(ctx):
+            return await ctx.send("You do not have proper permissions to do this. You need to be either admin or have the giveaway role. This cannot be run outside announcement channels either.")
         if not giveaway:
             if hasattr(ctx.message, "reference") and ctx.message.reference != None:
                 msg = ctx.message.reference.resolved
@@ -1819,7 +1824,6 @@ class Giveaways(commands.Cog):
     # -------------------------------------gstore---------------------------------
 
     @commands.group(name="giveawaystore", aliases=["gstore"])
-    @commands.check(is_manager)
     async def giveawaystore(self, ctx):
         """Manage donation and note tracking for members"""
         pass
@@ -1827,6 +1831,8 @@ class Giveaways(commands.Cog):
     @giveawaystore.command(name="clear")
     async def gstore_clear(self, ctx, member: Optional[discord.Member] = None):
         """Clear everything for a member"""
+        if not is_manager(ctx):
+            return await ctx.send("You do not have proper permissions to do this. You need to be either admin or have the giveaway role. This cannot be run outside announcement channels either.")
         if not member:
             return await ctx.send("A member needs to be specified after this")
         else:
@@ -1862,6 +1868,8 @@ class Giveaways(commands.Cog):
         self, ctx, member: Optional[discord.Member] = None, amt: str = None
     ):
         """Add an amount to a users donations"""
+        if not is_manager(ctx):
+            return await ctx.send("You do not have proper permissions to do this. You need to be either admin or have the giveaway role. This cannot be run outside announcement channels either.")
         if not member:
             return await ctx.send("A member needs to be specified after this")
         if not amt:
@@ -1879,6 +1887,8 @@ class Giveaways(commands.Cog):
         self, ctx, member: Optional[discord.Member] = None, amt: str = None
     ):
         """Remove a certain amount from a members donation amount"""
+        if not is_manager(ctx):
+            return await ctx.send("You do not have proper permissions to do this. You need to be either admin or have the giveaway role. This cannot be run outside announcement channels either.")
         if not member:
             return await ctx.send("A member needs to be specified after this")
         if not amt:
@@ -1906,6 +1916,8 @@ class Giveaways(commands.Cog):
         self, ctx, member: Optional[discord.Member] = None, *, note: str = None
     ):
         """Add a note to a member"""
+        if not is_manager(ctx):
+            return await ctx.send("You do not have proper permissions to do this. You need to be either admin or have the giveaway role. This cannot be run outside announcement channels either.")
         if not member:
             return await ctx.send("A member needs to be specified.")
         if not note:
@@ -1921,6 +1933,8 @@ class Giveaways(commands.Cog):
         self, ctx, member: Optional[discord.Member] = None, note: Optional[int] = None
     ):
         """Remove a note from a member, you can do `[p]gprofile notes @member` to find the note ID, and specify that for the note param"""
+        if not is_manager(ctx):
+            return await ctx.send("You do not have proper permissions to do this. You need to be either admin or have the giveaway role. This cannot be run outside announcement channels either.")
         if not member:
             return await ctx.send("A member needs to be specified.")
         if not note:
@@ -1975,3 +1989,4 @@ class Giveaways(commands.Cog):
                 ),
             )
             await user.send(embed=e)
+        
