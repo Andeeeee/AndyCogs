@@ -55,7 +55,6 @@ class FuzzyRole(RoleConverter):
                 "joindays": None,
                 "invites": None,
                 "shared": None,
-                "server": None,
             }
         final_results = []
         pattern = re.compile(r"\||;;")
@@ -68,7 +67,6 @@ class FuzzyRole(RoleConverter):
         joindays = None
         shared = None
         invites = None
-        server = None
         for arg in argument:
             mee6_split = arg.split(":")
             if mee6_split[0] == "mee6" and len(mee6_split) >= 2:
@@ -140,13 +138,6 @@ class FuzzyRole(RoleConverter):
                 except ValueError:
                     continue
 
-            elif mee6_split[0] == "server" and len(mee6_split) >= 2:
-                try:
-                    server = mee6_split[1]
-                    continue
-                except ValueError:
-                    continue
-
             arg = arg.lstrip("<@&").rstrip(">")
             if arg.isdigit():
                 role = guild.get_role(int(arg))
@@ -178,7 +169,6 @@ class FuzzyRole(RoleConverter):
         requirements["weeklyamari"] = wa
         requirements["joindays"] = joindays
         requirements["shared"] = shared
-        requirements["invites"] = invites
         requirements["server"] = server
 
         return requirements

@@ -238,16 +238,6 @@ class Giveaways(commands.Cog):
                     False,
                     f"You need to be in the server for {requirements['joindays'] - days} more days to enter [JUMP_URL_HERE] giveaway",
                 )
-        if requirements["server"]:
-            server: discord.Guild = self.bot.get_guild(requirements["server"])
-            if not server:
-                return True
-            elif user.id not in [m.id for m in server.members]:
-                invite = await self.create_invite(server)
-                return (
-                    False,
-                    f"You need to be in the **[{server.name}]({invite})** server to join [JUMP_URL_HERE] giveaway",
-                )
         if requirements["shared"]:
             cog = self.bot.get_cog("DankLogs")
             if not cog:
@@ -1293,29 +1283,11 @@ class Giveaways(commands.Cog):
                 "roles": None,
                 "joindays": None,
                 "invites": None,
-                "server": None,
                 "shared": None,
             }
         else:
             if requirements["roles"]:
                 requirements["roles"] = [r.id for r in requirements["roles"]]
-            if requirements["server"]:
-                server = requirements["server"]
-                try:
-                    fetched_server = self.bot.get_guild(int(server))
-                except ValueError:
-                    try:
-                        inv: discord.Invite = await self.bot.fetch_invite(server)
-                        fetched_server = inv.guild
-                    except (discord.NotFound, discord.errors.Forbidden):
-                        return await ctx.send(
-                            f"I cannot fetch this invite, please make sure it is valid and I am in this server"
-                        )
-                if not fetched_server:
-                    return await ctx.send(
-                        f"I cannot fetch this invite, please make sure it is valid and I am in this server"
-                    )
-                requirements["server"] = fetched_server.id
 
         e = discord.Embed(
             title=title,
