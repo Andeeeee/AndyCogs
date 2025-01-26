@@ -1,3 +1,8 @@
+
+<h1 align="center">
+  NO LONGER IN USE
+</h1>
+
 <h1 align="center">
   AndyCogs
 </h1>
@@ -7,9 +12,6 @@
 </h1>
 
 <p align="center">
-  <a href="https://discord.gg/nVcZQt7mqk">
-    <img src="https://discordapp.com/api/guilds/779170711305715764/widget.png?style=shield" alt="Support Server">
-  </a>
   <a href="https://www.python.org/downloads/">
     <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/Red-Discordbot">
   </a>
