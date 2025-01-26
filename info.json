@@ -1,6 +1,6 @@
 {
     "author" : ["Andy"],
-    "install_msg" : "Thanks for installing my repo! If you need help, join my support server with <https://discord.gg/nVcZQt7mqk>, or make a PR on my repo (I don't check these much)",
+    "install_msg" : "Thanks for installing my repo!",
     "name" : "AndyCogs",
     "short" : "Utility bot cogs",
     "description" : "Random bot cogs that are easy to make but at the same time too easy so no one wants to make them.",
