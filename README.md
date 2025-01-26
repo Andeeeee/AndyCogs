@@ -1,6 +1,6 @@
 
 <h1 align="center">
-  NO LONGER IN USE
+  Not being working on anymore, most of this code will not work currently due to slash commands
 </h1>
 
 <h1 align="center">
